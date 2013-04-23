@@ -1,0 +1,50 @@
+<HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                      "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<script type="text/javascript">
+
+function callbackFunctionWrapper(request, callback, element){
+  if (typeof callback == "function")
+    return function(){
+      if (request.readyState == 4){
+        callback.call(request, element);
+        request = null;
+      }
+    };
+  else
+    return null;
+}
+
+function callbackFunction(element){
+  element.innerHTML = this.responseText;
+}
+
+
+function sendAsync(){
+var xmlHttpRequest = null;
+
+if (window.XMLHttpRequest)
+  xmlHttpRequest = new window.XMLHttpRequest();
+else
+  xmlHttpRequest = new ActiveXObject("Msxml2.XMLHTTP");
+
+var element = document.getElementById("selectColor");
+
+xmlHttpRequest.onreadystatechange = callbackFunctionWrapper(
+                xmlHttpRequest, callbackFunction, element);
+
+xmlHttpRequest.open("get", "response.txt", true);
+
+xmlHttpRequest.send(null);
+}
+
+</script>
+
+
+</head>
+<body>
+<fieldset id="selectColor" style="width:250" style="display:block"> </fieldset>
+<input type="button" onclick="sendAsync();" value="Отправить запрос">
+</body>
+</html>

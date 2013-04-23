@@ -1,0 +1,15 @@
+9
+
+<script type="text/javascript" src="../bhv/util.js" id="bhv_util_script"></script>
+8
+<script>
+
+ bhv.sendScriptRequest('test.php', '', function(){alert('2')}, []);
+ 
+ function f(){
+ bhv.sendScriptRequest('test.php', '', function(){alert('2')}, []);
+ }
+</script>
+7
+<input type=button onclick="f();">
+

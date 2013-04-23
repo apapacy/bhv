@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="windows-1251"?>
+
+<image_rotator>
+
+<image_item>
+<image_text>
+Имидж
+</image_text>
+<image_url>/bhvajax/text/img/image.gif</image_url>
+</image_item>
+
+<image_item>
+<image_text>
+Имидж 1
+</image_text>
+<image_url>/bhvajax/text/img/image1.gif</image_url>
+</image_item>
+
+<image_item>
+<image_text>
+Имидж 2
+</image_text>
+<image_url>/bhvajax/text/img/image2.gif</image_url>
+</image_item>
+
+<image_item>
+<image_text>
+Имидж 3
+</image_text>
+<image_url>/bhvajax/text/img/image3.gif</image_url>
+</image_item>
+
+</image_rotator>

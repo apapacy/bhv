@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<table_definition>
+
+<groups>
+<group>admins</group><group>group001</group>
+</groups>
+
+<users>
+<user>admin</user><user>user001</user>
+</users>
+
+<sql0>
+select kod_order, kod_product,count,price, p.name as name, 'kod_order=' || kod_order || ' and kod_product=' || kod_product  as where_clause from orders_details od inner join products p on od.kod_product = p.kod
+</sql0>
+
+<sql>
+select kod, name,det,nv, rc, 'kod=' || kod as where_clause from cennic
+</sql>
+
+
+<update0>
+ update orders_details set kod_order=$kod_order, kod_product=$kod_product,count=$count,price=$price
+</update0>
+
+<update>
+ update cennic set name='$name',  nv=$nv, rc=$rc
+</update>
+
+<count>
+ 5
+</count>
+
+<order>
+ order by name
+</order>
+
+<whereClause>
+ kod=$kod
+</whereClause>
+
+<columns>
+
+<column>
+<header>
+Номер&lt;br&gt;документа
+</header>
+<value>
+kod
+</value>
+</column>
+
+<column>
+<header>
+Товар
+</header>
+<displayValue>
+name
+</displayValue>
+<value>
+name
+</value>
+<editor>
+new bhv.Combobox("combobox1", null,0, 10, "cennic", "name", "det");
+</editor>
+</column>
+
+<column>
+<header>
+Количество
+</header>
+<value>
+nv
+</value>
+</column>
+
+
+<column>
+<header>
+Цена
+</header>
+<value>
+rc
+</value>
+</column>
+
+</columns>
+
+</table_definition>

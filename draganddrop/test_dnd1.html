@@ -1,0 +1,19 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd"> 
+<html>
+<head>
+<title>Плавающие окна</title>
+<link rel="stylesheet" type="text/css" href="../bhv/widget/window.css">
+<script type="text/javascript" src="../bhv/util.js"></script>
+<script type="text/javascript" src="../bhv/classes.js"></script>
+<script type="text/javascript" src="dnd.js"></script>
+</head>
+<body>
+<script>
+var window1 = bhv.create("bhv.widget.BaseWindow", "Объект BaseWindow");
+var window2 = bhv.create("bhv.widget.WindowURL", "Объект WindowURL");
+window1.show();
+window2.show();
+window2.loadIFrame("http://google.com:80");
+</script>
+</body>
+</html>

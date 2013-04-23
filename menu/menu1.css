@@ -1,0 +1,67 @@
+div.menu {
+  float:left;
+  background-color: wheat;
+  color: blue;
+  padding: 6px 4px 6px 4px
+}
+
+div.selected {
+  float:left;
+  background-color: #ddd;
+  padding: 0px 4px 0px 4px;
+  border-width: 2px;
+  border-style: inset;
+  border-color: silver;
+  margin: 0px 4px 0px 4px
+}
+
+div.other {
+  float:left;
+  background-color:#ddd;
+  padding:0px 4px 0px 4px;
+  border-width:2px;
+  border-style:outset;
+  border-color:silver;
+  margin:0px 4px 0px 4px
+}
+
+div.selected  div.popup {
+  position: absolute;
+  visibility:visible;
+  background-color:wheat;
+  color:blue;
+  padding:0px
+}
+
+div.other  div.popup {
+  position: absolute;
+  top:0px;
+  left:0px;
+  visibility:hidden
+}
+
+
+div.itemOther {
+  background-color:#ddd;
+  padding:0px 4px 0px 4px;
+  border-width:2px;
+  border-style:outset;
+  border-color:silver;
+  margin:2px 2px 2px 2px
+}
+
+div.itemSelected {
+  background-color: #ddd;
+  padding:0px 4px 0px 4px;
+  border-width:2px;
+  border-style:inset;
+  border-color:silver;
+  margin:2px 2px 2px 2px
+}
+
+
+
+
+
+
+

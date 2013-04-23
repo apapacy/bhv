@@ -1,0 +1,42 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" 
+                      "http://www.w3.org/TR/html4/loose.dtd"> 
+
+<html>
+<head>
+<link rel="stylesheet" type="text/css" href="tabbedpane.css">
+<script src="../bhv/util.js"></script>
+<script src="tabbedpane.js"></script>
+</head>
+<body>
+
+<div id="root" style="height:600px;width:800px"> </div>
+
+
+<script>
+function main(){
+var rootDiv = document.getElementById("root")
+var pane = [
+
+["Панель 1","../text/text1.html"],
+["Панель 2","../accordion/accordion1.html"],
+["Панель 3","tabbedpane.html"],
+["Панель 4","../text/text2.html"],
+["Панель 5","../text/text3.html"],
+["Панель 6","../text/text4.html"],
+["Панель 7","../text/text15.html"]
+]
+
+
+
+bhv.tabbedpane.addTabbedPaneBehivior(rootDiv, pane)
+
+
+}
+
+window.onload = main
+
+//----
+
+</script>
+</body>
+<h/tml>

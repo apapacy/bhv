@@ -1,0 +1,67 @@
+div.menu {
+    float:left;
+    background-color: wheat;
+    color: yellow;
+    padding: 4px 2px 4px 2px;
+    margin: 0px
+}
+
+div.selected {
+    float:left;
+    background-color: peru;
+    padding: 0px 4px 0px 4px;
+    border-width: 0px;
+    border-style: inset;
+    border-color: silver;
+    margin: 4px
+}
+
+div.other {
+    float: left;
+    background-color: linen;
+    color: black;
+    padding: 0px 4px 0px 4px;
+    border-width: 0px;
+    border-style: outset;
+    border-color: silver;
+    margin: 4px
+}
+
+div.other  div.popup {
+    position: absolute;
+    top:0px;left:0px;
+    visibility:hidden;
+}
+
+div.selected  div.popup {
+    position: absolute;
+    visibility: visible;
+    background-color: linen;
+    padding: 0px;
+    border-width: 1px;
+    border-style: solid;
+    border-color: peru;
+    margin: 0px
+}
+
+div.itemOther {
+    color:black;
+    padding:2px;
+    margin:0px;
+}
+
+div.itemSelected {
+    color:yellow;
+    background-color:peru;
+    padding:2px ;
+    border-width:0px;
+    margin:0px;
+}
+
+div.itemDisabled {
+    color:#999;
+    background-color:#ccc;
+    padding:2px ;
+    border-width:0px;
+    margin:0px;
+}

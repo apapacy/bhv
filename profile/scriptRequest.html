@@ -1,0 +1,13 @@
+<script src="../bhv/util.js"></script>
+<input type="button" onclick="sendScriptRequest()"
+      value="Отправить запрос">
+<script type="text/javascript">
+function sendScriptRequest(){
+  bhv.sendScriptRequest(
+    "https://localhost/bhvajax/profile/scriptResponse.php",
+    "var=bhv.secretKey", alertSecretKey,[]);
+}
+function alertSecretKey(){
+  alert(bhv.secretKey)
+}
+</script>

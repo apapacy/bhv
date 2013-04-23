@@ -1,0 +1,48 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" 
+                      "http://www.w3.org/TR/html4/loose.dtd"> 
+
+<html>
+<head>
+<script src="../bhv/util.js"></script>
+</head>
+<body>
+<div id="rotator"></div>
+
+<script>
+
+
+loadImage = function(element) {
+  element = document.getElementById(element);
+  var imageElement = document.createElement("IMG")
+  imageElement.style.height = "100px";
+  element.appendChild(imageElement)
+  var imageList = [];
+  imageList.nextLoad = 0
+  var imageTags = this.responseXML.getElementsByTagName("image_item");
+
+  for (var i = 0; i < imageTags.length; i++) {
+    imageList[i] = {}
+    imageList[i].imageText = imageTags[i].getElementsByTagName("image_text")[0].firstChild.data;
+    imageList[i].imageURL = imageTags[i].getElementsByTagName("image_url")[0].firstChild.data;  
+  }
+
+  innerLoad()
+  window.setInterval(innerLoad,5000)
+  function innerLoad(){
+    var currentLoad = imageList.nextLoad;
+    if (imageList[currentLoad].imageElement){
+      imageList.nextLoad = (imageList.nextLoad + 1) % imageList.length;
+      imageElement.src = imageList[currentLoad].imageElement.src
+    } else {
+      imageList[currentLoad].imageElement = document.createElement("IMG");
+      imageList[currentLoad].imageElement.onload = innerLoad;
+      imageList[currentLoad].imageElement.src=imageList[currentLoad].imageURL;
+    }
+
+   }
+}
+
+bhv.sendRequest("GET", "image_rotator.xml", null, true, loadImage, null, ["rotator"])
+</script>
+</body>
+</html>

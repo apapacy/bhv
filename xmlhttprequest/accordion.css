@@ -1,0 +1,46 @@
+body{
+  margin: 5px;
+  border: 0px;
+  padding: 0px
+}
+
+H1, .header1{
+  color: indigo;
+  font: italic bold 28pt/150% sans-serif;
+}
+
+
+.accordionComponent{
+  width: 30%;
+  margin: 10px;
+  border: solid indigo;
+  border-width: 2px 2px 2px 2px;
+  overflow: visible;
+  height: 500px
+}
+
+.accordionCurrentTitle{
+  background: indigo;
+  color: white;
+  font: italic bold 12pt/150% sans-serif;
+  border: outset 2px 
+}
+
+.accordionOtherTitle{
+  background: indigo;
+  color: white;
+  font: italic bold 12pt/150% sans-serif;
+  border: outset 2px
+}
+
+.accordionCurrentPane{
+  border: none;
+  overflow: scroll;
+  display: block;
+  height:90%
+}
+
+.accordionOtherPane{
+    display: none
+}
+

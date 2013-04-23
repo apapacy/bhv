@@ -1,0 +1,99 @@
+<style type="text/css">
+div.menu {background-color:wheat;color:blue;padding:6 4 6 4}
+span.selected {background-color:silver;padding:0 4 0 4;border-width:2;border-style:inset;border-color:silver;margin:0 4 0 4}
+span.other {background-color:silver;padding:0 4 0 4;border-width:2;border-style:outset;border-color:silver;margin:0 4 0 4}
+div.popupHidden {position: absolute;top:0;left:0;visibility:hidden}
+div.popupDropped {position: absolute;visibility:visible;background-color:wheat;color:blue;padding:0;}
+div.itemOther     {background-color:silver;padding:0 4 0 4;border-width:2;border-style:outset;border-color:silver;margin:2 2 2 2}
+div.itemSelected {background-color:silver;padding:0 4 0 4;border-width:2;border-style:inset;border-color:silver;margin:2 2 2 2}
+</style>
+
+<div class="menu">
+<span class="other" 
+onmouseout="this.className='other';hidePopup(this)"
+onmouseover="this.className='selected';showPopup(this)">
+HTML 
+<div class="popupHidden" onmouseout="hidePopup(this.parentNode)">
+<div class="itemOther"
+onmouseover="this.className='itemSelected' "
+onmouseout="this.className='itemOther'"
+onclick="alertContent(this)">
+HEAD</div>
+<div class="itemOther"
+onmouseover="this.className='itemSelected' "
+onmouseout="this.className='itemOther'"
+onclick="alertContent(this)">
+BODY
+</div>
+<div class="itemOther"
+onmouseover="this.className='itemSelected' "
+onmouseout="this.className='itemOther'"
+onclick="alertContent(this)">
+SCRIPT
+</div>
+</div>
+</span>  
+<span class="other" 
+onmouseout="this.className='other';hidePopup(this)"
+onmouseover="this.className='selected';showPopup(this)">
+CGI
+<div class="popupHidden" onmouseout="this.className='other';hidePopup(this.parentNode)">
+<div class="itemOther"
+onmouseover="this.className='itemSelected' "
+onmouseout="this.className='itemOther'"
+onclick="alertContent(this)">
+METHOD</div>
+<div class="itemOther"
+onmouseover="this.className='itemSelected' "
+onmouseout="this.className='itemOther'"
+onclick="alertContent(this)">
+GET</div>
+<div class="itemOther"
+onmouseover="this.className='itemSelected' "
+onmouseout="this.className='itemOther'"
+onclick="alertContent(this)">
+POST</div>
+</div>
+</span> 
+<span class="other" 
+onmouseout="this.className='other'"
+onmouseover="this.className='selected';showPopup(this)">
+Perl
+</span> 
+<span class="other" 
+onmouseout="this.className='other'"
+onmouseover="this.className='selected';showPopup(this)">
+PHP
+</span> 
+<span class="other" 
+onmouseout="this.className='other'"
+onmouseover="this.className='selected';showPopup(this)">
+ASP(.NET)
+</span> 
+<span class="other" 
+onmouseout="this.className='other'"
+onmouseover="this.className='selected';showPopup(this)">
+J2EE 
+</span> 
+<span class="other" 
+onmouseout="this.className='other'"
+onmouseover="this.className='selected';showPopup(this)">
+Ajax=HTML+CSS+JavaScript+XMLHttpRequest()</span>
+<div>
+<script>
+function showPopup(element){
+    var popup= element.childNodes[1]
+    popup.style.top=element.offsetTop+element.offsetHeight
+    popup.style.left=element.offsetLeft
+    popup.className="popupDropped";
+    
+}
+function hidePopup(element){
+    var popup= element.childNodes[1]
+    popup.className="popupHidden";
+    
+}
+function alertContent(element){
+    alert(element.firstChild.data)
+}
+</script>

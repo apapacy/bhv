@@ -1,0 +1,64 @@
+.textDropDown {
+  position: absolute;
+  display: block;
+  background-color: #eeeeee; 
+  border-width: 2px 2px 2px 2px;
+  border-style: ridge ;
+  border-color: #dddddd; 
+  overflow: visible; 
+  visibility: hidden; 
+  top: 0px;
+  padding: 0px;
+  z-index: 100;
+  line-height: 150%
+}
+
+.selectedItem {
+  background-color: rgb(177,138,90);
+  color: #ffffff;
+  display: block;
+  overflow: visible; 
+  z-index:100;
+  padding: 1px;
+  margin: 0px;
+  border-width: 0px 0px 0px 0px;
+  overflow: visible; 
+  border-style: solid ;
+  border-color: #999999; 
+  z-index: 52;
+  cursor: pointer
+}
+
+.otherItem {
+  background-color:  #ffffff;
+  color: #000000;
+  padding: 1px;
+  margin: 0px;
+  display: block;
+  border-width: 0px 0px 0px 0px;
+  border-style: solid ;
+  border-color:  #999999; 
+  overflow: visible; 
+  z-index:100
+}
+
+.hiddenItem {display: none}
+
+span.silverButton {
+  background-color: #c0c0c0;
+  padding: 2px 4px 2px 4px;
+  margin: 0px;
+  border-color: #dddddd;
+  border-width:2px;
+  border-style: outset
+}
+
+span.pressedSilverButton {
+  background-color: #c0c0c0;
+  padding: 2px 4px 2px 4px;
+  margin: 0px;
+  border-color: #dddddd;
+  border-width: 2px;
+  border-style: inset
+}
+

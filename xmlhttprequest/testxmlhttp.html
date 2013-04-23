@@ -1,0 +1,31 @@
+<HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                      "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<script type="text/javascript">
+
+function sendColorRequest(){
+
+var xmlHttpRequest = null;
+
+if (window.XMLHttpRequest)
+  xmlHttpRequest = new window.XMLHttpRequest();
+else
+  xmlHttpRequest = new ActiveXObject("Msxml2.XMLHTTP");
+
+xmlHttpRequest.open("GET","response.txt",false);
+
+xmlHttpRequest.send(null);
+
+var selectColor = document.getElementById("selectColor");
+
+selectColor.innerHTML = xmlHttpRequest.responseText;
+
+}
+</script>
+</head>
+<body>
+<fieldset id="selectColor" style="width:250"></fieldset>
+<input type="button" onclick="sendColorRequest();" value="Отправить запрос">
+</body>
+</html>

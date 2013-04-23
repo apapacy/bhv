@@ -1,0 +1,156 @@
+html, body {
+  background-color: #B0C4DE;
+  color: #000099;
+  z-index:1
+}
+
+
+span.silverButton {
+  background-color: #c0c0c0;
+  padding: 2px 4px 2px 4px;
+  margin: 0px;
+  border-color: #dddddd;
+  border-width: 2px;
+  border-style:outset
+}
+
+span.pressedSilverButton {
+  background-color: #c0c0c0;
+  padding: 2px 4px 2px 4px;
+  margin: 0px;
+  border-color: #dddddd;
+  border-width: 2px;
+  border-style:inset
+}
+
+.cofeeHead {
+  padding: 4px;
+  background: rgb(167,131,95);
+  color: #ffffff;
+  font-family: verdana, arial, sans serif;
+  font-weight: bold;
+  line-height: 200%;
+  z-index: 1
+}
+
+.cofeeBody {
+  padding: 4px;
+  background: rgb(220,206,192);
+  color: #000000;
+  font-family: verdana, arial, sans serif;
+  font-weight: normal;
+  border-color: #cccccc;
+  border-style: outset;
+  border-width: 0px;
+  z-index: 1
+}
+
+span.windowTitle {
+  float: left;
+  color: blue;
+  padding: 2px;
+  font-size: 10pt;
+  font-weight: bold;
+  z-index: 1;
+  overflow: hidden
+}
+
+div.windowBody {
+  background: rgb(220,206,192);
+  color: #000000;
+  font-family: verdana, arial, sans serif;
+  font-weight: normal;
+  border-color: #cccccc;
+  border-style: outset;
+  margin: 0px 0px 0px 0px;
+  padding: 0px 0px 0px 0px;
+  border-width: 0px 2px 0px 2px;
+  z-index: 1;
+  width: auto;
+  overflow: scroll
+}
+
+span.windowTitleButton {
+  color :blue;
+  float: right;
+  background-color: transparent;
+  border-style: outset;
+  border-color: #eeeedd;
+  border-width: 1px;
+  margin: 0px 2px 0px 2px;
+  padding: 2px 4px 2px 4px;
+  font-size: 8pt;
+  font-family: verdana, arial, sans serif;
+  z-index: 1;
+  cursor: pointer;
+  overflow: visible
+}
+
+span.windowPressedTitleButton {
+  color: blue;
+  float: right;
+  border-style: inset;
+  border-color: #cccccc;
+  border-width: 1px;
+  background-color:transparent;
+  margin: 0px 2px 0px 2px;
+  padding: 2px 4px 2px 4px;
+  font-size: 8pt;
+  font-family: verdana, arial, sans serif;
+  z-index: 1;
+  cursor: wait;
+  overflow: visible
+}
+
+span.windowFooterInsetBox {
+  color :blue;
+  float: right;
+  border-style: inset;
+  border-color: #cccccc;
+  border-width: 1px;
+  background-color: transparent;
+  margin: 0px 2px 0px 2px;
+  padding: 2px 4px 2px 4px;
+  font-size: 8pt;
+  font-family: verdana, arial, sans serif;
+  z-index:1;
+  cursor:se-resize
+}
+
+
+div.windowTitleBar {
+  position: static;
+  height: 20px;
+  background-color: #C0C0C0;
+  border-width: 2px;
+  border-style: outset;
+  border-color: #dddddd;
+  margin: 0px;
+  padding: 4px;
+  z-index: 1;
+  cursor: move;
+  overflow: visible
+}
+
+span.windowW {
+  position:static;
+  float: left;
+  margin: 0px 4px 0px 0px;
+  padding: 0px 4px 0px 2px;
+  background-color: #E6E6FA;
+  color: magenta;
+  font-style: italic;
+  text-decoration: underline;
+  overflow: visible;
+  z-index: 1
+}
+
+div.windowPanel {
+  position: absolute;
+  background-color: transparent;
+  padding: 0px;
+  margin: 0px;
+  overflow: hidden;
+  z-index: 50
+}
+

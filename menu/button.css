@@ -1,0 +1,13 @@
+span.button {
+  padding: 4px;
+  background-color: yellow;
+  border-style: outset;
+  border-width: 3px
+}
+
+span.buttonPressed {
+  padding: 5px;
+  background-color: yellow;
+  border-style: inset;
+  border-width: 2px
+}
