@@ -81,7 +81,8 @@ bhv.create = function(className) {
   var objRef;
   classConstructor.apply(objRef = bhv.classes.newInstance(classConstructor, className), args);
   if(objRef.init)
-	objRef.init.apply(objRef, args);  return objRef;
+	objRef.init.apply(objRef, args);
+  return objRef;
 };
 
 bhv.classes.derive=function(className){

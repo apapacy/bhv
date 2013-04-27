@@ -107,9 +107,9 @@ bhv.util.nullFunction = bhv.util.emptyFunction = function(){};
 
 bhv.util.defaultError = function(){
 if (typeof this.responseText != "undefined")
-    alert("–û—à–∏–±–∫–∞:\n" + this.responseText);
+    alert("Œ¯Ë·Í‡:\n" + this.responseText);
 else
-    alert("–û—à–∏–±–∫–∞: XMLHttpRequest");
+    alert("Œ¯Ë·Í‡: XMLHttpRequest");
 }
 
 bhv.util.registreCallbackFunction = function(xmlHttpRequest, callback, onerror, callbackArgsArray){

@@ -131,9 +131,9 @@ bhv.util.nullFunction = bhv.util.emptyFunction = function(){};
 
 bhv.util.defaultError = function(){
     if (typeof this.responseText != "undefined")
-		alert("ÐžÑˆÐ¸Ð±ÐºÐ°:\n" + this.responseText);
+		alert("Îøèáêà:\n" + this.responseText);
     else
-		alert("ÐžÑˆÐ¸Ð±ÐºÐ°: XMLHttpRequest");
+		alert("Îøèáêà: XMLHttpRequest");
 };
 
 bhv.util.registreCallbackFunction = function(xmlHttpRequest, callback, onerror, callbackArgsArray){
@@ -145,7 +145,7 @@ bhv.util.registreCallbackFunction = function(xmlHttpRequest, callback, onerror, 
             else if (typeof onerror == "function")
 				onerror.apply(xmlHttpRequest, callbackArgsArray);
             else
-				throw new Error("ÐžÑˆÐ¸Ð±ÐºÐ° ÑÐ¾Ð·Ð´Ð°Ð½Ð¸Ñ XMLHttpRequest")
+				throw new Error("Îøèáêà ñîçäàíèÿ XMLHttpRequest")
             bhv.scriptConteiner = {};
             xmlHttpRequest.onreadystatechange = bhv.util.nullFunction;
         }
@@ -225,7 +225,7 @@ else
 			if (typeof onerror == "function")
 				onerror.apply(xmlHttpRequest, callbackArgsArray);
 			else
-				throw new Error("ÐžÑˆÐ¸Ð±ÐºÐ° XMLHttpRequest")
+				throw new Error("Îøèáêà XMLHttpRequest")
 		}
 		if (!async){
 			if (!xmlHttpRequest.status || xmlHttpRequest.status >= 200 && xmlHttpRequest.status < 300 || xmlHttpRequest.status == 304){
@@ -235,7 +235,7 @@ else
 			}else if (typeof onerror == "function")
 				onerror.apply(xmlHttpRequest, callbackArgsArray);
 			else
-				throw new Error("ÐžÑˆÐ¸Ð±ÐºÐ° XMLHttpRequest")
+				throw new Error("Îøèáêà XMLHttpRequest")
 		}
 	}
 

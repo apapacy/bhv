@@ -1,15 +1,15 @@
 ////////////////////////////////////////////////////////////////////////////////
 bhv.Combobox = function(element, valueElement, initialValue, count,
-    table, keyColumn, displayValueColumn, searchValueColumn){
+    table, keyColumn, displayValueColumn, searchValueColumn, exactly, filter, addonce){
   this.init(element, valueElement, initialValue, count,
-    table, keyColumn, displayValueColumn, searchValueColumn);
+    table, keyColumn, displayValueColumn, searchValueColumn, exactly, filter, addonce);
 };
 ////////////////////////////////////////////////////////////////////////////////
 bhv.Combobox.prototype = {
 constructor: bhv.Combobox
 ,///////////////////////////////////////////////////////////////////////////////
 init: function(element, valueElement, initialValue, count,
-                 table, keyColumn, displayValueColumn, searchValueColumn){
+                 table, keyColumn, displayValueColumn, searchValueColumn, exactly, filter, addonce){
 // Переменнаая the исползуется в замыканиях
 
 
@@ -20,6 +20,9 @@ this.destroy = function(){
   the = null;
 };
 
+this.exactly = !! exactly;
+this.filter = filter;
+this.addonce = addonce;
 this.enabled = false;
 this.count = count;
 this.data = new bhv.Combobox.ComboboxData(this.count);
@@ -48,27 +51,29 @@ this.input.onkeyup = function() {
     var event0 = arguments[0] || window.event;
     the.onkeyup(event0);
 };
-this.input.onkeydown = function() {
+/*this.input.onkeydown = function() {
     var event0 = arguments[0] || window.event;
     the.onkeydown(event0);
-};
+};*/
 this.input.onclick = function() {
     var event0 = arguments[0] || window.event;
     the.onclick(event0);
 };
 this.input.onblur = function() {
-
-  var event0 = arguments[0] || window.event;
+    var event0 = arguments[0] || window.event;
 	//alert(event0.keyCode)
-  if (the.enabled){
-    the.enabled = false;
-	  the.assignValue();
-    setTimeout(function(){the.hideComboBox()}, 100);
-    event0.cancelBubble = true;
-    event0.returnValue = false;
-    this.focus();
-    return false;
-  }
+    if (the.enabled) {
+        the.enabled = false;
+	    the.assignValue();
+        setTimeout(function(){the.hideComboBox()}, 100);
+        event0.cancelBubble = true;
+        event0.returnValue = false;
+        this.focus();
+        return false;
+   }
+};
+this.input.onfocus = function() {
+    this.select();
 };
 
 if (!valueElement)
@@ -122,7 +127,7 @@ if (typeof initialValue != "undefined"  && initialValue != null) {
 }
 
 if (typeof this.valueElement.value != "undefined") {
-    this.getValueFromServerSync("currentKey=" + encodeURIComponent(this.valueElement.value), "init");
+    this.getValueFromServer("currentKey=" + encodeURIComponent(this.valueElement.value), "init");
 }
 
 }
@@ -139,8 +144,10 @@ params = "table=" + this.table
     + "&keyColumn=" + this.keyColumn
     + "&displayValueColumn=" + this.displayValueColumn
     + "&searchValueColumn=" + this.searchValueColumn
-    + "&count=" + this.count
-
+    + "&count=" + this.count + (this.exactly ? "&exactly=1" : "")
+    + (this.filter ? "&filter="+encodeURIComponent(this.filter) : "")
+    + (this.addonce ? "&addonce="+encodeURIComponent(this.addonce) : "")
+    
 if (additions)
     params += "&"+additions;
 
@@ -209,7 +216,8 @@ if (combobox.enabled) {
 assignValue: function(selected) {
   this.input.value = this.data.getCurrentDisplayValue();
   this.valueElement.value = this.data.getCurrentKey();
-  if (typeof this.afterValueChange == "function")	this.afterValueChange(this);
+  if (typeof this.afterValueChange == "function")
+	this.afterValueChange(this);
 }
 ,//////////////////////////////////////////////////////////////////////////////
 hideComboBox: function(selected) {
@@ -266,7 +274,7 @@ for (var i = 0; i < this.count; i++) {
 }
 }
 ,//////////////////////////////////////////////////////////////////////////////
-onkeydown: function(event0) {
+onkeydown0: function(event0) {
 
 event0.returnValue = true;
 event0.cancelBubble = true;
@@ -287,7 +295,7 @@ if (event0.keyCode == bhv.key.TAB) {
         this.hideComboBox();
         this.enabled = false;
 	} 
-	return false;
+	return true;
 }
 
 if (event0.keyCode == bhv.key.ENTER) {
@@ -332,10 +340,10 @@ if (event0.keyCode == bhv.key.LEFT) {
 
 
 if (! this.enabled) {
-    this.enabled = true;
-    this.showComboBox();
-    this.input.value = this.data.getCurrentSearchValue();//String.fromCharCode(event0.charCode || event0.keyCode);//this.data.getCurrentSearchValue();
-    this.input.select();
+  this.enabled = true;
+  this.showComboBox();
+  //this.input.value = this.data.getCurrentSearchValue();//String.fromCharCode(event0.charCode || event0.keyCode);//this.data.getCurrentSearchValue();
+  //this.input.select();
 	this.input.focus();
 	return true;
 }
@@ -392,20 +400,24 @@ event0.cancelBubble = true;
 //alert(event0.keyCode);
 
 if (event0.keyCode == bhv.key.ESC 
-	|| event0.keyCode == bhv.key.TAB 
+	|| event0.keyCode == bhv.key.TAB
 	|| event0.keyCode == bhv.key.ENTER || event0.keyCode == bhv.key.RIGHT
 	|| event0.keyCode == bhv.key.LEFT
 	|| event0.keyCode == bhv.key.PAGEDOWN
 	|| event0.keyCode == bhv.key.PAGEUP
     || event0.keyCode == bhv.key.DOWN
-    || event0.keyCode == bhv.key.UP)
-	
-	return true;
+    || event0.keyCode == bhv.key.UP){
+	return this.onkeydown0(event0)
+}
 
-else if (!this.enabled)
-    combobox.input.value = combobox.data.getCurrentSearchValue();
-else if (!String(this.input.value).isEmpty())
+else if (!this.enabled){
+    this.onkeydown0(event0);
+  	this.getValueFromServer("currentSearchValue=" + encodeURIComponent(this.input.value));
+    //combobox.input.value = combobox.data.getCurrentSearchValue();
+}else if (!String(this.input.value).isEmpty()){
+  this.onkeydown0(event0)
 	this.getValueFromServer("currentSearchValue=" + encodeURIComponent(this.input.value));
+}
 
 this.showComboBox();
 return true;
@@ -464,14 +476,14 @@ if (rows && rows.length && (rows.length > 0)) {
     this.currentIndex = 0;
     this.currentCount = rows.length;
     for (var i = 0; i < rows.length; i++)
-        for (var j = 0; j < 3; j++)
+        for (var j = 0; j < rows[i].length; j++)
             if (rows[i][j])
                 this.data[i][j] = rows[i][j];
             else
-                this.data[i][j] = "<i>Empty</i>";
+                this.data[i][j] = "";
 }else {
     this.currentIndex = -1;
-    this.currentCount = 0;
+    //this.currentCount = 0;
 }
 }
 ,////////////////////////////////////////////////////////////////////////////
@@ -485,7 +497,7 @@ if (rows && rows.length && (rows.length > 0)) {
             if (rows[i].childNodes[j].firstChild)
                 this.data[i][j] = rows[i].childNodes[j].firstChild.data;
             else
-                this.data[i][j] = "<i>Empty</i>";
+                this.data[i][j] = "";
 }else {
     this.currentIndex = -1;
     this.currentCount = 0;
@@ -516,24 +528,27 @@ for (var i = 0; i < this.currentCount; i++)
         return i;
 return -1;
 }
-,////////////////////////////////////////////////////////////////////////////
+,/////////////////////////////////////////////
 getCurrentDisplayValue: function() {
-if (this.currentIndex<0)
-	return "";
+if (this.currentIndex < 0) return "";
 return this.data[this.currentIndex][1];
 }
 ,///////////////////////////////////////////////////////////////////////////
 getCurrentKey: function() {
-if (this.currentIndex<0)
-	return 0;
 return this.data[this.currentIndex][0];
 }
 ,///////////////////////////////////////////////////////////////////////////
 getCurrentSearchValue: function() {
-if (this.currentIndex<0)
-	return "";
+if (this.currentIndex < 0) return "";
 return this.data[this.currentIndex][2];
 }
+,///////////////////////////////////////////////////////////////////////////
+getCurrentAddonceValue: function(i) {
+if (this.currentIndex < 0) return "";
+//alert(this.data[this.currentIndex])
+return this.data[this.currentIndex][2+i];
+}
+
 ////////////////////////////////////////////////////////////////////////////
 }// end prototype
 

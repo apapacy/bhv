@@ -10,11 +10,11 @@ constructor: bhv.Combobox
 ,///////////////////////////////////////////////////////////////////////////////
 init: function(element, valueElement, initialValue, count,
                  table, keyColumn, displayValueColumn, searchValueColumn, exactly, filter, addonce){
-// Переменнаая the исползуется в замыканиях
+// РџРµСЂРµРјРµРЅРЅР°Р°СЏ the РёСЃРїРѕР»Р·СѓРµС‚СЃСЏ РІ Р·Р°РјС‹РєР°РЅРёСЏС…
 
 
 var the = this;
-// Для удаления циклических ссылок в замыканиях достаточно обнулить the
+// Р”Р»СЏ СѓРґР°Р»РµРЅРёСЏ С†РёРєР»РёС‡РµСЃРєРёС… СЃСЃС‹Р»РѕРє РІ Р·Р°РјС‹РєР°РЅРёСЏС… РґРѕСЃС‚Р°С‚РѕС‡РЅРѕ РѕР±РЅСѓР»РёС‚СЊ the
 this.destroy = function(){
   the.destroy = null;
   the = null;
@@ -45,8 +45,8 @@ if (bhv.IE4){
 	this.input.style.width = this.element.style.width ;
 }
 
-// Для фукнций-обработчиков событий вызываем функции-методы объекта Combobox,
-// которые исползуют замыкание переменной the
+// Р”Р»СЏ С„СѓРєРЅС†РёР№-РѕР±СЂР°Р±РѕС‚С‡РёРєРѕРІ СЃРѕР±С‹С‚РёР№ РІС‹Р·С‹РІР°РµРј С„СѓРЅРєС†РёРё-РјРµС‚РѕРґС‹ РѕР±СЉРµРєС‚Р° Combobox,
+// РєРѕС‚РѕСЂС‹Рµ РёСЃРїРѕР»Р·СѓСЋС‚ Р·Р°РјС‹РєР°РЅРёРµ РїРµСЂРµРјРµРЅРЅРѕР№ the
 this.input.onkeyup = function() {
     var event0 = arguments[0] || window.event;
     the.onkeyup(event0);
@@ -143,7 +143,8 @@ var params = "";
 params = "table=" + this.table
     + "&keyColumn=" + this.keyColumn
     + "&displayValueColumn=" + this.displayValueColumn
-    + "&searchValueColumn=" + this.searchValueColumn    + "&count=" + this.count + (this.exactly ? "&exactly=1" : "")
+    + "&searchValueColumn=" + this.searchValueColumn
+    + "&count=" + this.count + (this.exactly ? "&exactly=1" : "")
     + (this.filter ? "&filter="+encodeURIComponent(this.filter) : "")
     + (this.addonce ? "&addonce="+encodeURIComponent(this.addonce) : "")
     
@@ -394,7 +395,8 @@ onclick: function(event0) {
 onkeyup: function(event0) {
 
 event0.returnValue = true;
-event0.cancelBubble = true;
+event0.cancelBubble = true;
+
 //alert(event0.keyCode);
 
 if (event0.keyCode == bhv.key.ESC 
