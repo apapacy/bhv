@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<table_definition>
+
+<groups>
+<group>admins</group><group>group001</group>
+</groups>
+
+<users>
+<user>admin</user><user>user001</user>
+</users>
+
+<sql0>
+select kod_order, kod_product,count,price, p.name as name, 'kod_order=' || kod_order || ' and kod_product=' || kod_product  as where_clause from orders_details od inner join products p on od.kod_product = p.kod
+</sql0>
+
+<sql>
+select kod, npp, kodiz,koddet,nop, kol, nv, rc, 'kod=' || kod ' and npp=' || npp as where_clause fromdoc_det
+</sql>
+
+
+<update0>
+ update orders_details set kod_order=$kod_order, kod_product=$kod_product,count=$count,price=$price
+</update0>
+
+<update>
+ update doc_det set koddet='$koddet',  nv=$nv, rc=$rc
+</update>
+
+<count>
+ 5
+</count>
+
+<order>
+ order by kod, npp
+</order>
+
+<whereClause>
+ kod=$kod and $npp=npp
+</whereClause>
+
+<columns>
+
+<column>
+<header>
+Изделие
+</header>
+<value>
+kodiz
+</value>
+<editor>
+new bhv.Combobox("combobox1", null,0, 10, "izdel", "kod","name", "name");
+</editor>
+</column>
+
+<column>
+<header>
+Деталь
+</header>
+<value>
+koddet
+</value>
+<editor>
+new bhv.Combobox("combobox1", null,0, 10, "izdel", "kod","name", "name");
+</editor>
+</column>
+
+<column>
+<header>
+№ оп.
+</header>
+<displayValue>
+nop
+</displayValue>
+<value>
+nop
+</value>
+</column>
+
+<column>
+<header>
+Количество
+</header>
+<value>
+kol
+</value>
+</column>
+
+
+<column>
+<header>
+Мин.
+</header>
+<value>
+nv
+</value>
+</column>
+
+<column>
+<header>
+Коп.
+</header>
+<value>
+rc
+</value>
+</column>
+
+</columns>
+
+</table_definition>
