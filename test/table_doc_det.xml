@@ -47,7 +47,7 @@ insert into doc_det (kod, npp, koddet, kodiz, nop, kol) values ($kod, $npp, $kod
 </whereClause>
 
 <filter>
-d.kod=0
+d.kod=4169
 </filter>
 
 <columns>
@@ -109,7 +109,7 @@ koddet
 cennic_name
 </displayValue>
 <editor>
-new bhv.Combobox("combobox2", null,0, 10, "cennic", "kod","name", "det");
+new bhv.Combobox("combobox2", null,0, 10, "cennic", "kod","name", "name");
 </editor>
 </column>
 

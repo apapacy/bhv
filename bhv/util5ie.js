@@ -1,24 +1,26 @@
 if (!Function.prototype.apply){
-  Function.prototype.apply = function(thisObj, args){
-    var a = [];
-    for (var i = 0; i < args.length; i++)
-      a[i] = "args[" + i + "]";
-    thisObj.__apply__ = this; // thisfunction
-    a = "thisObj.__apply__(" + a.join(",") + ")";
-    var r = eval(a);
-    delete thisObj.__apply__;
-    return r;
-  };
+    Function.prototype.apply = function(thisObj, args){
+        var a = [];
+        for (var i = 0; i < args.length; i ++ ){
+            a[i] = "args[" + i + "]";
+            thisObj.__apply__ = this;
+            a = "thisObj.__apply__(" + a.join(",") + ")";
+            var r = eval(a);
+            delete thisObj.__apply__;
+            return r;
+        }
+    };
 }
 
 if (!Function.prototype.call){
-  Function.prototype.call = function(thisObj){
-    var args = [];
-    // copy all arguments but the first
-    for (var i = 1; i < arguments.length; i++)
-      args[i - 1] = arguments[i];
-    return this.apply(thisObj, args);
-  };
+    Function.prototype.call = function(thisObj){
+        var args = [];
+        // copy all arguments but the first
+        for (var i = 1; i < arguments.length; i ++ ){
+            args[i - 1] = arguments[i];
+        }
+        return this.apply(thisObj, args);
+    };
 }
 /****************************
  ** Most of this code was kindly
@@ -77,24 +79,30 @@ if (typeof encodeURIComponent != "function"){
 }
 
 String.prototype.isEmpty = function(){
-if (this.replace(/[\r|\n]/g, "").search(/\S+/) < 0)
+    if (this.replace(/[\r|\n]/g, "").search(/\S+/) < 0)
 		return true;
-else
+    else
 		return false;
 };
 
 String.prototype.allTrim = function(){
-if (typeof this == "string")
+    if (typeof this == "string")
 		return this.replace(/^\s+|\s+$/g,"");
-else
+    else
 		return this.toString().replace(/^\s+|\s+$/g,"");
 };
 
+bhv.allTrim = function(str){
+    if (typeof str == "string")
+		return str.replace(/^\s+|\s+$/g,"");
+    else
+		return String(str).replace(/^\s+|\s+$/g,"");
+};
 
 bhv.addEventListener = function(element, strEvent, callback){
-if (element.addEventListener)
+    if (element.addEventListener)
 		element.addEventListener(strEvent, callback, false);
-else
+    else
 		element.attachEvent("on" + strEvent, callback);
 };
 
@@ -352,15 +360,17 @@ bhv.isVisible = function(elem){
     return !isNone && (!isHidden || isVisible);
 }
 
-bhv.selectPreviousInput = function(elem){
-    if (elem) elem.blur();
-    else return false;
+bhv.selectPreviousInput = function(elem, select0){
+    //if (elem) elem.blur();
+    //else return false;
     var allInput = document.getElementsByTagName("input");
     var isNext = false;
     if (allInput && allInput.length > 0){
 		for (var i = allInput.length - 1; i >= 0; i -- ){
 			try{if (isNext && bhv.isVisible(allInput[i]) && ! allInput[i].disabled){
 					allInput[i].focus();
+          if (select0 && allInput[i].value!="")
+            allInput[i].select();
 					return true;
 				}
 				if (!isNext && allInput[i] == elem)
@@ -369,18 +379,22 @@ bhv.selectPreviousInput = function(elem){
 		}
 	}
     elem.focus();
-	return truel
+    if (select0 && elem.value!="")
+      elem.select();
+	return true;
 };
 
-bhv.selectNextInput = function(elem){
-    if (elem) elem.blur();
-    else return false;
+bhv.selectNextInput = function(elem, select0){
+    //if (elem) elem.blur();
+    //else return false;
     var allInput = document.getElementsByTagName("input");
     var isNext = false;
     if (allInput && allInput.length > 0){
 		for (var i = 0 ; i < allInput.length; i++){
 			try{if (isNext && bhv.isVisible(allInput[i]) && ! allInput[i].disabled){
 					allInput[i].focus();
+          if (select0 && allInput[i].value!="" )
+            allInput[i].select();
 					return true;
 				}
 				if (!isNext && allInput[i] == elem)
@@ -389,6 +403,8 @@ bhv.selectNextInput = function(elem){
 		}
 	}
     elem.focus();
+    if (select0 && elem.value !='')
+      elem.select();
     return true;
 };
 
