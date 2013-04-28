@@ -1,28 +1,31 @@
-bhv.Combotree = function(element, valueElement, initialValue, count,
-    table, keyColumn, displayValueColumn, searchValueColumn){
+////////////////////////////////////////////////////////////////////////////////
+bhv.Combobox = function(element, valueElement, initialValue, count,
+    table, keyColumn, displayValueColumn, searchValueColumn, exactly, filter, addonce){
   this.init(element, valueElement, initialValue, count,
-    table, keyColumn, displayValueColumn, searchValueColumn);
+    table, keyColumn, displayValueColumn, searchValueColumn, exactly, filter, addonce);
 };
-
-bhv.Combotree.prototype ={
-constructor: bhv.Combotree
-,//-------------------------------------------------------
+////////////////////////////////////////////////////////////////////////////////
+bhv.Combobox.prototype = {
+constructor: bhv.Combobox
+,///////////////////////////////////////////////////////////////////////////////
 init: function(element, valueElement, initialValue, count,
-                 table, keyColumn, displayValueColumn, searchValueColumn){
-// Переменнаая the исползуется в замыканиях
+                 table, keyColumn, displayValueColumn, searchValueColumn, exactly, filter, addonce){
+// РџРµСЂРµРјРµРЅРЅР°Р°СЏ the РёСЃРїРѕР»Р·СѓРµС‚СЃСЏ РІ Р·Р°РјС‹РєР°РЅРёСЏС…
+
+
 var the = this;
-// Для удаления циклических ссылок в замыканиях достаточно обнулить the
+// Р”Р»СЏ СѓРґР°Р»РµРЅРёСЏ С†РёРєР»РёС‡РµСЃРєРёС… СЃСЃС‹Р»РѕРє РІ Р·Р°РјС‹РєР°РЅРёСЏС… РґРѕСЃС‚Р°С‚РѕС‡РЅРѕ РѕР±РЅСѓР»РёС‚СЊ the
 this.destroy = function(){
   the.destroy = null;
   the = null;
 };
 
+this.exactly = !! exactly;
+this.filter = filter;
+this.addonce = addonce;
 this.enabled = false;
 this.count = count;
-this.selectTree = false;
-
-
-this.data = new bhv.Combotree.CombotreeData(this.count);
+this.data = new bhv.Combobox.ComboboxData(this.count);
 
 if (typeof element == "string")
 	if (typeof document.getElementById != 'undefined')
@@ -42,36 +45,38 @@ if (bhv.IE4){
 	this.input.style.width = this.element.style.width ;
 }
 
-// Для фукнций-обработчиков событий вызываем функции-методы объекта Combotree,
-// которые исползуют замыкание переменной the
+// Р”Р»СЏ С„СѓРєРЅС†РёР№-РѕР±СЂР°Р±РѕС‚С‡РёРєРѕРІ СЃРѕР±С‹С‚РёР№ РІС‹Р·С‹РІР°РµРј С„СѓРЅРєС†РёРё-РјРµС‚РѕРґС‹ РѕР±СЉРµРєС‚Р° Combobox,
+// РєРѕС‚РѕСЂС‹Рµ РёСЃРїРѕР»Р·СѓСЋС‚ Р·Р°РјС‹РєР°РЅРёРµ РїРµСЂРµРјРµРЅРЅРѕР№ the
 this.input.onkeyup = function() {
     var event0 = arguments[0] || window.event;
     the.onkeyup(event0);
 };
-this.input.onkeydown = function() {
+/*this.input.onkeydown = function() {
     var event0 = arguments[0] || window.event;
     the.onkeydown(event0);
-};
+};*/
 this.input.onclick = function() {
     var event0 = arguments[0] || window.event;
     the.onclick(event0);
 };
 this.input.onblur = function() {
-	
     var event0 = arguments[0] || window.event;
 	//alert(event0.keyCode)
-    if (the.enabled && !the.selectTree) {
+    if (the.enabled) {
         the.enabled = false;
 	    the.assignValue();
-        setTimeout(function(){if (the.selectTree) return; the.hideComboTree();the.treeconteiner.style.visibility = "hidden";}, 3000);
+        setTimeout(function(){the.hideComboBox()}, 100);
         event0.cancelBubble = true;
         event0.returnValue = false;
         this.focus();
         return false;
    }
 };
+this.input.onfocus = function() {
+    this.select();
+};
 
-if (! valueElement)
+if (!valueElement)
     this.valueElement = {};
 else if (typeof valueElement == "string")
 		if (typeof document.getElementById != 'undefined')
@@ -91,27 +96,14 @@ for (var i = 0; i < this.count; i++)
 	this.conteiner = window[optionID]
 	this.conteiner.onmousedown = function() {
 		the.assignValue();
-		the.hideComboTree();
-		the.treeconteiner.style.visibility = "hidden";
+		the.hideComboBox();
 	}
 }else{
 this.conteiner = document.createElement("DIV");
 this.conteiner.className = "textDropDown"
 this.conteiner.onmousedown = function() {
-if (!the.selectTree){
-	the.treeconteiner.style.visibility = "hidden";
     the.assignValue();
-    the.hideComboTree();
-
-}else{
-	the.selectTree = false;
-	the.enabled = false;
-	the.data.currentTree=the.data.getCurrentKey();
-	the.getValueFromServerSync("currentSearchValue=" + encodeURIComponent('') /*+ "&shot=yes"*/, null, null, true);
-	the.input.value = "";
-	the.input.select();
-	//the.showComboTree();
-}
+    the.hideComboBox();
 }
 for (var i = 0; i < this.count; i++)
     this.conteiner.appendChild(document.createElement("DIV")) ;
@@ -121,29 +113,6 @@ for (var i = 0; i < this.count; i++) {
 }
 bhv.contentPane().appendChild(this.conteiner)
 }
-
-this.treeconteiner = document.createElement("DIV");
-this.treeconteiner.className = "textDropDown"
-this.treeconteiner.onmousedown = function() {
-    //the.assignTreeValue();
-    //the.hideComboTree();
-}
-for (var i = 0; i < this.count; i++)
-    this.treeconteiner.appendChild(document.createElement("DIV")) ;
-for (var i = 0; i < this.count; i++) {
-    this.treeconteiner.childNodes[i].className = "otherItem";
-	this.treeconteiner.childNodes[i].onmouseover = function() {the.selectOption(this);};
-	void function loc(){
-		var inneri = i;
-		the.treeconteiner.childNodes[i].onclick = function() {the.data.currentTree=the.data.tree[inneri][0];
-																this.getElementsByTagName("input")[0].checked=true;};
-		the.treeconteiner.childNodes[i].ondblclick = function() {the.data.currentTree=the.data.tree[inneri][0];
-																this.getElementsByTagName("input")[0].checked=true;
-																the.showChild(inneri);};
-	}();
-	this.treeconteiner.childNodes[i].innerHTML="&nbsp;";
-}
-bhv.contentPane().appendChild(this.treeconteiner)
 
 this.table = table;
 this.keyColumn = keyColumn;
@@ -163,7 +132,7 @@ if (typeof this.valueElement.value != "undefined") {
 
 }
 ,///////////////////////////////////////////////////////////////////////////////
-SERVER_SCRIPT: bhv.getApplicationFolder()+"combobox/combotree_query.php"
+SERVER_SCRIPT: bhv.getApplicationFolder()+"combobox/combobox_query.php"
 ,///////////////////////////////////////////////////////////////////////////////
 getServerScript: function() {
     return this.SERVER_SCRIPT;
@@ -174,9 +143,11 @@ var params = "";
 params = "table=" + this.table
     + "&keyColumn=" + this.keyColumn
     + "&displayValueColumn=" + this.displayValueColumn
-    + "&searchValueColumn=" + this.searchValueColumn    + "&count=" + this.count
-	+ "&currentTree=" + this.data.currentTree
-
+    + "&searchValueColumn=" + this.searchValueColumn
+    + "&count=" + this.count + (this.exactly ? "&exactly=1" : "")
+    + (this.filter ? "&filter="+encodeURIComponent(this.filter) : "")
+    + (this.addonce ? "&addonce="+encodeURIComponent(this.addonce) : "")
+    
 if (additions)
     params += "&"+additions;
 
@@ -187,72 +158,111 @@ if (command)
 }
 ,//////////////////////////////////////////////////////////////////////////////
 getValueFromServer: function(additions, command, selected, timeout) {
-
-bhv.unsetCommand("bhv_combotree_" + this.element.id);
-
-var the = this;
-var timeout = 0;
-
-//if ((typeof  additions == "string") &&  additions.indexOf("currentSearchValue") >= 0)
-    timeout = 700;
-
-//bhv.setCommand(bhv.sendRequest, bhv,
-//    ["get", this.getServerScript(), this.getHttpParams(additions, command), true,
-//    this.handleRequest, function(){alert(this.responseText)}, [the, selected]], timeout, "bhv_combotree_" + this.element.id);
-bhv.setCommand(bhv.sendScriptRequest, bhv,
-    [this.getServerScript(), this.getHttpParams(additions, command), 
-    this.handleRequest, [the, selected]], timeout, "bhv_combotree_" + this.element.id);
+bhv.unsetCommand("bhv_combobox_" + this.element.id);
+bhv.setCommand(this.getValueFromServer$, this,
+    [additions, command, selected], 700, "bhv_combobox_" + this.element.id);
+return;
+this.getValueFromServer$(additions, command, selected);
 }
 ,//////////////////////////////////////////////////////////////////////////////
-getValueFromServerSync: function(additions, command, selected, expand) {
-
-bhv.unsetCommand("bhv_combotree_" + this.element.id);
-
-var the = this;
-
-//bhv.sendRequest("get", this.getServerScript(), this.getHttpParams(additions, command), false,
-//    this.handleRequest, null, [the, selected]);
-bhv.sendScriptRequest(this.getServerScript(), this.getHttpParams(additions, command),  this.handleRequest, [the, selected, expand]);
-
-
+getValueFromServerSync: function(additions, command, selected) {
+bhv.unsetCommand("bhv_combobox_" + this.element.id);
+this.getValueFromServer$(additions, command, selected);
+return
 }
 ,//////////////////////////////////////////////////////////////////////////////
-handleRequest: function(combotree, selected, expand) {
-combotree.data.parseXML(/*this.responseXML*/);
-if (combotree.enabled || expand) {
-	combotree.enabled = true;
-    combotree.element.value = combotree.data.getCurrentKey();
-    //combotree.input.value = combotree.data.getCurrentSearchValue();
-    combotree.showComboTree(selected);
-    var matchedChar = bhv.compareString(String(combotree.input.value).toLowerCase(), String(combotree.data.getCurrentSearchValue()).toLowerCase());
+getValueFromServer$: function(additions, command, selected) {
+var thet = this;
+var settings = {
+	context: {combobox:thet, selected:selected},
+	data: thet.getHttpParams(additions, command),
+	dataType: 'text',
+	success: thet.handleRequest$	
+};
+jQuery.ajax(this.getServerScript(), settings)
+}
+,//////////////////////////////////////////////////////////////////////////////
+handleRequest$: function(data, textStatus, jqXHR) {
+//bhv.scriptConteiner = {};
+//eval(data);
+var combobox = this.combobox,
+    selected = this.selected;
+this.combobox = null;
+combobox.data.parseJSON(data);
+if (combobox.enabled) {
+    combobox.element.value = combobox.data.getCurrentKey();
+    //combobox.input.value = combobox.data.getCurrentSearchValue();
+    combobox.showComboBox(selected);
+    var matchedChar = bhv.compareString(String(combobox.input.value).toLowerCase(), String(combobox.data.getCurrentSearchValue()).toLowerCase());
+	/*if (matchedChar < String(combobox.input.value).length)
+		if (combobox.input.createTextRange) {
+			var textRange = combobox.input.createTextRange();
+			textRange.moveStart('character', matchedChar);
+			textRange.select();
+		}else
+			combobox.input.setSelectionRange(matchedChar, combobox.input.value.length);
+	*/
 }else {
-//  combotree.input.value = combotree.data.getCurrentSearchValue();
-    combotree.input.value = combotree.data.getCurrentDisplayValue();
-//  combotree.element.value = combotree.data.getCurrentSearchValue();
+//  combobox.input.value = combobox.data.getCurrentSearchValue();
+    combobox.input.value = combobox.data.getCurrentDisplayValue();
+//  combobox.element.value = combobox.data.getCurrentSearchValue();
+
+}
+}
+,//////////////////////////////////////////////////////////////////////////////
+handleRequest: function(combobox, selected) {
+//alert(this.responseText)
+//eval(this.responseText);
+combobox.data.parseXML(/*this.responseXML*/);
+if (combobox.enabled) {
+    combobox.element.value = combobox.data.getCurrentKey();
+    //combobox.input.value = combobox.data.getCurrentSearchValue();
+    combobox.showComboBox(selected);
+    var matchedChar = bhv.compareString(String(combobox.input.value).toLowerCase(), String(combobox.data.getCurrentSearchValue()).toLowerCase());
+	/*if (matchedChar < String(combobox.input.value).length)
+		if (combobox.input.createTextRange) {
+			var textRange = combobox.input.createTextRange();
+			textRange.moveStart('character', matchedChar);
+			textRange.select();
+		}else
+			combobox.input.setSelectionRange(matchedChar, combobox.input.value.length);
+	*/
+}else {
+//  combobox.input.value = combobox.data.getCurrentSearchValue();
+    combobox.input.value = combobox.data.getCurrentDisplayValue();
+//  combobox.element.value = combobox.data.getCurrentSearchValue();
+
 }
 }
 ,//////////////////////////////////////////////////////////////////////////////
 assignValue: function(selected) {
   this.input.value = this.data.getCurrentDisplayValue();
   this.valueElement.value = this.data.getCurrentKey();
-  if (typeof this.afterValueChange == "function")	this.afterValueChange(this);
+  if (typeof this.afterValueChange == "function")
+	this.afterValueChange(this);
 }
 ,//////////////////////////////////////////////////////////////////////////////
-hideComboTree: function(selected) {
+hideComboBox: function(selected) {
+
     this.enabled = false;
     this.conteiner.style.visibility = "hidden";
-	//this.treeconteiner.style.visibility = "hidden";
     this.input.focus();
 //    this.input.readonly = true;
 }
 ,//////////////////////////////////////////////////////////////////////////////
-showComboTree: function(selected) {
-if (!this.enabled)
+showComboBox: function(selected) {
+if (! this.enabled)
     return;
+
 //this.input.readonly = false;
 this.conteiner.style.visibility = "visible";
 this.conteiner.style.top = this.input.offsetHeight + bhv.top(this.input)+"px"//this.input.offsetTop;
 this.conteiner.style.left = bhv.left(this.input)+"px"//this.input.offsetLeft;
+//this.conteiner.style.width = this.input.clientOffset //xWidth(this.input);
+//var delta=this.input.offsetWidth;
+//this.conteiner.style.width = this.input.offsetWidth;
+//delta = (this.conteiner.offsetWidth-this.conteiner.clientWidth)/2;
+//  if (delta !=0)
 this.conteiner.style.width = this.input.clientWidth + "px";//offsetWidth-delta+"px";
 
 if (selected == "last")
@@ -263,55 +273,7 @@ else if (selected)
     this.data.currentIndex = this.data.getKeyIndex(selected);
 
 for (var i = 0; i < this.count; i++) {
-    this.conteiner.childNodes[i].innerHTML =(this.selectTree ? "<input type=radio>" : "")+this.data.getSearchValue(i);
-    if (i == this.data.currentIndex)
-        this.conteiner.childNodes[i].className = "selectedItem"
-    else if (i < this.data.currentCount)
-        this.conteiner.childNodes[i].className = "otherItem"
-    else
-        this.conteiner.childNodes[i].className = "hiddenItem"
-}
-this.treeconteiner.style.visibility = "visible";
-this.treeconteiner.style.top = (this.conteiner.offsetHeight + bhv.top(this.conteiner)+ 2) + "px"; //this.input.offsetTop;
-this.treeconteiner.style.left = /*this.input.clientWidth + */bhv.left(this.input) + "px"; //this.input.offsetLeft;
-
-for (var i = 0; i < this.count; i++){
-	if (this.data.tree.length > i){
-		if (this.data.tree[i][0] == this.data.currentTree)
-			this.treeconteiner.childNodes[i].innerHTML = "<input type=radio id=id_radio_tree name=name_radio_tree onclick='' checked>" + this.data.tree[i][2];
-		else
-			this.treeconteiner.childNodes[i].innerHTML = "<input type=radio id=id_radio_tree name=name_radio_tree onclick=''>" + this.data.tree[i][2];
-        this.treeconteiner.childNodes[i].className = "otherItem"
-	}else {
-	    this.treeconteiner.childNodes[i].innerHTML = "&nbsp;";
-        this.treeconteiner.childNodes[i].className = "hiddenItem"
-	}
-}
-this.treeconteiner.style.width = this.input.clientWidth + "px";//offsetWidth-delta+"px";
-}
-,//////////////////////////////////////////////////////////////////////////////
-showChild: function(inneri){
-this.conteiner.style.visibility = "visible";
-this.conteiner.style.top = this.input.offsetHeight + bhv.top(this.input)+"px"//this.input.offsetTop;
-this.conteiner.style.left = bhv.left(this.input)+"px"//this.input.offsetLeft;
-this.conteiner.style.width = this.input.clientWidth + "px";//offsetWidth-delta+"px";
-this.selectTree = true;
-//this.enabled = true;
-this.getValueFromServerSync("currentSearchValue=" + encodeURIComponent('') + "&shot=yes", null, null, true);
-this.input.value="";
-this.input.select();
-
-return
-
-if (selected == "last")
-    this.data.currentIndex = this.data.currentCount - 1;
-else if (selected == "first")
-    this.data.currentIndex = 0;
-else if (selected)
-    this.data.currentIndex = this.data.getKeyIndex(selected);
-
-for (var i = 0; i < this.count; i++) {
-    this.conteiner.childNodes[i].innerHTML ="<input type=radio>"+this.data.getDisplayValue(i);
+    this.conteiner.childNodes[i].innerHTML =this.data.getDisplayValue(i);
 
     if (i == this.data.currentIndex)
         this.conteiner.childNodes[i].className = "selectedItem"
@@ -320,24 +282,6 @@ for (var i = 0; i < this.count; i++) {
     else
         this.conteiner.childNodes[i].className = "hiddenItem"
 }
-
-this.treeconteiner.style.visibility = "visible";
-this.treeconteiner.style.top = this.conteiner.offsetHeight + bhv.top(this.conteiner)+"px"; //this.input.offsetTop;
-this.treeconteiner.style.left = this.input.clientWidth + bhv.left(this.input)+100+"px"; //this.input.offsetLeft;
-
-for (var i = 0; i < this.count; i++) {
-	if (this.data.tree.length > i){
-		if (this.data.tree[i][0] == this.data.currentTree)
-			this.treeconteiner.childNodes[i].innerHTML = "<input type=radio id=id_radio_tree name=name_radio_tree onclick='' checked>" + this.data.tree[i][2];
-		else
-			this.treeconteiner.childNodes[i].innerHTML = "<input type=radio id=id_radio_tree name=name_radio_tree onclick=''>" + this.data.tree[i][2];
-        this.treeconteiner.childNodes[i].className = "otherItem"
-	}else {
-	    this.treeconteiner.childNodes[i].innerHTML = "&nbsp;";
-        this.treeconteiner.childNodes[i].className = "hiddenItem"
-	}
-}
-this.treeconteiner.style.width = this.input.clientWidth + "px";//offsetWidth-delta+"px";
 }
 ,//////////////////////////////////////////////////////////////////////////////
 selectOption: function(selectedOption) {
@@ -352,7 +296,7 @@ for (var i = 0; i < this.count; i++) {
 }
 }
 ,//////////////////////////////////////////////////////////////////////////////
-onkeydown: function(event0) {
+onkeydown0: function(event0) {
 
 event0.returnValue = true;
 event0.cancelBubble = true;
@@ -362,8 +306,7 @@ if (event0.keyCode == bhv.key.ESC) {
     this.enabled = false;
 	this.input.select();
     this.getValueFromServer("currentKey=" + encodeURIComponent(this.valueElement.value), "init");
-    this.hideComboTree();
-	this.treeconteiner.style.visibility = "hidden";
+    this.hideComboBox();
     //}
     return true;
 }
@@ -371,26 +314,17 @@ if (event0.keyCode == bhv.key.ESC) {
 if (event0.keyCode == bhv.key.TAB) {
     if (this.enabled) {
         this.assignValue();
-        this.hideComboTree();
-		this.treeconteiner.style.visibility = "hidden";
+        this.hideComboBox();
         this.enabled = false;
 	} 
-	return false;
+	return true;
 }
 
 if (event0.keyCode == bhv.key.ENTER) {
 
-	if (this.selectTree){
-		this.selectTree = false;
-		this.enabled = true;
-		this.data.currentTree=this.data.getCurrentKey();
-		this.getValueFromServerSync("currentSearchValue=" + encodeURIComponent('')/* + "&shot=yes"*/, null, null, true);
-		this.input.value = "";
-		this.input.select();
-	}else if (this.enabled) {
+    if (this.enabled) {
         this.assignValue();
-        this.hideComboTree();
-		this.treeconteiner.style.visibility = "hidden";
+        this.hideComboBox();
         this.enabled = false;
 	} else {
         bhv.selectNextInput(this.input);
@@ -403,7 +337,7 @@ if (event0.keyCode == bhv.key.RIGHT) {
 
     if (! this.enabled) {
     //    this.assignValue();
-    //    this.hideComboTree();
+    //    this.hideComboBox();
     //    this.enabled = false;
 	//} else {
         bhv.selectNextInput(this.input);
@@ -417,7 +351,7 @@ if (event0.keyCode == bhv.key.LEFT) {
 
     if (! this.enabled) {
     //    this.assignValue();
-    //    this.hideComboTree();
+    //    this.hideComboBox();
     //    this.enabled = false;
 	//} else {
         bhv.selectPreviousInput(this.input);
@@ -428,10 +362,10 @@ if (event0.keyCode == bhv.key.LEFT) {
 
 
 if (! this.enabled) {
-    this.enabled = true;
-    this.showComboTree();
-    this.input.value = this.data.getCurrentSearchValue();//String.fromCharCode(event0.charCode || event0.keyCode);//this.data.getCurrentSearchValue();
-    this.input.select();
+  this.enabled = true;
+  this.showComboBox();
+  //this.input.value = this.data.getCurrentSearchValue();//String.fromCharCode(event0.charCode || event0.keyCode);//this.data.getCurrentSearchValue();
+  //this.input.select();
 	this.input.focus();
 	return true;
 }
@@ -462,19 +396,19 @@ if (event0.keyCode == bhv.key.PAGEDOWN) {
         this.getValueFromServer("currentKey=" + this.data.getCurrentKey() + "&currentSearchValue=" + encodeURIComponent(this.input.value), "previous", this.data.getCurrentKey());
     } else {
         if (!this.enabled)
-            combotree.input.value = combotree.data.getCurrentSearchValue();
+            combobox.input.value = combobox.data.getCurrentSearchValue();
  //       else
 			//if (!String(this.input.value).isEmpty())
 				//this.getValueFromServer("currentSearchValue=" + encodeURIComponent(this.input.value));
     }
 
-this.showComboTree();
+this.showComboBox();
 return true;
 }
 ,//////////////////////////////////////////////////////////////////////////////
 onclick: function(event0) {
     this.enabled = true;
-    this.showComboTree();
+    this.showComboBox();
     this.input.value = this.data.getCurrentSearchValue();
     this.input.select();
 	this.input.focus();
@@ -483,32 +417,37 @@ onclick: function(event0) {
 onkeyup: function(event0) {
 
 event0.returnValue = true;
-event0.cancelBubble = true;
+event0.cancelBubble = true;
+
 //alert(event0.keyCode);
 
 if (event0.keyCode == bhv.key.ESC 
-	|| event0.keyCode == bhv.key.TAB 
+	|| event0.keyCode == bhv.key.TAB
 	|| event0.keyCode == bhv.key.ENTER || event0.keyCode == bhv.key.RIGHT
 	|| event0.keyCode == bhv.key.LEFT
 	|| event0.keyCode == bhv.key.PAGEDOWN
 	|| event0.keyCode == bhv.key.PAGEUP
     || event0.keyCode == bhv.key.DOWN
-    || event0.keyCode == bhv.key.UP)
-	
-	return true;
+    || event0.keyCode == bhv.key.UP){
+	return this.onkeydown0(event0)
+}
 
-else if (!this.enabled)
-    combotree.input.value = combotree.data.getCurrentSearchValue();
-else if (!String(this.input.value).isEmpty())
+else if (!this.enabled){
+    this.onkeydown0(event0);
+  	this.getValueFromServer("currentSearchValue=" + encodeURIComponent(this.input.value));
+    //combobox.input.value = combobox.data.getCurrentSearchValue();
+}else if (!String(this.input.value).isEmpty()){
+  this.onkeydown0(event0)
 	this.getValueFromServer("currentSearchValue=" + encodeURIComponent(this.input.value));
+}
 
-this.showComboTree();
+this.showComboBox();
 return true;
 }
 ,//////////////////////////////////////////////////////////////////////////////
 onclick: function(event0) {
     this.enabled = true;
-    this.showComboTree();
+    this.showComboBox();
     this.input.value = this.data.getCurrentSearchValue();
     this.input.select();
 	this.input.focus();
@@ -518,7 +457,7 @@ setValue: function(value) {
     //this.enabled = true;
     this.valueElement.value = value;
     this.requestedKey = value;
-    this.getValueFromServerSync("currentKey=" + encodeURIComponent(value), 'init', null);
+    this.getValueFromServerSync("currentKey=" + encodeURIComponent(value), 'init', null, 1);
 }
 ,////////////////////////////////////////////////////////////////////////////
 getValue: function() {
@@ -542,36 +481,49 @@ edit: function() {
 
 
 /////////////////////////////////////////////////////////////////////////////
-bhv.Combotree.CombotreeData = function (count) {
+bhv.Combobox.ComboboxData = function (count) {
     this.count = count;
     this.currentCount = -1;
     this.currentIndex = -1;
     this.data = [];
     for (var i = 0; i < count; i++)
         this.data[i] = [];
-	this.tree = [[0,'...','...']];
-	this.currentTree = 0;
 };
 /////////////////////////////////////////////////////////////////////////////
-bhv.Combotree.CombotreeData.prototype = {
+bhv.Combobox.ComboboxData.prototype = {
 /////////////////////////////////////////////////////////////////////////////
-parseXML: function(xmlDocument) {
-var rows = bhv.scriptConteiner.responseJSON[0];
+parseJSON: function(json) {
+var rows = eval("("+json+")");
 if (rows && rows.length && (rows.length > 0)) {
     this.currentIndex = 0;
     this.currentCount = rows.length;
     for (var i = 0; i < rows.length; i++)
-        for (var j = 0; j < 3; j++)
+        for (var j = 0; j < rows[i].length; j++)
             if (rows[i][j])
                 this.data[i][j] = rows[i][j];
             else
-                this.data[i][j] = "<i>Empty</i>";
+                this.data[i][j] = "";
 }else {
     this.currentIndex = -1;
-    this.currentCount = 0;
+    //this.currentCount = 0;
 }
-	this.tree = bhv.scriptConteiner.responseJSON[1];
-//	alert(bhv.scriptConteiner.responseJSON[1])
+}
+,////////////////////////////////////////////////////////////////////////////
+parseXML: function(xmlDocument) {
+var rows = bhv.scriptConteiner.responseJSON;
+if (rows && rows.length && (rows.length > 0)) {
+    this.currentIndex = 0;
+    this.currentCount = rows.length;
+    for (var i = 0; i < rows.length; i++)
+        for (var j = 0; j < rows[i].length; j++)
+            if (rows[i][j])
+                this.data[i][j] = rows[i][j];
+            else
+                this.data[i][j] = "";
+}else {
+    this.currentIndex = -1;
+    //this.currentCount = 0;
+}
 }
 ,////////////////////////////////////////////////////////////////////////////
 parseXML0: function(xmlDocument) {
@@ -584,7 +536,7 @@ if (rows && rows.length && (rows.length > 0)) {
             if (rows[i].childNodes[j].firstChild)
                 this.data[i][j] = rows[i].childNodes[j].firstChild.data;
             else
-                this.data[i][j] = "<i>Empty</i>";
+                this.data[i][j] = "";
 }else {
     this.currentIndex = -1;
     this.currentCount = 0;
@@ -615,8 +567,9 @@ for (var i = 0; i < this.currentCount; i++)
         return i;
 return -1;
 }
-,////////////////////////////////////////////////////////////////////////////
+,/////////////////////////////////////////////
 getCurrentDisplayValue: function() {
+if (this.currentIndex < 0) return "";
 return this.data[this.currentIndex][1];
 }
 ,///////////////////////////////////////////////////////////////////////////
@@ -625,8 +578,16 @@ return this.data[this.currentIndex][0];
 }
 ,///////////////////////////////////////////////////////////////////////////
 getCurrentSearchValue: function() {
+if (this.currentIndex < 0) return "";
 return this.data[this.currentIndex][2];
 }
+,///////////////////////////////////////////////////////////////////////////
+getCurrentAddonceValue: function(i) {
+if (this.currentIndex < 0) return "";
+//alert(this.data[this.currentIndex])
+return this.data[this.currentIndex][2+i];
+}
+
 ////////////////////////////////////////////////////////////////////////////
 }// end prototype
 
