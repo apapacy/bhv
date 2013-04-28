@@ -4,7 +4,7 @@ bhv.classes = {};
 
 bhv.isa = function( toObject, fromObject ) {
   for ( var p in fromObject )
-  if ( typeof toObject[p] === "undefined" )
+  if ( typeof toObject[p] === "undefined" && p !== "init")
     toObject[p] = fromObject[p];
 }
 
@@ -88,13 +88,13 @@ bhv.create = function( className ) {
   return objRef;
 };
 
-bhv.classes.derive = function( className, construct ) {
+bhv.classes.derive = function( className, construct, args ) {
   if ( this.parentList["" + className] )
     return this;
   this.parentList["" + className] = true;
-  var args = [];
-  for ( var i = 1; i < arguments.length; i++ )
-    args[i - 1] = arguments[i];
+  if (! args)
+    for ( var i = 1; i < arguments.length; i++ )
+      args[i - 1] = arguments[i];
   if (typeof className === "string") {
     bhv.load(className)
     var classConstructor = eval(className)
@@ -118,12 +118,14 @@ bhv.classes.loadedClasses = {};
 bhv.classes.loader = function (strNameSpace){
   var mod = bhv.classes["package"](strNameSpace);
   eval(this.responseText);
-  if ( typeof Constructor === "function" )
+  if ( typeof Constructor === "function" ) {
     eval(strNameSpace + " = Constructor");
+  }
   else if ( eval( "typeof " + strNameSpace) != "function") {
       eval(strNameSpace + " = " + strNameSpace.match(/[^\.]*$/));
   }
   bhv.classes.loadedClasses[strNameSpace] = eval(strNameSpace);
+
 }
 
 bhv.load = function( strNameSpace ) {
@@ -142,4 +144,4 @@ bhv.load = function( strNameSpace ) {
   } catch (ex) {alert(ex.message)}
   return bhv.classes.loadedClasses[strNameSpace];
 };
-alert(2);
+

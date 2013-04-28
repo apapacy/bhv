@@ -20,10 +20,12 @@
 <span id="combobox2" style="background: blue;width:300px"> </span> 
 <div id="combopane"></div>
 <script>
-var combo1 = new bhv.Combobox("combobox1", "comb1", 2, 10,
+//var combo1 = new bhv.Combobox("combobox1", "comb1", 2, 10,
+//     "dbo.cennic", "kod", "name", "name")
+var combo1 = bhv.create("bhv.widget.Combobox","combobox1", "comb1", 2, 10,
      "dbo.cennic", "kod", "name", "name")
-var combo2 = new bhv.Combobox("combobox2", "comb2", 1, 10,
-     "dbo.cennic", "kod", "name", "det")
+
+var combo2 = bhv.create("test.widget.ComboboxCennic", "combobox2");
 
 var cp = document.getElementById("combopane")
 

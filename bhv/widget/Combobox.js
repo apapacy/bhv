@@ -590,7 +590,9 @@ return this.data[this.currentIndex][2+i];
 
 ////////////////////////////////////////////////////////////////////////////
 }// end prototype
-
+function Constructor(element, valueElement, initialValue, count,
+                 table, keyColumn, displayValueColumn, searchValueColumn, exactly, filter, addonce){}
+bhv.ISA(Constructor.prototype, bhv.Combobox.prototype)
 
 
 
