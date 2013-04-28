@@ -162,7 +162,7 @@ if (isset($_REQUEST['command']) &&  $_REQUEST['command'] == 'init'){
 			. " order by field3, field1 limit $count");
 
 }
-    echo "/*bhv.scriptConteiner.responseJSON = */[";
+    echo "bhv.scriptConteiner.responseJSON = [";
     $rowcounter = 0;
     while ($result and $row = pg_fetch_row($result)){
     	$fieldcounter = 0;

@@ -176,7 +176,7 @@ var thet = this;
 var settings = {
 	context: {combobox:thet, selected:selected},
 	data: thet.getHttpParams(additions, command),
-	dataType: 'text',
+	dataType: 'jsonp',
 	success: thet.handleRequest$	
 };
 jQuery.ajax(this.getServerScript(), settings)

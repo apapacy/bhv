@@ -15,7 +15,18 @@ require_once('../db/setting.php');
 /*/echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\n";
 //echo '<response>';*/
 
+if (empty($username))
+    $db = pg_pconnect("host=$host dbname=$database");
+elseif (empty($password))
+	$db = pg_pconnect("host=$host dbname=$database user=$username");
+else
+	$db = pg_pconnect("host=$host dbname=$database user=$username password=$password");
 
+if (!$db){
+    echo '/*<errorcode>' . 1 . '</errorcode>';
+    echo '<error>' . pg_last_error($db) . '</error></response>*/';
+    die();
+}
 
 if (isset($_REQUEST['table']))
     $table = pg_escape_string($_REQUEST['table']);

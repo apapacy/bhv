@@ -11,5 +11,10 @@ elseif (empty($password))
 else
 	$db = pg_pconnect("host=$host dbname=$database user=$username password=$password");
 
+if (!$db){
+    echo '/*<errorcode>' . 1 . '</errorcode>';
+    echo '<error>' . pg_last_error($db) . '</error></response>*/';
+    die();
+}
 
 ?>
