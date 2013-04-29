@@ -22,10 +22,10 @@
 <script>
 //var combo1 = new bhv.Combobox("combobox1", "comb1", 2, 10,
 //     "dbo.cennic", "kod", "name", "name")
-var combo1 = bhv.create("bhv.widget.Combobox","combobox1", "comb1", 2, 10,
-     "dbo.cennic", "kod", "name", "name")
+//var combo1 = bhv.create("bhv.widget.Combobox","combobox1", "comb1", 2, 10,
+//     "dbo.cennic", "kod", "name", "name")
 
-var combo2 = bhv.create("test.widget.ComboboxCennic", "combobox2");
+var combo2 = bhv.create("test.widget.ComboboxCennic", "combobox2","comb2",19);
 
 var cp = document.getElementById("combopane")
 
@@ -39,7 +39,7 @@ sp.id="id"+i
 cp.appendChild(sp)
 //new bhv.Combobox(sp, undefined, i0, 10,     "dbo.cennic", "kod", "name", "name")
 //function inner(){new bhv.Combobox(sp, undefined, i0, 10,     "dbo.cennic", "kod", "name", "name")}
-window.setTimeout(function(){new bhv.Combobox(sp, undefined, i0, 10,     "dbo.cennic", "kod", "name", "name",true)},100)
+window.setTimeout(function(){bhv.create("test.widget.ComboboxCennic", sp, undefined, i0);},100)
 	 //alert(i)
 }()
 }

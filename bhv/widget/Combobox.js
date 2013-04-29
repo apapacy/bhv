@@ -1,19 +1,18 @@
 ////////////////////////////////////////////////////////////////////////////////
-bhv.Combobox = function(element, valueElement, initialValue, count,
-    table, keyColumn, displayValueColumn, searchValueColumn, exactly, filter, addonce){
-  this.init(element, valueElement, initialValue, count,
-    table, keyColumn, displayValueColumn, searchValueColumn, exactly, filter, addonce);
+bhv.Combobox = function( element, valueElement, initialValue, count,
+    table, keyColumn, displayValueColumn, searchValueColumn, exactly, filter, addonce ) {
+  this.init( element, valueElement, initialValue, count,
+    table, keyColumn, displayValueColumn, searchValueColumn, exactly, filter, addonce );
 };
 ////////////////////////////////////////////////////////////////////////////////
 bhv.Combobox.prototype = {
 constructor: bhv.Combobox
 ,///////////////////////////////////////////////////////////////////////////////
-init: function(element, valueElement, initialValue, count,
-                 table, keyColumn, displayValueColumn, searchValueColumn, exactly, filter, addonce){
+init: function( element, valueElement, initialValue, count,
+                 table, keyColumn, displayValueColumn, searchValueColumn, exactly, filter, addonce ) {
 // Переменнаая the исползуется в замыканиях
-
-
 var the = this;
+
 // Для удаления циклических ссылок в замыканиях достаточно обнулить the
 this.destroy = function(){
   the.destroy = null;
@@ -25,25 +24,17 @@ this.filter = filter;
 this.addonce = addonce;
 this.enabled = false;
 this.count = count;
-this.data = new bhv.Combobox.ComboboxData(this.count);
+this.data = new bhv.Combobox.ComboboxData( this.count );
 
-if (typeof element == "string")
-	if (typeof document.getElementById != 'undefined')
-		this.element = document.getElementById(element);
-	else
-		this.element = document.all(element);
+if ( typeof element === "string" )
+  this.element = document.getElementById( element );
 else
-    this.element = element;
+  this.element = element;
 
-if (bhv.IE4){
-	this.element.insertAdjacentHTML("afterBegin","<input type=text>")
-	this.input = this.element.all.tags('INPUT')[0]
-}else{
-	this.input = document.createElement("input");
-	this.element.appendChild(this.input);
-	this.input.type = "text";
-	this.input.style.width = this.element.style.width ;
-}
+this.input = document.createElement( "input" );
+this.element.appendChild( this.input );
+this.input.type = "text";
+this.input.style.width = this.element.style.width;
 
 // Для фукнций-обработчиков событий вызываем функции-методы объекта Combobox,
 // которые исползуют замыкание переменной the
@@ -76,43 +67,28 @@ this.input.onfocus = function() {
     this.select();
 };
 
-if (!valueElement)
-    this.valueElement = {};
-else if (typeof valueElement == "string")
-		if (typeof document.getElementById != 'undefined')
-			this.valueElement = document.getElementById(valueElement);
-		else
-			this.valueElement = document.all(valueElement);
-	else
-		this.valueElement = valueElement;
+if ( !valueElement )
+  this.valueElement = {};
+else if ( typeof valueElement == "string" )
+	this.valueElement = document.getElementById( valueElement );
+else
+	this.valueElement = valueElement;
 
-if (bhv.IE4){
-var optionID="optionID" + Math.round(Math.random()*1000000)
-var optionHTML = "<DIV class=textDropDown id=" + optionID + ">"
-for (var i = 0; i < this.count; i++)
-    optionHTML = optionHTML + "<DIV class=otherItem></DIV>";
-	optionHTML = optionHTML + "</DIV>"
-	bhv.contentPane().insertAdjacentHTML("afterBegin", optionHTML)
-	this.conteiner = window[optionID]
-	this.conteiner.onmousedown = function() {
-		the.assignValue();
-		the.hideComboBox();
-	}
-}else{
 this.conteiner = document.createElement("DIV");
 this.conteiner.className = "textDropDown"
+
 this.conteiner.onmousedown = function() {
     the.assignValue();
     the.hideComboBox();
 }
-for (var i = 0; i < this.count; i++)
-    this.conteiner.appendChild(document.createElement("DIV")) ;
-for (var i = 0; i < this.count; i++) {
+
+for ( var i = 0; i < this.count; i++ )
+  this.conteiner.appendChild( document.createElement( "DIV" ) ) ;
+for ( var i = 0; i < this.count; i++ ) {
     this.conteiner.childNodes[i].className = "otherItem";
-    this.conteiner.childNodes[i].onmouseover = function() {the.selectOption(this);};
+    this.conteiner.childNodes[i].onmouseover = function() { the.selectOption( this ); };
 }
-bhv.contentPane().appendChild(this.conteiner)
-}
+bhv.contentPane().appendChild( this.conteiner );
 
 this.table = table;
 this.keyColumn = keyColumn;
@@ -121,13 +97,13 @@ this.searchValueColumn = searchValueColumn;
 this.requestedKey = null;
 this.requestedSearchValue = null;
 
-if (typeof initialValue != "undefined"  && initialValue != null) {
+if ( typeof initialValue !== "undefined"  && initialValue !== null ) {
     this.valueElement.value = initialValue;
     this.requestedKey = initialValue;
 }
 
-if (typeof this.valueElement.value != "undefined") {
-    this.getValueFromServerSync("currentKey=" + encodeURIComponent(this.valueElement.value), "init");
+if ( typeof this.valueElement.value !== "undefined" ) {
+    this.getValueFromServerSync( "currentKey=" + encodeURIComponent( this.valueElement.value ), "init" );
 }
 
 }
@@ -138,75 +114,60 @@ getServerScript: function() {
     return this.SERVER_SCRIPT;
 }
 ,///////////////////////////////////////////////////////////////////////////////
-getHttpParams: function(additions, command) {
+getHttpParams: function( additions, command ) {
 var params = "";
 params = "table=" + this.table
-    + "&keyColumn=" + this.keyColumn
-    + "&displayValueColumn=" + this.displayValueColumn
-    + "&searchValueColumn=" + this.searchValueColumn
-    + "&count=" + this.count + (this.exactly ? "&exactly=1" : "")
-    + (this.filter ? "&filter="+encodeURIComponent(this.filter) : "")
-    + (this.addonce ? "&addonce="+encodeURIComponent(this.addonce) : "")
+  + "&keyColumn=" + this.keyColumn
+  + "&displayValueColumn=" + this.displayValueColumn
+  + "&searchValueColumn=" + this.searchValueColumn
+  + "&count=" + this.count + ( this.exactly ? "&exactly=1" : "" )
+  + ( this.filter ? "&filter="+encodeURIComponent( this.filter ) : "")
+  + ( this.addonce ? "&addonce="+encodeURIComponent( this.addonce ) : "")
     
-if (additions)
-    params += "&"+additions;
+if  (additions )
+  params += "&"+additions;
 
-if (command)
-    params += "&command=" + command;
-    return params;
+if ( command )
+  params += "&command=" + command;
+return params;
 
 }
 ,//////////////////////////////////////////////////////////////////////////////
-getValueFromServer: function(additions, command, selected, timeout) {
-bhv.unsetCommand("bhv_combobox_" + this.element.id);
-bhv.setCommand(this.getValueFromServer$, this,
-    [additions, command, selected], 700, "bhv_combobox_" + this.element.id);
+getValueFromServer: function( additions, command, selected, timeout ) {
+bhv.unsetCommand( "bhv_combobox_" + this.element.id );
+bhv.setCommand( this.getValueFromServer$, this,
+    [additions, command, selected], 700, "bhv_combobox_" + this.element.id );
 return;
-this.getValueFromServer$(additions, command, selected);
 }
 ,//////////////////////////////////////////////////////////////////////////////
-getValueFromServerSync: function(additions, command, selected) {
-bhv.unsetCommand("bhv_combobox_" + this.element.id);
-this.getValueFromServer$(additions, command, selected);
-return
+getValueFromServerSync: function( additions, command, selected ) {
+bhv.unsetCommand( "bhv_combobox_" + this.element.id );
+this.getValueFromServer$( additions, command, selected );
+return;
 }
 ,//////////////////////////////////////////////////////////////////////////////
-getValueFromServer$: function(additions, command, selected) {
+getValueFromServer$: function( additions, command, selected ) {
 var thet = this;
 var settings = {
-	context: {combobox:thet, selected:selected},
-	data: thet.getHttpParams(additions, command),
+	context: { combobox:thet, selected:selected },
+	data: thet.getHttpParams( additions, command ),
 	dataType: 'text',
 	success: thet.handleRequest$	
 };
-jQuery.ajax(this.getServerScript(), settings)
+jQuery.ajax( this.getServerScript(), settings )
 }
 ,//////////////////////////////////////////////////////////////////////////////
-handleRequest$: function(data, textStatus, jqXHR) {
-//bhv.scriptConteiner = {};
-//eval(data);
+handleRequest$: function (data, textStatus, jqXHR ) {
 var combobox = this.combobox,
     selected = this.selected;
 this.combobox = null;
-combobox.data.parseJSON(data);
-if (combobox.enabled) {
-    combobox.element.value = combobox.data.getCurrentKey();
-    //combobox.input.value = combobox.data.getCurrentSearchValue();
-    combobox.showComboBox(selected);
-    var matchedChar = bhv.compareString(String(combobox.input.value).toLowerCase(), String(combobox.data.getCurrentSearchValue()).toLowerCase());
-	/*if (matchedChar < String(combobox.input.value).length)
-		if (combobox.input.createTextRange) {
-			var textRange = combobox.input.createTextRange();
-			textRange.moveStart('character', matchedChar);
-			textRange.select();
-		}else
-			combobox.input.setSelectionRange(matchedChar, combobox.input.value.length);
-	*/
+combobox.data.parseJSON( data );
+if ( combobox.enabled ) {
+  combobox.element.value = combobox.data.getCurrentKey();
+  combobox.showComboBox(selected);
+  var matchedChar = bhv.compareString(String(combobox.input.value).toLowerCase(), String(combobox.data.getCurrentSearchValue()).toLowerCase());
 }else {
-//  combobox.input.value = combobox.data.getCurrentSearchValue();
-    combobox.input.value = combobox.data.getCurrentDisplayValue();
-//  combobox.element.value = combobox.data.getCurrentSearchValue();
-
+  combobox.input.value = combobox.data.getCurrentDisplayValue();
 }
 }
 ,//////////////////////////////////////////////////////////////////////////////
@@ -251,7 +212,7 @@ hideComboBox: function(selected) {
 }
 ,//////////////////////////////////////////////////////////////////////////////
 showComboBox: function(selected) {
-if (! this.enabled)
+if ( !this.enabled )
     return;
 
 //this.input.readonly = false;
@@ -445,36 +406,36 @@ this.showComboBox();
 return true;
 }
 ,//////////////////////////////////////////////////////////////////////////////
-onclick: function(event0) {
-    this.enabled = true;
-    this.showComboBox();
-    this.input.value = this.data.getCurrentSearchValue();
-    this.input.select();
+onclick: function() {
+  this.enabled = true;
+  this.showComboBox();
+  this.input.value = this.data.getCurrentSearchValue();
+  this.input.select();
 	this.input.focus();
 }
 ,////////////////////////////////////////////////////////////////////////////
 setValue: function(value) {
-    //this.enabled = true;
-    this.valueElement.value = value;
-    this.requestedKey = value;
-    this.getValueFromServerSync("currentKey=" + encodeURIComponent(value), 'init', null, 1);
+  //this.enabled = true;
+  this.valueElement.value = value;
+  this.requestedKey = value;
+  this.getValueFromServerSync("currentKey=" + encodeURIComponent(value), 'init', null, 1);
 }
 ,////////////////////////////////////////////////////////////////////////////
 getValue: function() {
-    return this.valueElement.value ;
+  return this.valueElement.value ;
 }
 ,////////////////////////////////////////////////////////////////////////////
 show: function() {
-    this.element.style.display = "block";
+  this.element.style.display = "block";
 }
 ,////////////////////////////////////////////////////////////////////////////
 hide: function() {
-    this.element.style.display = "none";
+  this.element.style.display = "none";
 }
 ,////////////////////////////////////////////////////////////////////////////
 edit: function() {
-    this.enabled = true;
-    this.onclick.call(this);
+  this.enabled = true;
+  this.onclick.call(this);
 }
 /////////////////////////////////////////////////////////////////////////////
 }// end prototype
