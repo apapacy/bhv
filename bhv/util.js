@@ -46,5 +46,5 @@ if (typeof document.getElementById != 'undefined'){
 }
 document.write('<style type="text/css">div, span {border-width: 0px; border-style: none; padding: 0px; margin: 0px}</style>');
 document.write('<link rel=stylesheet type="text/css" href="'+bhv.getApplicationFolder()+'combobox/combobox.css'+'?rand='+Math.random()+'"></script>');
-document.write('<script src="'+bhv.getApplicationFolder()+'combobox/Combobox.js'+'?rand='+Math.random()+'"></script>');
-document.write('<script src="'+bhv.getApplicationFolder()+'combobox/Combotree.js'+'?rand='+Math.random()+'"></script>');
+document.write('<script src="'+bhv.getApplicationFolder()+'bhv/classes.js'+'?rand='+Math.random()+'"></script>');
+//document.write('<script src="'+bhv.getApplicationFolder()+'combobox/Combotree.js'+'?rand='+Math.random()+'"></script>');

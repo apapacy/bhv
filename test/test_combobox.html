@@ -6,8 +6,8 @@
 <script type="text/javascript" src="../bhv/jquery-1.9.1.js"></script>
 <link rel=stylesheet type="text/css" href="../combobox/combobox.css">
 <script type="text/javascript" src="../bhv/util.js"></script>
-<script type="text/javascript" src="../bhv/classes.js"></script>
-<script type="text/javascript" src="../combobox/Combobox.js"></script>
+<!--script type="text/javascript" src="../bhv/classes.js"></script>
+<script type="text/javascript" src="../combobox/Combobox.js"></script-->
 </head>
 
 
@@ -20,8 +20,8 @@
 <span id="combobox2" style="background: blue;width:300px"> </span> 
 <div id="combopane"></div>
 <script>
-//var combo1 = new bhv.Combobox("combobox1", "comb1", 2, 10,
-//     "dbo.cennic", "kod", "name", "name")
+var combo1 = bhv.create("bhv.widget.Combobox", "combobox1", "comb1", 2, 10,
+     "dbo.cennic", "kod", "name", "name")
 //var combo1 = bhv.create("bhv.widget.Combobox","combobox1", "comb1", 2, 10,
 //     "dbo.cennic", "kod", "name", "name")
 
@@ -30,7 +30,7 @@ var combo2 = bhv.create("test.widget.ComboboxCennic", "combobox2","comb2",19);
 var cp = document.getElementById("combopane")
 
 
-for (i=3; i<20; i++){
+for (i=3; i<2000; i++){
 void function(){	 
 var i0
 i0=i
