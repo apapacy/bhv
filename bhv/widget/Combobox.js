@@ -163,7 +163,7 @@ _bhv.Combobox.prototype = {
 		if (combobox.enabled) {
 			combobox.element.value = combobox.data.getCurrentKey();
 			combobox.showComboBox(selected);
-			var matchedChar = bhv.compareString(String(combobox.input.value).toLowerCase(),
+			var matchedChar = bhv.matchedChar(String(combobox.input.value).toLowerCase(),
 				String(combobox.data.getCurrentSearchValue()).toLowerCase());
 		} else {
 			combobox.input.value = combobox.data.getCurrentDisplayValue();

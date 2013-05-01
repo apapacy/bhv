@@ -4,12 +4,12 @@
 <html>
 <head>
 <script type="text/javascript" src="../bhv/jquery-1.9.1.js"></script>
-<link rel=stylesheet type="text/css" href="../combobox/combobox.css">
-<script type="text/javascript" src="../bhv/util.js"></script>
-<!--script type="text/javascript" src="../bhv/classes.js"></script>
-<script type="text/javascript" src="../combobox/Combobox.js"></script-->
-</head>
+<link rel=stylesheet type="text/css" href="../combobox/combobox.css"></link>
 
+
+</head>
+<body>
+<script type="text/javascript" src="../bhv/util.js"></script>
 
 
 
@@ -28,9 +28,10 @@ var combo1 = bhv.create("bhv.widget.Combobox", "combobox1", "comb1", 2, 10,
 var combo2 = bhv.create("test.widget.ComboboxCennic", "combobox2","comb2",19);
 
 var cp = document.getElementById("combopane")
+function a(a0,b){alert(a.length), alert(arguments.length)}
+a(1)
 
-
-for (i=3; i<2000; i++){
+for (i=3; i<20; i++){
 void function(){	 
 var i0
 i0=i
@@ -43,7 +44,7 @@ window.setTimeout(function(){bhv.create("test.widget.ComboboxCennic", sp, undefi
 	 //alert(i)
 }()
 }
-	 
-
 
 </script>
+</body>
+</html>

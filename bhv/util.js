@@ -477,11 +477,20 @@ bhv.setCommand = function (command, context, args, timeout, name) {
 }
 
 bhv.unsetCommand = function (name) {
+	for (var id in bhv.commandQueue[name]) {
+		for (var p in bhv.commandQueue[name][id]) {
+			bhv.commandQueue[name][id][p] = null;
+			delete bhv.commandQueue[name][id][p]
+		}
+		bhv.commandQueue[name][id] = null;
+		delete bhv.commandQueue[name][id];
+	
+	}
 	bhv.commandQueue[name] = null;
 	delete bhv.commandQueue[name];
 }
 
-bhv.compareString = function (string0, string1) {
+bhv.matchedChar = function (string0, string1) {
 	if (typeof string0 != "string")
 		return -1;
 	if (typeof string1 != "string")
@@ -547,18 +556,21 @@ bhv.left = function (element) {
 	return left;
 }
 
-document.write(
-	'<div id="bhv_contentPane" style="position:absolute;top:0;left:0;margin:0;padding:0;border:0;z-index:100"><span style="display:none"><br></span></div>');
+
+jQuery.ajax(bhv.getApplicationFolder() + 'bhv/classes.js', {async: false, dataType: 'script'});
+
+//jQuery("body").html
+document.write('<div id="bhv_contentPane" style="position:absolute;top:0;left:0;margin:0;padding:0;border:0;z-index:100"><span> </span></div>');
+
 bhv.contentPane = function () {
 	return document.getElementById("bhv_contentPane");
 }
 
 
-
-document.write(
-	'<style type="text/css">div, span {border-width: 0px; border-style: none; padding: 0px; margin: 0px}</style>');
-document.write('<link rel=stylesheet type="text/css" href="' + bhv.getApplicationFolder() +
-	'combobox/combobox.css' + '?rand=' + Math.random() + '"></script>');
-document.write('<script src="' + bhv.getApplicationFolder() + 'bhv/classes.js' +
-	'?rand=' + Math.random() + '"></script>');
+//document.write(
+//	'<style type="text/css">div, span {border-width: 0px; border-style: none; padding: 0px; margin: 0px}</style>');
+//document.write('<link rel=stylesheet type="text/css" href="' + bhv.getApplicationFolder() +
+//	'combobox/combobox.css' + '?rand=' + Math.random() + '"></link>');
+//document.write('<script src="' + bhv.getApplicationFolder() + 'bhv/classes.js' +
+//	'?rand=' + Math.random() + '"></script>');
 //document.write('<script src="'+bhv.getApplicationFolder()+'combobox/Combotree.js'+'?rand='+Math.random()+'"></script>');
