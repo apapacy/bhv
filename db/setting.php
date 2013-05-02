@@ -11,5 +11,5 @@ elseif (empty($password))
 else
 	$db = pg_pconnect("host=$host dbname=$database user=$username password=$password");
 
-
-?>
+$db = new PDO("pgsql:host=$host;dbname=$database;user=$username;password=$password");
+//pgsql:host=localhost;port=5432;dbname=testdb;user=bruce;password=mypass

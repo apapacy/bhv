@@ -21,39 +21,39 @@ require_once('../db/setting.php');
 /*echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\n";
 echo '<response>';*/
 
-if (!$db){
-    echo '/*<errorcode>' . 1 . '</errorcode>';
-    echo '<error>' . pg_last_error($db) . '</error></response>*/';
-    die();
-}
+//if (!$db){
+//    echo '/*<errorcode>' . 1 . '</errorcode>';
+//    echo '<error>' . pg_last_error($db) . '</error></response>*/';
+//    die();
+//}
 //pg_client_encoding($db, 'UTF8');
 //mb_regex_encoding('UTF8');
 if (isset($_REQUEST['table']))
-    $table = pg_escape_string($_REQUEST['table']);
+    $table = trim($db->quote($_REQUEST['table']), "'");
 if (isset($_REQUEST['keyColumn']))
-    $keyColumn = pg_escape_string($_REQUEST['keyColumn']);
+    $keyColumn = trim($db->quote($_REQUEST['keyColumn']), "'");
 if (isset($_REQUEST['displayValueColumn']))
-    $displayValueColumn = pg_escape_string($_REQUEST['displayValueColumn']);
+    $displayValueColumn = trim($db->quote($_REQUEST['displayValueColumn']), "'");
 if (isset($_REQUEST['searchValueColumn']))    
-    $searchValueColumn = pg_escape_string($_REQUEST['searchValueColumn']);
+    $searchValueColumn = trim($db->quote($_REQUEST['searchValueColumn']), "'");
 if (isset($_REQUEST['addonce']))    
-    $addonce = ' ,' . pg_escape_string($_REQUEST['addonce']);
+    $addonce = ' ,' . trim($db->quote($_REQUEST['addonce']), "'");
 else 
     $addonce = '';
 
     
 if (isset($_REQUEST['count']))    
-    $count = pg_escape_string($_REQUEST['count']);
+    $count = trim($db->quote($_REQUEST['count']), "'");
 
 	
 if (isset($_REQUEST['currentKey']))
-    $currentKey = pg_escape_string($_REQUEST['currentKey']);
+    $currentKey = trim($db->quote($_REQUEST['currentKey']), "'");
 	
 //mb_regex_encoding('UTF-8');	
 
 if (isset($_REQUEST['currentSearchValue'])){
     $currentSearchValue = $_REQUEST['currentSearchValue'];
-//iconv("UTF-8", "windows-1251", $_REQUEST['currentSearchValue']); //pg_escape_string(iconv("UTF-8", "windows-1251", $_REQUEST['currentSearchValue']));
+//iconv("UTF-8", "windows-1251", $_REQUEST['currentSearchValue']); //$db->quote(iconv("UTF-8", "windows-1251", $_REQUEST['currentSearchValue']));
 	if (substr($currentSearchValue,-1) === ' ')
 		$currentSearchValuePrepared = substr($currentSearchValue,0, -1) . '%';
 	elseif (isset($_REQUEST['exactly']))
@@ -65,13 +65,13 @@ if (isset($_REQUEST['currentSearchValue'])){
 	$currentSearchValuePrepared = '%';
 }
 
-$currentSearchValuePrepared = pg_escape_string($currentSearchValuePrepared);
+$currentSearchValuePrepared = substr($db->quote($currentSearchValuePrepared), 1, -1);
 
 	
 //if (isset($_REQUEST['command']) &&  $_REQUEST['command'] == 'previous'){   
 //if (isset($_REQUEST['command']) &&  $_REQUEST['command'] == 'previous' && isset($_REQUEST['currentKey'])){
 
-//	$result = pg_query($db,
+//	$result = $db->query($db,
 //		"select $keyColumn as field1, $displayValueColumn as field2," 
 //		. " $searchValueColumn as field3 from $table" 
 //		. " where ($searchValueColumn) like ('$currentSearchValuePrepared')"
@@ -85,7 +85,7 @@ $currentSearchValuePrepared = pg_escape_string($currentSearchValuePrepared);
 //		die();
 //	}
 //
-//	while ($result and $row = pg_fetch_row($result)){
+//	while ($result and $row = $result->fetch(PDO::FETCH_NUM)){
  //       $currentKey = $row[0];
 //	}
 //}
@@ -104,23 +104,23 @@ if (isset($_REQUEST['filter'])){
 }
 
 if (isset($_REQUEST['command']) &&  $_REQUEST['command'] == 'init'){   
-	$result = pg_query($db,
+	$result = $db->query(
 		"select $keyColumn as field1, $displayValueColumn as field2," 
 		. " $searchValueColumn as field3 $addonce from $table" 
 		///////////////////////. " where $keyColumn = '$currentKey'$filter order by field3 desc, field1 limit 1"
 		. " where $keyColumn = '$currentKey' order by field3 desc, field1 limit 1"
 		. '');
 } elseif (isset($_REQUEST['currentKey'])) {
-	$result = pg_query($db,
+	$result = $db->query(
 		"select $keyColumn as field1, $displayValueColumn as field2," 
 		. " $searchValueColumn as field3 $addonce from $table" 
 		////////////////////////////. " where $keyColumn = '$currentKey' $filter order by field3 desc, field1 limit 1"
 		. " where $keyColumn = '$currentKey' order by field3 desc, field1 limit 1"
 		. '');
-	if ($result and $row = pg_fetch_row($result)) {
+	if ($result and $row = $result->fetch(PDO::FETCH_NUM)) {
 		$currentSearchValueByKey = $row[2];
 		if (isset($_REQUEST['command']) &&  $_REQUEST['command'] == 'previous') {
-			$result = pg_query($db,
+			$result = $db->query(
 				"select $keyColumn as field1, $displayValueColumn as field2," 
 				. " $searchValueColumn as field3 $addonce from $table" 
 				. " where $searchValueColumn ilike '$currentSearchValuePrepared'"
@@ -128,18 +128,18 @@ if (isset($_REQUEST['command']) &&  $_REQUEST['command'] == 'init'){
 				. " or $searchValueColumn < '$currentSearchValueByKey') $filter"
 				. " order by field3 desc, field1 desc limit $count"
 				. '');
-			while ($result and $row = pg_fetch_row($result))
+			while ($result and $row = $result->fetch(PDO::FETCH_NUM))
 				$currentKey = $row[0];
-			$result = pg_query($db,
+			$result = $db->query(
 				"select $keyColumn as field1, $displayValueColumn as field2," 
 				. " $searchValueColumn as field3 $addonce from $table" 
 				////////////////. " where $keyColumn = '$currentKey' $filter order by field3 desc, field1 limit 1"
 				. " where $keyColumn = '$currentKey' order by field3 desc, field1 limit 1"
 				. '');
-			if ($result and $row = pg_fetch_row($result))
+			if ($result and $row = $result->fetch(PDO::FETCH_NUM))
 				$currentSearchValueByKey = $row[2];
 		}
-		$result = pg_query($db,
+		$result = $db->query(
 			"select $keyColumn as field1, $displayValueColumn as field2," 
 			. " $searchValueColumn as field3 $addonce from $table" 
 			. " where $searchValueColumn ilike '$currentSearchValuePrepared'"
@@ -149,22 +149,25 @@ if (isset($_REQUEST['command']) &&  $_REQUEST['command'] == 'init'){
 			. '');
 	}
 } elseif (isset($_REQUEST['currentSearchValue'])) {
-		$result = pg_query($db,
+		$result = $db->query(
 			"select $keyColumn as field1, $displayValueColumn as field2," 
 			. " $searchValueColumn as field3 $addonce from $table" 
 			. " where $searchValueColumn ilike '$currentSearchValuePrepared' $filter"
 			. " order by field3, field1 limit $count"
 			. '');
 } else {////////////////////////////////////////////////////////////////////////What is it $filter withiyn
-	$result = pg_query($db,
+	$result = $db->query(
 			"select $keyColumn as field1, $displayValueColumn as field2," 
 			. " $searchValueColumn as field3 $addonce from $table $wherefilter " 
 			. " order by field3, field1 limit $count");
 
 }
-    echo "/*bhv.scriptConteiner.responseJSON = */[";
+    echo "/*select $keyColumn as field1, $displayValueColumn as field2," 
+			. " $searchValueColumn as field3 $addonce from $table" 
+			. " where $searchValueColumn ilike '$currentSearchValuePrepared' $filter"
+			. " order by field3, field1 limit $count bhv.scriptConteiner.responseJSON = */[";
     $rowcounter = 0;
-    while ($result and $row = pg_fetch_row($result)){
+    while ($result and $row = $result->fetch(PDO::FETCH_NUM)){
     	$fieldcounter = 0;
     	if ($rowcounter++)
     		echo ',[';//'<row>';

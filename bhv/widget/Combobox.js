@@ -132,22 +132,23 @@ _bhv.Combobox.prototype = {
 	},
 	getValueFromServer: function (additions, command, selected, timeout) {
 		bhv.unsetCommand("bhv_combobox_" + this.element.id);
-		bhv.setCommand(this.getValueFromServer$, this, [additions, command, selected],
+		bhv.setCommand(this.getValueFromServer$, this, [additions, command, selected, true],
 			700, "bhv_combobox_" + this.element.id);
 		return;
 	},
 	getValueFromServerSync: function (additions, command, selected) {
 		bhv.unsetCommand("bhv_combobox_" + this.element.id);
-		this.getValueFromServer$(additions, command, selected);
+		this.getValueFromServer$(additions, command, selected, false);
 		return;
 	},
-	getValueFromServer$: function (additions, command, selected) {
+	getValueFromServer$: function (additions, command, selected, async) {
 		var thet = this;
 		var settings = {
 			context: {
 				combobox: thet,
 				selected: selected,
-				timeout: 5*60*1000
+				timeout: 5*60*1000,
+				async: async
 			},
 			data: thet.getHttpParams(additions, command),
 			dataType: 'text',
