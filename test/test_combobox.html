@@ -15,11 +15,23 @@
 
 <input type= text id="comb1" disabled>
 <span id="combobox1" style="background: blue;width:300px"> </span>
-<br><br><br><br><br><br><br><br> 
+<br><br><br><br>
+<div id=di><p>0</p><p>1</p><p>2</p><p>3<p/></div>
+<br><br><br><br> 
 <input type= text id="comb2" disabled>
 <span id="combobox2" style="background: blue;width:300px"> </span> 
 <div id="combopane"></div>
 <script>
+var N=0;
+v=jQuery('#di p').map(
+	function(){
+		alert(jQuery(this).html());
+		jQuery("<span>123</span>").appendTo(jQuery(this)); 
+		return true;
+	}
+);
+
+
 var combo1 = bhv.create("bhv.widget.Combobox", "combobox1", "comb1", 2, 10,
      "dbo.cennic", "kod", "name", "name")
 //var combo1 = bhv.create("bhv.widget.Combobox","combobox1", "comb1", 2, 10,

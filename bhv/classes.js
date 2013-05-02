@@ -4,7 +4,7 @@ bhv.classes = {};
 
 bhv.isa = function (toObject, fromObject) {
 	for (var p in fromObject)
-		if (typeof toObject[p] === "undefined" && p !== "init")
+		if (typeof toObject[p] === "undefined" /*&& p !== "init"*/)
 			toObject[p] = fromObject[p];
 }
 
@@ -83,8 +83,8 @@ bhv.create = function (className) {
 
 	var objRef;
 	classConstructor.apply(objRef = bhv.classes.newInstance(classConstructor, className), args);
-	if (typeof objRef.init === 'function')
-		objRef.init.apply(objRef, args);
+//	if (typeof objRef.init === 'function')
+//		objRef.init.apply(objRef, args);
 	return objRef;
 };
 
@@ -106,8 +106,8 @@ bhv.classes.derive = function (className, construct, args) {
 	bhv.isa(this.superClass, classConstructor.prototype)
 	if (construct) {
 		classConstructor.apply(this, args)
-		if (typeof classConstructor.prototype.init == 'function')
-			classConstructor.prototype.init.apply(this, args);
+//		if (typeof classConstructor.prototype.init == 'function')
+//			classConstructor.prototype.init.apply(this, args);
 	}
 	return this;
 };

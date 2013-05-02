@@ -1,3 +1,10 @@
+var styleSheet = $('<link href="'+bhv.getApplicationFolder()+'css/widget/combobox.css" rel="stylesheet" type="text/css" />').appendTo("head");
+styleSheet.attr({
+	href : bhv.getApplicationFolder() + "css/widget/combobox.css",
+	rel  : "stylesheet",
+	type : "text/css"
+});
+
 var _bhv = {}
 _bhv.Combobox = function (element, valueElement, initialValue, count,
 	table, keyColumn, displayValueColumn, searchValueColumn, exactly, filter,
@@ -477,8 +484,9 @@ _bhv.Combobox.ComboboxData.prototype = {
 	
 } // end prototype
 
-function Constructor(element, valueElement, initialValue, count,
-	table, keyColumn, displayValueColumn, searchValueColumn, exactly, filter,
-	addonce) {}
+function Constructor(element, valueElement, initialValue, count, table, keyColumn, displayValueColumn, searchValueColumn, exactly, filter, addonce) {
+	this.init(element, valueElement, initialValue, count, table, keyColumn, displayValueColumn, searchValueColumn, exactly, filter,	addonce);
+}
+
 	
 bhv.ISA(Constructor.prototype, _bhv.Combobox.prototype)
