@@ -1,11 +1,12 @@
-var styleSheet = $('<link href="'+bhv.getApplicationFolder()+'css/widget/combobox.css" rel="stylesheet" type="text/css" />').appendTo("head");
+var styleSheet = jQuery('<link href="'+bhv.getApplicationFolder()+'css/widget/combobox.css" rel="stylesheet" type="text/css" />'
+	).appendTo("head");
 styleSheet.attr({
 	href : bhv.getApplicationFolder() + "css/widget/combobox.css",
 	rel  : "stylesheet",
 	type : "text/css"
 });
 
-var _bhv = {}
+var _bhv = {};
 _bhv.Combobox = function (element, valueElement, initialValue, count,
 	table, keyColumn, displayValueColumn, searchValueColumn, exactly, filter,
 	addonce) {
@@ -43,36 +44,52 @@ _bhv.Combobox.prototype = {
 		this.input = document.createElement("input");
 		this.element.appendChild(this.input);
 		this.input.type = "text";
-		this.input.style.width = this.element.style.width;
+		this.input.style.width = this.element.offsetWidth + "px";
 
 		// Для фукнций-обработчиков событий вызываем функции-методы объекта Combobox,
 		// которые исползуют замыкание переменной the
-		this.input.onkeyup = function () {
-			var event0 = arguments[0] || window.event;
-			the.onkeyup(event0);
-		};
-		this.input.onclick = function () {
-			var event0 = arguments[0] || window.event;
-			the.onclick(event0);
-		};
-		this.input.onblur = function () {
-			var event0 = arguments[0] || window.event;
-
-			if (the.enabled) {
-				the.enabled = false;
-				the.assignValue();
-				setTimeout(function () {
-					the.hideComboBox()
-				}, 100);
-				event0.cancelBubble = true;
-				event0.returnValue = false;
-				this.focus();
-				return false;
+		//this.input.onkeyup = function () {
+		//	var event0 = arguments[0] || window.event;
+		//	the.onkeyup(event0);
+		//};
+		jQuery(this.input).keyup(
+			function(event) {
+				the.onkeyup(event)
 			}
-		};
-		this.input.onfocus = function () {
-			this.select();
-		};
+		);
+		jQuery(this.input).mouseup(
+			function (event) {
+				the.onclick(event);
+			}
+		);
+		jQuery(this.input).blur(
+			function(event) {
+				if (the.enabled) {
+					the.enabled = false;
+					the.assignValue();
+					//setTimeout(
+					//	function () {
+							the.hideComboBox();
+					//	}
+					//, 100
+					//);
+					event.cancelBubble = true;
+					event.returnValue = false;
+					this.focus();
+					//return false;
+				}// else {
+					var saveText = this.value;
+					this.value = '';
+					this.value = saveText;
+				//}
+
+			}
+		);
+		jQuery(this.input).focus(
+			function (event) {
+				this.select();
+			}
+		);
 
 		if (!valueElement)
 			this.valueElement = {};
@@ -84,10 +101,13 @@ _bhv.Combobox.prototype = {
 		this.conteiner = document.createElement("DIV");
 		this.conteiner.className = "textDropDown"
 
-		this.conteiner.onmousedown = function () {
+		jQuery(this.conteiner).mouseup(function(event) {
 			the.assignValue();
 			the.hideComboBox();
-		}
+			the.input.focus();
+			the.input.select();
+			//jQuert(the.input).attr('selected', '');
+		});
 
 		for (var i = 0; i < this.count; i++)
 			this.conteiner.appendChild(document.createElement("DIV"));
@@ -138,28 +158,28 @@ _bhv.Combobox.prototype = {
 
 	},
 	getValueFromServer: function (additions, command, selected, timeout) {
-		bhv.unsetCommand("bhv_combobox_" + this.element.id);
+		//bhv.unsetCommand("bhv_combobox_" + this.element.id);//in bhv.setCommand()
 		bhv.setCommand(this.getValueFromServer$, this, [additions, command, selected, true],
 			700, "bhv_combobox_" + this.element.id);
 		return;
 	},
 	getValueFromServerSync: function (additions, command, selected) {
-		bhv.unsetCommand("bhv_combobox_" + this.element.id);
+		bhv.unsetCommand("bhv_combobox_" + this.element.id); //clear command queue by name
 		this.getValueFromServer$(additions, command, selected, false);
 		return;
 	},
 	getValueFromServer$: function (additions, command, selected, async) {
-		var thet = this;
-		var settings = {
+		var the = this,
+		    settings = {
 			context: {
-				combobox: thet,
+				combobox: the,
 				selected: selected,
 				timeout: 5*60*1000,
 				async: async
 			},
-			data: thet.getHttpParams(additions, command),
+			data: this.getHttpParams(additions, command),
 			dataType: 'text',
-			success: thet.handleRequest$
+			success: this.handleRequest$
 		};
 		jQuery.ajax(this.getServerScript(), settings)
 	},
@@ -184,15 +204,18 @@ _bhv.Combobox.prototype = {
 			this.afterValueChange(this);
 	},
 	hideComboBox: function (selected) {
-
 		this.enabled = false;
+		if (this.conteiner.style.visibility === "hidden")
+			return;
+		//this.enabled = false;
 		this.conteiner.style.visibility = "hidden";
-		this.input.focus();
+		//jQuery(this.input).focus();
+		//jQuery(this.input).select();
 	},
 	showComboBox: function (selected) {
 		if (!this.enabled)
 			return;
-
+		//bhv.clearSelection();
 		this.conteiner.style.visibility = "visible";
 		this.conteiner.style.top = this.input.offsetHeight + bhv.top(this.input) + "px";
 		this.conteiner.style.left = bhv.left(this.input) + "px";
@@ -235,7 +258,7 @@ _bhv.Combobox.prototype = {
 		if (event0.keyCode == bhv.key.ESC) {
 			this.enabled = false;
 			this.input.select();
-			this.getValueFromServer("currentKey=" + encodeURIComponent(this.valueElement
+			this.getValueFromServerSync("currentKey=" + encodeURIComponent(this.valueElement
 				.value), "init");
 			this.hideComboBox();
 			return true;
@@ -256,7 +279,11 @@ _bhv.Combobox.prototype = {
 				this.assignValue();
 				this.hideComboBox();
 				this.enabled = false;
+				this.input.focus();
+				this.input.select();
+				//bhv.clearSelection();
 			} else {
+				//bhv.clearSelection();
 				bhv.selectNextInput(this.input);
 				return true;
 			}
@@ -328,10 +355,11 @@ _bhv.Combobox.prototype = {
 		return true;
 	},
 	onclick: function (event0) {
+		bhv.clearSelection();
 		this.enabled = true;
 		this.showComboBox();
 		this.input.value = this.data.getCurrentSearchValue();
-		this.input.select();
+		//this.input.select();
 		this.input.focus();
 	},
 	onkeyup: function (event0) {
@@ -360,6 +388,7 @@ _bhv.Combobox.prototype = {
 		return true;
 	},
 	onclick: function () {
+		bhv.clearSelection();
 		this.enabled = true;
 		this.showComboBox();
 		this.input.value = this.data.getCurrentSearchValue();

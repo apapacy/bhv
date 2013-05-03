@@ -397,6 +397,10 @@ bhv.isVisible = function (elem) {
 bhv.selectPreviousInput = function (elem, select0) {
 	//if (elem) elem.blur();
 	//else return false;
+	bhv.clearSelection();
+    var saveText = elem.value;
+    elem.value = "";
+    elem.value = saveText;
 	var allInput = document.getElementsByTagName("input");
 	var isNext = false;
 	if (allInput && allInput.length > 0) {
@@ -422,15 +426,23 @@ bhv.selectPreviousInput = function (elem, select0) {
 bhv.selectNextInput = function (elem, select0) {
 	//if (elem) elem.blur();
 	//else return false;
+//	if ( !bhv.clearSelection()) {
+	    var saveText = elem.value;
+	    elem.value = "";
+	    elem.value = saveText;
+//	}
 	var allInput = document.getElementsByTagName("input");
 	var isNext = false;
 	if (allInput && allInput.length > 0) {
 		for (var i = 0; i < allInput.length; i++) {
 			try {
 				if (isNext && bhv.isVisible(allInput[i]) && !allInput[i].disabled) {
+				    elem.focus();
+				    elem.blur();
 					allInput[i].focus();
-					if (select0 && allInput[i].value != "")
+					if (select0 && allInput[i].value != "") {
 						allInput[i].select();
+					}
 					return true;
 				}
 				if (!isNext && allInput[i] == elem)
@@ -556,6 +568,16 @@ bhv.left = function (element) {
 	return left;
 }
 
+bhv.clearSelection = function() {
+    if (document.selection) {
+        document.selection.empty();
+        return true;
+    } else if (window.getSelection) {
+        window.getSelection().removeAllRanges();
+        return true;
+    }
+    return false;
+}
 
 jQuery.ajax(bhv.getApplicationFolder() + 'bhv/classes.js', {async: false, dataType: 'script'});
 

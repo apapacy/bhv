@@ -12,7 +12,7 @@
 <script type="text/javascript" src="../bhv/util.js"></script>
 
 
-
+<input type=button onclick="bhv.clearSelection()">
 <input type= text id="comb1" disabled>
 <span id="combobox1" style="background: blue;width:300px"> </span>
 <br><br><br><br>
@@ -25,7 +25,7 @@
 var N=0;
 v=jQuery('#di p').map(
 	function(){
-		alert(jQuery(this).html());
+//		alert(jQuery(this).html());
 		jQuery("<span>123</span>").appendTo(jQuery(this)); 
 		return true;
 	}
@@ -41,7 +41,7 @@ var combo2 = bhv.create("test.widget.ComboboxCennic", "combobox2","comb2",19);
 
 var cp = document.getElementById("combopane")
 function a(a0,b){alert(a.length), alert(arguments.length)}
-a(1)
+//a(1)
 
 for (i=3; i<20; i++){
 void function(){	 
