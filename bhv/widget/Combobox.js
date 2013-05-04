@@ -67,21 +67,14 @@ _bhv.Combobox.prototype = {
 				if (the.enabled) {
 					the.enabled = false;
 					the.assignValue();
-					//setTimeout(
-					//	function () {
-							the.hideComboBox();
-					//	}
-					//, 100
-					//);
+					window.setTimeout(function(){the.hideComboBox()}, 200);
 					event.cancelBubble = true;
 					event.returnValue = false;
 					this.focus();
-					//return false;
-				}// else {
-					var saveText = this.value;
-					this.value = '';
-					this.value = saveText;
-				//}
+				}
+				var saveText = this.value;
+				this.value = '';
+				this.value = saveText;
 
 			}
 		);
@@ -103,7 +96,7 @@ _bhv.Combobox.prototype = {
 
 		jQuery(this.conteiner).mouseup(function(event) {
 			the.assignValue();
-			the.hideComboBox();
+			window.setTimeout(function(){the.hideComboBox();},200);
 			the.input.focus();
 			the.input.select();
 			//jQuert(the.input).attr('selected', '');
@@ -111,13 +104,10 @@ _bhv.Combobox.prototype = {
 
 		for (var i = 0; i < this.count; i++)
 			this.conteiner.appendChild(document.createElement("DIV"));
-		for (var i = 0; i < this.count; i++) {
-			this.conteiner.childNodes[i].className = "otherItem";
-			this.conteiner.childNodes[i].onmouseover = function () {
-				the.selectOption(this);
-			};
-		}
-		bhv.contentPane().appendChild(this.conteiner);
+		jQuery("div", this.conteiner).attr("class", "otherItem");
+		jQuery("div", this.conteiner).mouseover(function(){the.selectOption(this);});
+		//bhv.contentPane().appendChild(this.conteiner);
+		jQuery(this.conteiner).appendTo(jQuery('body'));
 
 		this.table = table;
 		this.keyColumn = keyColumn;
@@ -158,7 +148,6 @@ _bhv.Combobox.prototype = {
 
 	},
 	getValueFromServer: function (additions, command, selected, timeout) {
-		//bhv.unsetCommand("bhv_combobox_" + this.element.id);//in bhv.setCommand()
 		bhv.setCommand(this.getValueFromServer$, this, [additions, command, selected, true],
 			700, "bhv_combobox_" + this.element.id);
 		return;
@@ -169,10 +158,8 @@ _bhv.Combobox.prototype = {
 		return;
 	},
 	getValueFromServer$: function (additions, command, selected, async) {
-		var the = this,
-		    settings = {
+		var settings = {
 			context: {
-				combobox: the,
 				selected: selected,
 				timeout: 5*60*1000,
 				async: async
@@ -181,6 +168,7 @@ _bhv.Combobox.prototype = {
 			dataType: 'text',
 			success: this.handleRequest$
 		};
+		settings.context.combobox = this;
 		jQuery.ajax(this.getServerScript(), settings)
 	},
 	handleRequest$: function (data, textStatus, jqXHR) {
@@ -200,22 +188,18 @@ _bhv.Combobox.prototype = {
 	assignValue: function (selected) {
 		this.input.value = this.data.getCurrentDisplayValue();
 		this.valueElement.value = this.data.getCurrentKey();
-		if (typeof this.afterValueChange == "function")
+		if (typeof this.afterValueChange === "function")
 			this.afterValueChange(this);
 	},
 	hideComboBox: function (selected) {
 		this.enabled = false;
 		if (this.conteiner.style.visibility === "hidden")
 			return;
-		//this.enabled = false;
 		this.conteiner.style.visibility = "hidden";
-		//jQuery(this.input).focus();
-		//jQuery(this.input).select();
 	},
 	showComboBox: function (selected) {
 		if (!this.enabled)
 			return;
-		//bhv.clearSelection();
 		this.conteiner.style.visibility = "visible";
 		this.conteiner.style.top = this.input.offsetHeight + bhv.top(this.input) + "px";
 		this.conteiner.style.left = bhv.left(this.input) + "px";
@@ -240,15 +224,17 @@ _bhv.Combobox.prototype = {
 		}
 	},
 	selectOption: function (selectedOption) {
-
-		for (var i = 0; i < this.count; i++) {
-			if (this.conteiner.childNodes[i].className == "selectedItem")
-				this.conteiner.childNodes[i].className = "otherItem"
-			if (this.conteiner.childNodes[i] == selectedOption) {
-				this.data.currentIndex = i;
-				selectedOption.className = "selectedItem";
+		var the = this;
+		jQuery("div.selectedItem", this.conteiner).attr("class", "otherItem");
+		jQuery("div", this.conteiner).each(
+			function(i) {
+				if (selectedOption === this) {
+					the.data.currentIndex = i;
+					selectedOption.className = "selectedItem";
+					return false;
+				}
 			}
-		}
+		);
 	},
 	onkey: function (event0) {
 
@@ -281,9 +267,7 @@ _bhv.Combobox.prototype = {
 				this.enabled = false;
 				this.input.focus();
 				this.input.select();
-				//bhv.clearSelection();
 			} else {
-				//bhv.clearSelection();
 				bhv.selectNextInput(this.input);
 				return true;
 			}

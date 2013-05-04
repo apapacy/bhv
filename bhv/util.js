@@ -485,12 +485,13 @@ bhv.setCommand = function (command, context, args, timeout, name) {
 	bhv.commandQueue[name][id]["command"] = command;
 	bhv.commandQueue[name][id]["context"] = context;
 	bhv.commandQueue[name][id]["args"] = args;
-	setTimeout("bhv.callCommand('" + name + "', '" + id + "')", timeout);
+	bhv.commandQueue[name][id]["timeout"] = setTimeout("bhv.callCommand('" + name + "', '" + id + "')", timeout);
 }
 
 bhv.unsetCommand = function (name) {
 	for (var id in bhv.commandQueue[name]) {
 		for (var p in bhv.commandQueue[name][id]) {
+		    window.clearTimeout(bhv.commandQueue[name][id]["timeout"]);
 			bhv.commandQueue[name][id][p] = null;
 			delete bhv.commandQueue[name][id][p]
 		}
@@ -545,6 +546,7 @@ bhv.relocateSRC = function (htmlText, relative) {
 }
 
 bhv.top = function (element) {
+    return jQuery(element).offset().top;
 	var top = 0;
 	try {
 		top = element.offsetTop;
@@ -557,6 +559,7 @@ bhv.top = function (element) {
 }
 
 bhv.left = function (element) {
+    return jQuery(element).offset().left;
 	var left = 0;
 	try {
 		left = element.offsetLeft;
@@ -582,10 +585,10 @@ bhv.clearSelection = function() {
 jQuery.ajax(bhv.getApplicationFolder() + 'bhv/classes.js', {async: false, dataType: 'script'});
 
 //jQuery("body").html
-document.write('<div id="bhv_contentPane" style="position:absolute;top:0;left:0;margin:0;padding:0;border:0;z-index:100"><span> </span></div>');
+//document.write('<div id="bhv_contentPane" style="position:absolute;margin:0px;padding:0px;border:0px"><span></span></div>');
 
 bhv.contentPane = function () {
-	return document.getElementById("bhv_contentPane");
+	return jQuery('body');//document.getElementById("bhv_contentPane");
 }
 
 
