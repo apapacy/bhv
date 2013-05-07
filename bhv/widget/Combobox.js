@@ -57,6 +57,12 @@ _bhv.Combobox.prototype = {
 				the.onkeyup(event)
 			}
 		);
+		jQuery(this.input).keydown(
+			function(event){
+				if (event.keyCode === 27)
+					the.onkeyup(event);
+			}
+		);
 		jQuery(this.input).mouseup(
 			function (event) {
 				the.onclick(event);
@@ -66,10 +72,8 @@ _bhv.Combobox.prototype = {
 			function(event) {
 				if (the.enabled) {
 					the.enabled = false;
-					the.assignValue();
+					//the.assignValue();
 					window.setTimeout(function(){the.hideComboBox()}, 200);
-					event.cancelBubble = true;
-					event.returnValue = false;
 					this.focus();
 				}
 				var saveText = this.value;
@@ -127,7 +131,7 @@ _bhv.Combobox.prototype = {
 		}
 
 	}, 
-	SERVER_SCRIPT: bhv.getApplicationFolder() + "combobox/combobox_query.php", 
+	SERVER_SCRIPT: bhv.getApplicationFolder() + "bhv/widget/combobox_query.php", 
 	getServerScript: function () {
 		return this.SERVER_SCRIPT;
 	}, 
@@ -238,9 +242,6 @@ _bhv.Combobox.prototype = {
 	},
 	onkey: function (event0) {
 
-		event0.returnValue = true;
-		event0.cancelBubble = true;
-
 		if (event0.keyCode == bhv.key.ESC) {
 			this.enabled = false;
 			this.input.select();
@@ -348,15 +349,10 @@ _bhv.Combobox.prototype = {
 	},
 	onkeyup: function (event0) {
 
-		event0.returnValue = true;
-		event0.cancelBubble = true;
-
 		if (event0.keyCode == bhv.key.ESC || event0.keyCode == bhv.key.TAB || event0.keyCode ==
 			bhv.key.ENTER || event0.keyCode == bhv.key.RIGHT || event0.keyCode == bhv.key
 			.LEFT || event0.keyCode == bhv.key.PAGEDOWN || event0.keyCode == bhv.key.PAGEUP ||
 			event0.keyCode == bhv.key.DOWN || event0.keyCode == bhv.key.UP) {
-			event0.returnValue = false;
-			event0.cancelBubble = true;
 			return this.onkey(event0) && false;
 		} else if (!this.enabled) {
 			this.onkey(event0);
