@@ -1,3 +1,8 @@
+define(["jquery-1.9.1"], function(jQuery){
+//////////////////////////////////////////
+
+jQuery = $;
+
 var bhv = {
 	util: {}
 };
@@ -582,20 +587,11 @@ bhv.clearSelection = function() {
     return false;
 }
 
-jQuery.ajax(bhv.getApplicationFolder() + 'bhv/classes.js', {async: false, dataType: 'script'});
-
-//jQuery("body").html
-//document.write('<div id="bhv_contentPane" style="position:absolute;margin:0px;padding:0px;border:0px"><span></span></div>');
+//jQuery.ajax(bhv.getApplicationFolder() + 'bhv/classes.js', {async: false, dataType: 'script'});
 
 bhv.contentPane = function () {
-	return jQuery('body');//document.getElementById("bhv_contentPane");
+	return jQuery('body');
 }
 
-
-//document.write(
-//	'<style type="text/css">div, span {border-width: 0px; border-style: none; padding: 0px; margin: 0px}</style>');
-//document.write('<link rel=stylesheet type="text/css" href="' + bhv.getApplicationFolder() +
-//	'combobox/combobox.css' + '?rand=' + Math.random() + '"></link>');
-//document.write('<script src="' + bhv.getApplicationFolder() + 'bhv/classes.js' +
-//	'?rand=' + Math.random() + '"></script>');
-//document.write('<script src="'+bhv.getApplicationFolder()+'combobox/Combotree.js'+'?rand='+Math.random()+'"></script>');
+/////////////////////////////////////////
+return bhv;})

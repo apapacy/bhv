@@ -1,5 +1,6 @@
-if (!bhv)
-	var bhv = {};
+define(["bhv/util"], function(bhv){
+alert(bhv)
+////////////////////////////////////////////
 bhv.classes = {};
 
 bhv.isa = function (toObject, fromObject) {
@@ -133,3 +134,6 @@ bhv.load = function (strNameSpace) {
 
 	return bhv.classes.loadedClasses[strNameSpace];
 };
+/////////////////////////////////////
+return bhv;
+});

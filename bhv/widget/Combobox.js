@@ -1,3 +1,5 @@
+define(['bhv/util', 'bhv/classes'], function(bhv, classes){
+/////////////////////////////////////////////
 var styleSheet = jQuery('<link href="'+bhv.getApplicationFolder()+'css/widget/combobox.css" rel="stylesheet" type="text/css" />'
 	).appendTo("head");
 styleSheet.attr({
@@ -499,3 +501,7 @@ function Constructor(element, valueElement, initialValue, count, table, keyColum
 
 	
 bhv.ISA(Constructor.prototype, _bhv.Combobox.prototype)
+/////////////////////////////////////////////////////////////////////////////
+return Constructor;
+});
+
