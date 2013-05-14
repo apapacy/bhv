@@ -1,4 +1,4 @@
-define(["jquery-1.9.1"], function(){
+define([], function(){
 //////////////////////////////////////////
 
 var jQuery = $;
