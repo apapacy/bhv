@@ -3,11 +3,24 @@
 
 <html>
 
-<head>
 
+<head>
+<script type="text/javascript" src="../bhv/vendors/require.js"  data-main="js/test_combobox.js"></script>
+<script0 type="text/javascript" src="../bhv/vendors/jquery-1.9.1.js"></script0>
 </head>
 <body style="padding:20px;border:20px solid red"><div></div>
-<script type="text/javascript" src="../bhv/vendors/require.js"  data-main="test_combobox.js"></script>
+
+<script>
+for (i=1; i<100;i++) 
+document.write(i+'<br>')
+alert("ready")
+</script>
+<a href=test_combobox.html>try it!</a>
+<script>
+for (i=1; i<100;i++) 
+document.write(i+'<br>')
+alert("ready")
+</script>
 
 
 <input type=button onclick="bhv.clearSelection()">
@@ -19,6 +32,5 @@
 <input type= text id="comb2" disabled>
 <span id="combobox2" style="background: blue;width:300px"> </span> 
 <div id="combopane"></div>
-<script0 src="test_combobox.js"></script0>
 </body>
 </html>

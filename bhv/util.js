@@ -1,7 +1,7 @@
-define(["jquery-1.9.1"], function(jQuery){
+define(["jquery-1.9.1"], function(){
 //////////////////////////////////////////
 
-jQuery = $;
+var jQuery = $;
 
 var bhv = {
 	util: {}
@@ -490,7 +490,7 @@ bhv.setCommand = function (command, context, args, timeout, name) {
 	bhv.commandQueue[name][id]["command"] = command;
 	bhv.commandQueue[name][id]["context"] = context;
 	bhv.commandQueue[name][id]["args"] = args;
-	bhv.commandQueue[name][id]["timeout"] = setTimeout("bhv.callCommand('" + name + "', '" + id + "')", timeout);
+	bhv.commandQueue[name][id]["timeout"] = setTimeout(function(){bhv.callCommand(name, id)}, timeout);
 }
 
 bhv.unsetCommand = function (name) {
