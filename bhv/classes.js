@@ -1,8 +1,8 @@
-define([], function(bhv){
+define([], function(){
 ////////////////////////////////////////////
 var classes = {};
 
-classes.secret = 'dkO30fjvkJwe)alsKjdpeO,ri39rG&*dkFkgms=dfeoiru';
+classes.GUID = '14880588-38C7-4A84-82C3-BC76C167B5A4';
 
 classes.isa = function (toObject, fromObject) {
 	for (var p in fromObject)
@@ -22,15 +22,15 @@ classes.IN = function(objRef, arrayRef){
 	return false;
 }
 
-classes.Class = function () {};
+classes.EmptyClass = function () {};
 
-classes.Class.nativePrototype = classes.Class.prototype;
+classes.EmptyClass.nativePrototype = classes.EmptyClass.prototype;
 
 classes.newInstance = function (classConstructor) {
-	classes.Class.prototype = classConstructor.prototype;
-	var objRef = new classes.Class();
-	objRef[classes.secret] = [classConstructor];
-	classes.Class.prototype = classes.Class.nativePrototype;
+	classes.EmptyClass.prototype = classConstructor.prototype;
+	var objRef = new classes.EmptyClass();
+	objRef[classes.GUID] = [classConstructor];
+	classes.EmptyClass.prototype = classes.EmptyClass.nativePrototype;
 	return objRef;
 };
 
@@ -39,24 +39,24 @@ classes.create = function (classConstructor) {
 	var args = [];
 	for (var i = 1; i < arguments.length; i++)
 		args[i - 1] = arguments[i];
-	if (! classConstructor.prototype[classes.secret]) {
+	if (! classConstructor[classes.GUID]) {
 		classConstructor.prototype.derive = classes.derive;
 		classConstructor.prototype.superClass = {};
 	}
 	var objRef = classes.newInstance(classConstructor);
 	classConstructor.apply(objRef, args);
-	classConstructor.prototype[classes.secret] = true;
+	classConstructor[classes.GUID] = true;
 	return objRef;
 };
 
 classes.derive = function (classConstructor, construct) {
-	if (classes.IN(classConstructor, this[classes.secret]))
+	if (classes.IN(classConstructor, this[classes.GUID]))
 		return this;
+	this[classes.GUID].push(classConstructor);
 	var args = [];
-	this[classes.secret].push(classConstructor);
 	for (var i = 2; i < arguments.length; i++)
 		args[i - 2] = arguments[i];
-	if (! this.constructor.prototype[classes.secret]) {
+	if (! this.constructor[classes.GUID]) {
 		classes.isa(this.constructor.prototype, classConstructor.prototype);
 		classes.isa(this.constructor.prototype.superClass, classConstructor.prototype);
 	}
@@ -64,6 +64,11 @@ classes.derive = function (classConstructor, construct) {
 		classConstructor.apply(this, args);
 	return this;
 };
+
+
+classes.instanceOf = function(objRef, classConstructor) {
+	return classes.IN(classConstructor, objRef[classes.GUID] );
+}
 /////////////////////////////////////
 return classes;
 });

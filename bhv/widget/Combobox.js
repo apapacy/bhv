@@ -56,7 +56,7 @@ _bhv.Combobox.prototype = {
 		//};
 		jQuery(this.input).keyup(
 			function(event) {
-				the.onkeyup(event)
+				the.onkeyup(event);
 			}
 		);
 		jQuery(this.input).keydown(
