@@ -1,7 +1,5 @@
-define([], function(){
+define(['jquery'], function(){
 //////////////////////////////////////////
-
-var jQuery = $;
 
 var bhv = {
 	util: {}
@@ -123,14 +121,14 @@ String.prototype.isEmpty = function () {
 };
 
 String.prototype.allTrim = function () {
-	if (typeof this == "string")
+	if (typeof this === "string")
 		return this.replace(/^\s+|\s+$/g, "");
 	else
 		return this.toString().replace(/^\s+|\s+$/g, "");
 };
 
 bhv.allTrim = function (str) {
-	if (typeof str == "string")
+	if (typeof str === "string")
 		return str.replace(/^\s+|\s+$/g, "");
 	else
 		return String(str).replace(/^\s+|\s+$/g, "");
@@ -143,21 +141,16 @@ bhv.addEventListener = function (element, strEvent, callback) {
 		element.attachEvent("on" + strEvent, callback);
 };
 
-bhv.IE5 = true;
-
 bhv.util.getXMLHTTPRequest = bhv.util.getXMLHttpRequest = function () {
 	var xmlReq;
 	if (window.XMLHttpRequest) {
 		xmlReq = new window.XMLHttpRequest();
-		bhv.IE5 = false;
 	} else {
 		try {
 			xmlReq = new ActiveXObject("Msxml2.XMLHTTP");
-			bhv.IE5 = false;
 		} catch (e) {
 			try {
 				xmlReq = new ActiveXObject("Microsoft.XMLHTTP");
-				bhv.IE5 = false;
 			} catch (e) {
 				xmlReq = null;
 			}
@@ -177,7 +170,7 @@ bhv.util.defaultError = function () {
 		alert("Ошибка: XMLHttpRequest");
 };
 
-bhv.util.registreCallbackFunction = function (xmlHttpRequest, callback, onerror,
+bhv.util.registerCallbackFunction = function (xmlHttpRequest, callback, onerror,
 	callbackArgsArray) {
 	return function () {
 		if (xmlHttpRequest.readyState == 4) {
@@ -225,10 +218,10 @@ bhv.sendRequest = function (httpMethod, url, httpParams, async, callback,
 		headers = {};
 	var xmlHttpRequest = bhv.util.getXMLHttpRequest();
 	if (async)
-		xmlHttpRequest.onreadystatechange = bhv.util.registreCallbackFunction(
+		xmlHttpRequest.onreadystatechange = bhv.util.registerCallbackFunction(
 			xmlHttpRequest, callback, onerror, callbackArgsArray);
 	try {
-		if (httpMethod.toLowerCase() == "get") {
+		if (httpMethod.toLowerCase() === "get") {
 			if (!httpParams)
 				httpParams = "antiCache=" + Math.random();
 			else
@@ -247,7 +240,7 @@ bhv.sendRequest = function (httpMethod, url, httpParams, async, callback,
 		}
 	} catch (e) {
 		xmlHttpRequest.onreadystatechange = bhv.util.emptyFunction;
-		if (typeof onerror == "function")
+		if (typeof onerror === "function")
 			onerror.apply(xmlHttpRequest, callbackArgsArray);
 		else
 			throw new Error("Ошибка XMLHttpRequest")
@@ -255,10 +248,8 @@ bhv.sendRequest = function (httpMethod, url, httpParams, async, callback,
 	if (!async) {
 		if (!xmlHttpRequest.status || xmlHttpRequest.status >= 200 && xmlHttpRequest.status <
 			300 || xmlHttpRequest.status == 304) {
-			bhv.scriptConteiner = {};
 			callback.apply(xmlHttpRequest, callbackArgsArray);
-			bhv.scriptConteiner = {};
-		} else if (typeof onerror == "function")
+		} else if (typeof onerror === "function")
 			onerror.apply(xmlHttpRequest, callbackArgsArray);
 		else
 			throw new Error("Ошибка XMLHttpRequest")
@@ -307,8 +298,10 @@ bhv.util.iframeCallback = function (currentIframe, callback, callbackArgsArray,
 		if (!currentIframe.readyState || currentIframe.readyState == "loaded" ||
 			currentIframe.readyState == "complete") {
 			currentIframe.bhv_readyState = true;
-			if (doc.firstChild) eval(doc.firstChild.data);
-			elseeval(doc.innerHTML);
+			if (doc.firstChild)
+				eval(doc.firstChild.data);
+			else 
+				eval(doc.innerHTML);
 			try {
 				callback.apply(currentIframe, callbackArgsArray)
 			} catch (e) {
@@ -335,7 +328,8 @@ function extractIFrameBody(iFrameEl) {
 
 bhv.getElementData = function (parent, child) {
 	if (!child) child = parent;
-	if (typeof child == "string") child = parent.getElementsByTagName(child)[0];
+	if (typeof child === "string") 
+		child = parent.getElementsByTagName(child)[0];
 	return child.firstChild.data;
 	//if undefined child - throw new Error();
 }
@@ -402,7 +396,7 @@ bhv.isVisible = function (elem) {
 bhv.selectPreviousInput = function (elem, select0) {
 	//if (elem) elem.blur();
 	//else return false;
-	bhv.clearSelection();
+	//bhv.clearSelection();
     var saveText = elem.value;
     elem.value = "";
     elem.value = saveText;
@@ -495,8 +489,8 @@ bhv.setCommand = function (command, context, args, timeout, name) {
 
 bhv.unsetCommand = function (name) {
 	for (var id in bhv.commandQueue[name]) {
+	    window.clearTimeout(bhv.commandQueue[name][id]["timeout"]);
 		for (var p in bhv.commandQueue[name][id]) {
-		    window.clearTimeout(bhv.commandQueue[name][id]["timeout"]);
 			bhv.commandQueue[name][id][p] = null;
 			delete bhv.commandQueue[name][id][p]
 		}
@@ -552,28 +546,10 @@ bhv.relocateSRC = function (htmlText, relative) {
 
 bhv.top = function (element) {
     return jQuery(element).offset().top;
-	var top = 0;
-	try {
-		top = element.offsetTop;
-		while (element.offsetParent) {
-			element = element.offsetParent;
-			top += element.offsetTop;
-		}
-	} catch (ex) {}
-	return top;
 }
 
 bhv.left = function (element) {
     return jQuery(element).offset().left;
-	var left = 0;
-	try {
-		left = element.offsetLeft;
-		while (element.offsetParent) {
-			element = element.offsetParent;
-			left += element.offsetLeft;
-		}
-	} catch (ex) {}
-	return left;
 }
 
 bhv.clearSelection = function() {
@@ -587,11 +563,10 @@ bhv.clearSelection = function() {
     return false;
 }
 
-//jQuery.ajax(bhv.getApplicationFolder() + 'bhv/classes.js', {async: false, dataType: 'script'});
-
 bhv.contentPane = function () {
 	return jQuery('body');
 }
 
 /////////////////////////////////////////
-return bhv;})
+return bhv;
+});

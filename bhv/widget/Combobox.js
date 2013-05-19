@@ -500,7 +500,7 @@ function Constructor(element, valueElement, initialValue, count, table, keyColum
 }
 
 	
-bhv.ISA(Constructor.prototype, _bhv.Combobox.prototype)
+classes.ISA(Constructor.prototype, _bhv.Combobox.prototype)
 /////////////////////////////////////////////////////////////////////////////
 return Constructor;
 });
