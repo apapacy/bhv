@@ -8,17 +8,8 @@ styleSheet.attr({
 	type : "text/css"
 });
 
-var _bhv = {};
-_bhv.Combobox = function (element, valueElement, initialValue, count,
-	table, keyColumn, displayValueColumn, searchValueColumn, exactly, filter,
-	addonce) {
-	this.init(element, valueElement, initialValue, count,
-		table, keyColumn, displayValueColumn, searchValueColumn, exactly, filter,
-		addonce);
-};
-
-_bhv.Combobox.prototype = {
-	constructor: _bhv.Combobox, 
+var _bhv = {
+	/*constructor: _bhv.Combobox, */
 	init: function (element, valueElement, initialValue, count,
 		table, keyColumn, displayValueColumn, searchValueColumn, exactly, filter,
 		addonce) {
@@ -36,7 +27,7 @@ _bhv.Combobox.prototype = {
 		this.addonce = addonce;
 		this.enabled = false;
 		this.count = count;
-		this.data = new _bhv.Combobox.ComboboxData(this.count);
+		this.data = new _bhv.ComboboxData(this.count);
 
 		if (typeof element === "string")
 			this.element = document.getElementById(element);
@@ -44,8 +35,8 @@ _bhv.Combobox.prototype = {
 			this.element = element;
 
 		this.input = document.createElement("input");
-		this.element.appendChild(this.input);
 		this.input.type = "text";
+		this.element.appendChild(this.input);
 		this.input.style.width = this.element.offsetWidth + "px";
 
 		// Для фукнций-обработчиков событий вызываем функции-методы объекта Combobox,
@@ -61,7 +52,7 @@ _bhv.Combobox.prototype = {
 		);
 		jQuery(this.input).keydown(
 			function(event){
-				if (event.keyCode === 27)
+				if (event.keyCode === bhv.key.ESC)
 					the.onkeyup(event);
 			}
 		);
@@ -75,6 +66,8 @@ _bhv.Combobox.prototype = {
 				if (the.enabled) {
 					the.enabled = false;
 					//the.assignValue();
+	       				   the.getValueFromServerSync("currentKey=" + encodeURIComponent(the.valueElement
+		                                .value), "init");
 					window.setTimeout(function(){the.hideComboBox()}, 200);
 					this.focus();
 				}
@@ -341,7 +334,7 @@ _bhv.Combobox.prototype = {
 		this.showComboBox();
 		return true;
 	},
-	onclick: function (event0) {
+	onclick0: function (event0) {
 		bhv.clearSelection();
 		this.enabled = true;
 		this.showComboBox();
@@ -399,7 +392,7 @@ _bhv.Combobox.prototype = {
 }//end prototype
 
 
-_bhv.Combobox.ComboboxData = function (count) {
+_bhv.ComboboxData = function (count) {
 	this.count = count;
 	this.currentCount = -1;
 	this.currentIndex = -1;
@@ -408,7 +401,7 @@ _bhv.Combobox.ComboboxData = function (count) {
 		this.data[i] = [];
 };
 
-_bhv.Combobox.ComboboxData.prototype = {
+classes.isa(_bhv.ComboboxData.prototype, {
 	parseJSON: function (json) {
 		var rows = eval("(" + json + ")");
 		if (rows && rows.length && (rows.length > 0)) {
@@ -493,14 +486,14 @@ _bhv.Combobox.ComboboxData.prototype = {
 	}
 
 	
-} // end prototype
+}) // end prototype
 
 function Constructor(element, valueElement, initialValue, count, table, keyColumn, displayValueColumn, searchValueColumn, exactly, filter, addonce) {
 	this.init(element, valueElement, initialValue, count, table, keyColumn, displayValueColumn, searchValueColumn, exactly, filter,	addonce);
 }
 
 	
-classes.ISA(Constructor.prototype, _bhv.Combobox.prototype)
+classes.isa(Constructor.prototype, _bhv);
 /////////////////////////////////////////////////////////////////////////////
 return Constructor;
 });
