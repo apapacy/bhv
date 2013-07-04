@@ -545,10 +545,26 @@ bhv.relocateSRC = function (htmlText, relative) {
 }
 
 bhv.top = function (element) {
+    var top = 0;
+    try{top = element.offsetTop;
+        while(element.offsetParent){
+            element = element.offsetParent;
+            top += element.offsetTop;
+        }
+    }catch (ex){}
+    return top;
     return jQuery(element).offset().top;
 }
 
 bhv.left = function (element) {
+   var left = 0;
+    try{left = element.offsetLeft;
+        while(element.offsetParent){
+            element = element.offsetParent;
+            left += element.offsetLeft;
+        }
+    }catch (ex){}
+    return left + parseInt(jQuery("body").css("margin-left"));
     return jQuery(element).offset().left;
 }
 

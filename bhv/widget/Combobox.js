@@ -200,9 +200,14 @@ var _bhv = {
 		if (!this.enabled)
 			return;
 		this.conteiner.style.visibility = "visible";
-		this.conteiner.style.top = this.input.offsetHeight + bhv.top(this.input) + "px";
+		this.conteiner.style.top = bhv.top(this.input) + "px";
+    var deltaTop = bhv.top(this.input)-bhv.top(this.conteiner)
+		this.conteiner.style.top = this.input.offsetHeight + bhv.top(this.input) + 2*deltaTop + "px";
 		this.conteiner.style.left = bhv.left(this.input) + "px";
+    var deltaLeft = bhv.left(this.input)-bhv.left(this.conteiner)
+		this.conteiner.style.left = (bhv.left(this.input) + 2*deltaLeft) + "px";
 		this.conteiner.style.width = this.input.clientWidth + "px";
+    
 
 		if (selected == "last")
 			this.data.currentIndex = this.data.currentCount - 1;
