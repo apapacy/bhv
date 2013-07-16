@@ -50,12 +50,12 @@ var _bhv = {
 				the.onkeyup(event);
 			}
 		);
-		jQuery(this.input).keydown(
+		/*jQuery(this.input).keydown(
 			function(event){
 				if (event.keyCode === bhv.key.ESC)
 					the.onkeyup(event);
 			}
-		);
+		);*/
 		jQuery(this.input).mouseup(
 			function (event) {
 				the.onclick(event);
