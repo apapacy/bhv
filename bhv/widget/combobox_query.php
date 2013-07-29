@@ -4,7 +4,7 @@ function mb_str_split( $string ) {
     # and not before the end: $
     return preg_split('/(?<!^)(?!$)/u', $string );
 } 
-header('Content-type: text/javascript; charset="UTF-8"');
+header('Content-type: text/javascript; charset="windows-1251"');
 require_once('../../db/setting.php');
 if (isset($_REQUEST['table']))
     $table = substr($db->quote($_REQUEST['table']), 1, -1) ;

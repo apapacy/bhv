@@ -1,6 +1,6 @@
 <?php 	
-$host = 'localhost';
-	$database = 'proba';
+$host = 'c16-btz-1';
+	$database = 'Ceh16';
 	$username = 'root';
 	$password = '26682316'; 
 
