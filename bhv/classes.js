@@ -29,7 +29,7 @@ classes.EmptyClass.nativePrototype = classes.EmptyClass.prototype;
 classes.newInstance = function (classConstructor) {
 	classes.EmptyClass.prototype = classConstructor.prototype;
 	var objRef = new classes.EmptyClass();
-	objRef[classes.GUID] = [classConstructor];
+	//objRef[classes.GUID] = [classConstructor];
 	classes.EmptyClass.prototype = classes.EmptyClass.nativePrototype;
 	return objRef;
 };
@@ -42,6 +42,7 @@ classes.create = function (classConstructor) {
 	if (! classConstructor[classes.GUID]) {
 		classConstructor.prototype.derive = classes.derive;
 		classConstructor.prototype.superClass = {};
+	  classConstructor.prototype[classes.GUID] = [classConstructor];
 	}
 	var objRef = classes.newInstance(classConstructor);
 	classConstructor.apply(objRef, args);
@@ -50,24 +51,23 @@ classes.create = function (classConstructor) {
 };
 
 classes.derive = function (classConstructor, construct) {
-	if (classes.IN(classConstructor, this[classes.GUID]))
-		return this;
-	this[classes.GUID].push(classConstructor);
-	var args = [];
-	for (var i = 2; i < arguments.length; i++)
-		args[i - 2] = arguments[i];
-	if (! this.constructor[classes.GUID]) {
+	if (!this.constructor[classes.GUID] && !classes.IN(classConstructor, this.constructor.prototype[classes.GUID])){
+    alert(classConstructor)
+    this.constructor.prototype[classes.GUID].push(classConstructor);
 		classes.isa(this.constructor.prototype, classConstructor.prototype);
 		classes.isa(this.constructor.prototype.superClass, classConstructor.prototype);
 	}
-	if (construct)
+	if (construct) {
+    var args = [];
+    for (var i = 2; i < arguments.length; i++)
+      args[i - 2] = arguments[i];
 		classConstructor.apply(this, args);
+  }
 	return this;
 };
 
-
 classes.instanceOf = function(objRef, classConstructor) {
-	return classes.IN(classConstructor, objRef[classes.GUID] );
+	return classes.IN(classConstructor, objRef.constructor.prototype[classes.GUID] );
 }
 /////////////////////////////////////
 return classes;

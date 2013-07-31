@@ -9,7 +9,6 @@ styleSheet.attr({
 });
 
 var _bhv = {
-	/*constructor: _bhv.Combobox, */
 	init: function (element, valueElement, initialValue, count,
 		table, keyColumn, displayValueColumn, searchValueColumn, exactly, filter,
 		addonce) {
@@ -17,12 +16,12 @@ var _bhv = {
 		var the = this;
 
 		// Для удаления циклических ссылок в замыканиях достаточно обнулить the
-		this.destroy = function () {
+		this.destroy = function() {
 			the.destroy = null;
 			the = null;
 		};
 
-		this.exactly = !! exactly;
+		this.exactly = !!exactly;
 		this.filter = filter;
 		this.addonce = addonce;
 		this.enabled = false;
@@ -61,6 +60,7 @@ var _bhv = {
 				the.onclick(event);
 			}
 		);
+    
 		jQuery(this.input).blur(
 			function(event) {
 				if (the.enabled) {
@@ -77,6 +77,7 @@ var _bhv = {
 
 			}
 		);
+    
 		jQuery(this.input).focus(
 			function (event) {
 				this.select();
@@ -205,7 +206,7 @@ var _bhv = {
     var deltaTop = bhv.top(this.input)-bhv.top(this.conteiner)
 		this.conteiner.style.top = this.input.offsetHeight + bhv.top(this.input) + 2*deltaTop + "px";
 		this.conteiner.style.left = bhv.left(this.input) + "px";
-    var deltaLeft = bhv.left(this.input)-bhv.left(this.conteiner)
+    var deltaLeft = bhv.left(this.input) - bhv.left(this.conteiner)
 		this.conteiner.style.left = (bhv.left(this.input) + 2*deltaLeft) + "px";
 		this.conteiner.style.width = this.input.clientWidth + "px";
     
@@ -494,13 +495,13 @@ classes.isa(_bhv.ComboboxData.prototype, {
 	
 }) // end prototype
 
-function Constructor(element, valueElement, initialValue, count, table, keyColumn, displayValueColumn, searchValueColumn, exactly, filter, addonce) {
+function bhv$widget$Combobox(element, valueElement, initialValue, count, table, keyColumn, displayValueColumn, searchValueColumn, exactly, filter, addonce) {
 	this.init(element, valueElement, initialValue, count, table, keyColumn, displayValueColumn, searchValueColumn, exactly, filter,	addonce);
 }
 
 	
-classes.isa(Constructor.prototype, _bhv);
+classes.isa(bhv$widget$Combobox.prototype, _bhv);
 /////////////////////////////////////////////////////////////////////////////
-return Constructor;
+return bhv$widget$Combobox;
 });
 
