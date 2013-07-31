@@ -5,7 +5,11 @@
 
 
 <head>
-<script type="text/javascript" src="../bhv/vendors/require.js"  data-main="js/test_combobox.js"></script>
+<script type='text/javascript'>
+document.write(
+'<'+'script type="text/javascript" src="../bhv/vendors/require.js"  data-main="js/test_combobox.js?bust='+ (new Date()).getTime() +'"><'+'/script>'
+);
+</script>
 <script0 type="text/javascript" src="../bhv/vendors/jquery-1.9.1.js"></script0>
 </head>
 <body style="padding:0px;border:20px solid red;margin:0px"><div></div>
@@ -31,6 +35,7 @@ alert("ready")
 <br><br><br><br> 
 <input type= text id="comb2" disabled>
 <span id="combobox2" style="background: blue;width:300px"> </span> 
+</br>
 <div id="combopane"></div>
 </body>
 </html>

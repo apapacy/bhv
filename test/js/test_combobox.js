@@ -1,5 +1,6 @@
-<<<<<<< HEAD
+
 requirejs.config({
+  waitSeconds:120,
    baseUrl: '../bhv/vendors',
    paths: {
      bhv: '..',
@@ -30,11 +31,11 @@ for (var i=3; i<20; i++){
 }
 main();
 });
-=======
+
 alert(define.amd)
 alert(define.amd.jQuery)
 
-requirejs.config({
+/*requirejs.config({
     //By default load any module IDs from js/lib
     baseUrl: '../bhv/vendors',
     //except, if the module ID starts with "app",
@@ -97,4 +98,5 @@ window.setTimeout(function(){classes.create(cmbc, sp, undefined, i0);},100)
 
 });
 
->>>>>>> origin/master
+
+*/

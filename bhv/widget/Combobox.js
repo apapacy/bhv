@@ -93,11 +93,12 @@ var _bhv = {
 		this.conteiner = document.createElement("DIV");
 		this.conteiner.className = "textDropDown"
 
-		jQuery(this.conteiner).mouseup(function(event) {
+		jQuery(this.conteiner).mousedown(function(event) {
 			the.assignValue();
-			window.setTimeout(function(){the.hideComboBox();},200);
+			the.enabled = false;
 			the.input.focus();
 			the.input.select();
+			window.setTimeout(function(){the.hideComboBox();},200);
 			//jQuert(the.input).attr('selected', '');
 		});
 
@@ -234,7 +235,7 @@ var _bhv = {
 			function(i) {
 				if (selectedOption === this) {
 					the.data.currentIndex = i;
-					selectedOption.className = "selectedItem";
+          selectedOption.className = "selectedItem";
 					return false;
 				}
 			}
@@ -368,7 +369,7 @@ var _bhv = {
 		return true;
 	},
 	onclick: function () {
-		bhv.clearSelection();
+  	bhv.clearSelection();
 		this.enabled = true;
 		this.showComboBox();
 		this.input.value = this.data.getCurrentSearchValue();
