@@ -52,10 +52,12 @@ classes.create = function (classConstructor) {
 
 classes.derive = function (classConstructor, construct) {
 	if (!this.constructor[classes.GUID] && !classes.IN(classConstructor, this.constructor.prototype[classes.GUID])){
-    alert(classConstructor)
-    this.constructor.prototype[classes.GUID].push(classConstructor);
 		classes.isa(this.constructor.prototype, classConstructor.prototype);
-		classes.isa(this.constructor.prototype.superClass, classConstructor.prototype);
+    if (this.constructor.prototype[classes.GUID].length ===1)
+      classes.ISA(this.constructor.prototype.superClass, classConstructor.prototype);
+    else
+      classes.isa(this.constructor.prototype.superClass, classConstructor.prototype);
+    this.constructor.prototype[classes.GUID].push(classConstructor);
 	}
 	if (construct) {
     var args = [];
