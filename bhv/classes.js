@@ -4,7 +4,6 @@ var classes = {};
 
 classes.GUID = '14880588-38C7-4A84-82C3-BC76C167B5A4';
 
-
 classes.newClass = function(){
     var klass = new Function('if (typeof this.init === "function")\n this.init.apply(this,arguments);');
     klass.extend = classes.extend;
@@ -14,7 +13,7 @@ classes.newClass = function(){
 
 classes.extend = function(obj){
   for (var p in obj)
-    this[p] = obj[p]
+    this[p] = obj[p];
   if (typeof obj.extended === 'function')
     obj.extended.call(this, this);
   return this;
@@ -22,7 +21,7 @@ classes.extend = function(obj){
 
 classes.include = function(obj){
   for (var p in obj)
-    this.prototype[p] = obj[p]
+    this.prototype[p] = obj[p];
   if (typeof obj.included === 'function')
     obj.included.call(this, this);
   return this;
@@ -39,7 +38,7 @@ classes.ISA = function (toObject, fromObject) {
 		toObject[p] = fromObject[p];
 }
 
-classes.IN = function(objRef, arrayRef){
+classes.IN = function(objRef, arrayRef) {
 	for (var i = 0; i < arrayRef.length; i++)
 		if (objRef === arrayRef[i])
 			return true;
@@ -57,7 +56,6 @@ classes.newInstance = function (classConstructor) {
 	classes.EmptyClass.prototype = classes.EmptyClass.nativePrototype;
 	return objRef;
 };
-
 
 classes.create = function (classConstructor) {
 	var args = [];
@@ -93,7 +91,7 @@ classes.derive = function (classConstructor, construct) {
 };
 
 classes.instanceOf = function(objRef, classConstructor) {
-	return classes.IN(classConstructor, objRef.constructor.prototype[classes.GUID] );
+	return classes.IN(classConstructor, objRef.constructor.prototype[classes.GUID]);
 }
 /////////////////////////////////////
 return classes;
