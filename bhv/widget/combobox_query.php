@@ -31,13 +31,15 @@ if (isset($_REQUEST['currentKey']))
 
 if (isset($_REQUEST['currentSearchValue'])){
     $currentSearchValue = $_REQUEST['currentSearchValue'];
-//iconv("UTF-8", "windows-1251", $_REQUEST['currentSearchValue']); //$db->quote(iconv("UTF-8", "windows-1251", $_REQUEST['currentSearchValue']));
+$currentSearchValue = iconv("UTF-8", "windows-1251", $_REQUEST['currentSearchValue']);
+//$db->quote(iconv("UTF-8", "windows-1251", $_REQUEST['currentSearchValue']));
 	if (substr($currentSearchValue,-1) === ' ')
 		$currentSearchValuePrepared = substr($currentSearchValue,0, -1) . '%';
 	elseif (isset($_REQUEST['exactly']))
 		$currentSearchValuePrepared = $currentSearchValue . '%';		
 	else
-	    $currentSearchValuePrepared =  implode('%', preg_split('//u',$currentSearchValue));
+	    $currentSearchValuePrepared =  implode('%', preg_split('//',$currentSearchValue));
+	    //$currentSearchValuePrepared =  implode('%', preg_split('//u',$currentSearchValue));
 } else {
 	$currentSearchValue = '';
 	$currentSearchValuePrepared = '%';

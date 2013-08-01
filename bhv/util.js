@@ -33,10 +33,10 @@ if (!Function.prototype.apply) {
 		var a = [];
 		for (var i = 0; i < args.length; i++) {
 			a[i] = "args[" + i + "]";
-			thisObj.__apply__ = this;
-			a = "thisObj.__apply__(" + a.join(",") + ")";
+			thisObj.bhv__apply__ = this;
+			a = "thisObj.bhv__apply__(" + a.join(",") + ")";
 			var r = eval(a);
-			delete thisObj.__apply__;
+			delete thisObj.bhv__apply__;
 			return r;
 		}
 	};
@@ -98,8 +98,10 @@ function toHex(n) {
 var okURIchars =
 	"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_-";
 
-if (typeof encodeURIComponent != "function") {
-	var encodeURIComponent = function (s) {
+if (typeof encodeURIComponent === "function") 
+  bhv.encodeURIComponent = encodeURIComponent;
+else
+	encodeURIComponent = bhv.encodeURIComponent = function (s) {
 		s = utf8(s);
 		var c;
 		var enc = "";
@@ -111,7 +113,6 @@ if (typeof encodeURIComponent != "function") {
 		}
 		return enc;
 	};
-}
 
 String.prototype.isEmpty = function () {
 	if (this.replace(/[\r|\n]/g, "").search(/\S+/) < 0)
@@ -159,7 +160,7 @@ bhv.util.getXMLHTTPRequest = bhv.util.getXMLHttpRequest = function () {
 	return xmlReq;
 };
 
-bhv.util.getXMLHTTPRequest();
+//bhv.util.getXMLHTTPRequest();
 
 bhv.util.nullFunction = bhv.util.emptyFunction = function () {};
 
@@ -174,15 +175,15 @@ bhv.util.registerCallbackFunction = function (xmlHttpRequest, callback, onerror,
 	callbackArgsArray) {
 	return function () {
 		if (xmlHttpRequest.readyState == 4) {
-			bhv.scriptConteiner = {};
-			if (!xmlHttpRequest.status || xmlHttpRequest.status >= 200 && xmlHttpRequest
-				.status < 300 || xmlHttpRequest.status == 304 /* || xmlHttpRequest.status == 404 */ )
+			if (!xmlHttpRequest.status || xmlHttpRequest.status >= 200 
+        && xmlHttpRequest.status < 300 || xmlHttpRequest.status == 304 /* || xmlHttpRequest.status == 404 */ ){
+   			bhv.scriptConteiner = null;
 				callback.apply(xmlHttpRequest, callbackArgsArray);
-			else if (typeof onerror == "function")
+        bhv.scriptConteiner = null;
+			} else if (typeof onerror == "function")
 				onerror.apply(xmlHttpRequest, callbackArgsArray);
 			else
 				throw new Error("Ошибка создания XMLHttpRequest")
-			bhv.scriptConteiner = {};
 			xmlHttpRequest.onreadystatechange = bhv.util.nullFunction;
 		}
 	};
@@ -190,7 +191,6 @@ bhv.util.registerCallbackFunction = function (xmlHttpRequest, callback, onerror,
 
 bhv.sendScriptRequest = function (url, httpParams, callback, callbackArgsArray,
 	onerror) {
-	bhv.scriptConteiner = {};
 	var currentScript = document.createElement("script");
 	currentScript.onload = bhv.util.scriptCallback(currentScript, callback,
 		callbackArgsArray, onerror);
@@ -263,12 +263,13 @@ bhv.util.scriptCallback = function (currentScript, callback, callbackArgsArray,
 		if (!currentScript.readyState || currentScript.readyState == "loaded" ||
 			currentScript.readyState == "complete") {
 			currentScript.bhv_readyState = true;
+			bhv.scriptConteiner = null;
 			try {
 				callback.apply(currentScript, callbackArgsArray);
 			} catch (e) {
 				if (onerror) onerror.apply(currentScript, callbackArgsArray);
 			}
-			bhv.scriptConteiner = {};
+			bhv.scriptConteiner = null;
 			currentScript.parentNode.removeChild(currentScript);
 		}
 	};
@@ -307,7 +308,6 @@ bhv.util.iframeCallback = function (currentIframe, callback, callbackArgsArray,
 			} catch (e) {
 				if (onerror) onerror.apply(currentIframe, callbackArgsArray);
 			}
-			bhv.scriptConteiner = {};
 			//currentIframe.parentNode.removeChild(currentIframe);
 		}
 	};
