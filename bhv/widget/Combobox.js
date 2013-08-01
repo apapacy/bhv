@@ -525,13 +525,16 @@ classes.isa(_bhv.ComboboxData.prototype, {
 	
 }) // end prototype
 
-function bhv$widget$Combobox(element, valueElement, initialValue, count, table, keyColumn, displayValueColumn, searchValueColumn, exactly, filter, addonce) {
-	this.init(element, valueElement, initialValue, count, table, keyColumn, displayValueColumn, searchValueColumn, exactly, filter,	addonce);
-}
+//function bhv$widget$Combobox(element, valueElement, initialValue, count, table, keyColumn, displayValueColumn, searchValueColumn, exactly, filter, addonce) {
+//	this.init(element, valueElement, initialValue, count, table, keyColumn, displayValueColumn, searchValueColumn, exactly, filter,	addonce);
+//}
+//classes.isa(bhv$widget$Combobox.prototype, _bhv);
 
-	
-classes.isa(bhv$widget$Combobox.prototype, _bhv);
+var Constructor = classes.newClass();
+Constructor.include(_bhv);
+alert(Constructor)
+alert(Constructor.prototype.init)
 /////////////////////////////////////////////////////////////////////////////
-return bhv$widget$Combobox;
+return Constructor;
 });
 
