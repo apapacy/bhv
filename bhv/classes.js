@@ -4,6 +4,30 @@ var classes = {};
 
 classes.GUID = '14880588-38C7-4A84-82C3-BC76C167B5A4';
 
+
+classes.newClass = function(){
+    var klass = new Function('if (typeof this.init == "function")\n this.init.apply(this,arguments);');
+    klass.extend = classes.extend;
+    klass.include = classes.include;
+    return klass;
+};
+
+classes.extend = function(obj){
+  for (var p in obj)
+    this[p] = obj[p]
+  if (typeof obj.extended == 'function')
+    obj.extended.call(this, this);
+  return this;
+}
+
+classes.include = function(obj){
+  for (var p in obj)
+    this.prototype[p] = obj[p]
+  if (typeof obj.included == 'function')
+    obj.included.call(this, this);
+  return this;
+}
+
 classes.isa = function (toObject, fromObject) {
 	for (var p in fromObject)
 		if (typeof toObject[p] === "undefined")
