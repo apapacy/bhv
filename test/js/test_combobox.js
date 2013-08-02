@@ -12,7 +12,7 @@ requirejs.config({
    }
 });
 
-requirejs(['jquery', 'bhv/util', 'bhv/classes', 'app/widget/ComboboxCennic', 'domReady'],
+requirejs(['jquery', 'bhv/util', 'bhv/classes', 'app/widget/ComboboxCennic1', 'domReady'],
 function (jQ, util, classes, cmbc) {
 window.bhv = util;
 classes.create(cmbc, "combobox1", "comb1", 2,20,"cennic","kod","name","det")

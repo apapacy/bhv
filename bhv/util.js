@@ -477,7 +477,7 @@ bhv.setCommand = function (command, context, args, timeout, name) {
 	if (!name)
 		name = "default";
 	else if (bhv.commandQueue[name])
-		bhv.unsetCommand(bhv.commandQueue[name]);
+		bhv.unsetCommand(name);
 	if (!bhv.commandQueue[name])
 		bhv.commandQueue[name] = {};
 	bhv.commandQueue[name][id] = {};
