@@ -532,8 +532,8 @@ classes.isa(_bhv.ComboboxData.prototype, {
 
 var Constructor = classes.newClass();
 Constructor.include(_bhv);
-alert(Constructor)
-alert(Constructor.prototype.init)
+//alert(Constructor)
+//alert(Constructor.prototype.init)
 /////////////////////////////////////////////////////////////////////////////
 return Constructor;
 });

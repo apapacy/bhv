@@ -4,6 +4,13 @@ var classes = {};
 
 classes.GUID = '14880588-38C7-4A84-82C3-BC76C167B5A4';
 
+classes.Array = function(obj){
+  var arr = [];
+  for (var i = 0; i < obj.length; i++)
+    arr[i] = obj[i];
+  return arr;
+}
+
 classes.newClass = function(){
     var klass = new Function('if (typeof this.init === "function")\n this.init.apply(this,arguments);');
     klass.extend = classes.extend;
@@ -58,40 +65,31 @@ classes.newInstance = function (classConstructor) {
 };
 
 classes.create = function (classConstructor) {
-	var args = [];
-	for (var i = 1; i < arguments.length; i++)
-		args[i - 1] = arguments[i];
 	if (! classConstructor[classes.GUID]) {
 		classConstructor.prototype.derive = classes.derive;
 		classConstructor.prototype.superClass = {};
-	  classConstructor.prototype[classes.GUID] = [classConstructor];
-	}
-	var objRef = classes.newInstance(classConstructor);
-	classConstructor.apply(objRef, args);
+  }
+  var objRef = classes.newInstance(classConstructor);
+  objRef[classes.GUID] = [classConstructor];
+	classConstructor.apply(objRef, classes.Array(arguments).slice(1));
 	classConstructor[classes.GUID] = true;
 	return objRef;
 };
 
 classes.derive = function (classConstructor, construct) {
-	if (!this.constructor[classes.GUID] && !classes.IN(classConstructor, this.constructor.prototype[classes.GUID])){
+	if (!classes.IN(classConstructor, this[classes.GUID])){
 		classes.isa(this.constructor.prototype, classConstructor.prototype);
-    if (this.constructor.prototype[classes.GUID].length ===1)
-      classes.ISA(this.constructor.prototype.superClass, classConstructor.prototype);
-    else
-      classes.isa(this.constructor.prototype.superClass, classConstructor.prototype);
-    this.constructor.prototype[classes.GUID].push(classConstructor);
-	}
-	if (construct) {
-    var args = [];
-    for (var i = 2; i < arguments.length; i++)
-      args[i - 2] = arguments[i];
-		classConstructor.apply(this, args);
+    classes.isa(this.constructor.prototype.superClass, classConstructor.prototype);
+    this[classes.GUID].push(classConstructor);
+    if (construct) {
+      classConstructor.apply(this, classes.Array(arguments).slice(2));
+    }
   }
 	return this;
 };
 
 classes.instanceOf = function(objRef, classConstructor) {
-	return classes.IN(classConstructor, objRef.constructor.prototype[classes.GUID]);
+	return classes.IN(classConstructor, objRef[classes.GUID]);
 }
 /////////////////////////////////////
 return classes;
