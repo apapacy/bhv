@@ -12,29 +12,23 @@ requirejs.config({
    }
 });
 
-requirejs(['jquery', 'bhv/util', 'bhv/classes', 'app/widget/ComboboxCennic', 'domReady!'],
+requirejs(['jquery', 'bhv/util', 'bhv/classes', 'app/widget/ComboboxCennic1', 'domReady'],
 function (jQ, util, classes, cmbc) {
 window.bhv = util;
-function main(){
 classes.create(cmbc, "combobox1", "comb1", 2,20,"cennic","kod","name","det")
 classes.create(cmbc, "combobox2","comb2",19,20,"cennic","kod","name","det");
 var cp = document.getElementById("combopane")
 for (var i=3; i<20; i++){
-  void function(){  
   var i0
   i0=i
   var sp = document.createElement("SPAN")
   sp.id="id"+i
   cp.appendChild(sp)
-  window.setTimeout(function(){classes.create(cmbc, sp, undefined, i0,20,"cennic","kod","name","det");},100)
-  }()
+  classes.create(cmbc, sp, undefined, i0,20,"cennic","kod","name","det");
 }
-}
-main();
+
 });
 
-alert(define.amd)
-alert(define.amd.jQuery)
 
 /*requirejs.config({
     //By default load any module IDs from js/lib

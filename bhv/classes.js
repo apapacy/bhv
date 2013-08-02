@@ -4,6 +4,13 @@ var classes = {};
 
 classes.GUID = '14880588-38C7-4A84-82C3-BC76C167B5A4';
 
+classes.Array = function(obj){
+  var arr = [];
+  for (var i = 0; i < obj.length; i++)
+    arr[i] = obj[i];
+  return arr;
+}
+
 classes.newClass = function(){
     var klass = new Function('if (typeof this.init === "function")\n this.init.apply(this,arguments);');
     klass.extend = classes.extend;
@@ -58,40 +65,41 @@ classes.newInstance = function (classConstructor) {
 };
 
 classes.create = function (classConstructor) {
-	var args = [];
-	for (var i = 1; i < arguments.length; i++)
-		args[i - 1] = arguments[i];
 	if (! classConstructor[classes.GUID]) {
 		classConstructor.prototype.derive = classes.derive;
 		classConstructor.prototype.superClass = {};
-	  classConstructor.prototype[classes.GUID] = [classConstructor];
-	}
-	var objRef = classes.newInstance(classConstructor);
-	classConstructor.apply(objRef, args);
-	classConstructor[classes.GUID] = true;
+  	classConstructor[classes.GUID] = true;
+    classConstructor.prototype[classes.GUID] = [];
+    classes.inher.call(classConstructor, classConstructor);
+  }
+  var objRef = classes.newInstance(classConstructor);
+  objRef[classes.GUID] = [classConstructor];
+	classConstructor.apply(objRef, classes.Array(arguments).slice(1));
+  delete objRef[classes.GUID];
 	return objRef;
 };
 
-classes.derive = function (classConstructor, construct) {
-	if (!this.constructor[classes.GUID] && !classes.IN(classConstructor, this.constructor.prototype[classes.GUID])){
-		classes.isa(this.constructor.prototype, classConstructor.prototype);
-    if (this.constructor.prototype[classes.GUID].length ===1)
-      classes.ISA(this.constructor.prototype.superClass, classConstructor.prototype);
-    else
-      classes.isa(this.constructor.prototype.superClass, classConstructor.prototype);
-    this.constructor.prototype[classes.GUID].push(classConstructor);
-	}
-	if (construct) {
-    var args = [];
-    for (var i = 2; i < arguments.length; i++)
-      args[i - 2] = arguments[i];
-		classConstructor.apply(this, args);
+classes.inher = function(classConstructor){
+  if (typeof classConstructor.ISA === "object"  && typeof classConstructor.ISA.length === "number")
+    for (var i = 0; i < classConstructor.ISA.length; i++)
+      if (!classes.IN(classConstructor.ISA[i], this.prototype[classes.GUID])){
+        classes.isa(this.prototype, classConstructor.ISA[i].prototype);
+        classes.isa(this.prototype.superClass, classConstructor.ISA[i].prototype);
+        this.prototype[classes.GUID].push(classConstructor.ISA[i]);
+        classes.inher.call(this, classConstructor.ISA[i])
+      }
+}
+
+classes.derive = function (classConstructor) {
+  if (!classes.IN(classConstructor, this[classes.GUID])) {
+    this[classes.GUID].push(classConstructor);
+    classConstructor.apply(this, classes.Array(arguments).slice(1));
   }
 	return this;
 };
 
 classes.instanceOf = function(objRef, classConstructor) {
-	return classes.IN(classConstructor, objRef.constructor.prototype[classes.GUID]);
+	return classes.IN(classConstructor, objRef[classes.GUID]);
 }
 /////////////////////////////////////
 return classes;
