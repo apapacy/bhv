@@ -68,22 +68,32 @@ classes.create = function (classConstructor) {
 	if (! classConstructor[classes.GUID]) {
 		classConstructor.prototype.derive = classes.derive;
 		classConstructor.prototype.superClass = {};
+  	classConstructor[classes.GUID] = true;
+    classConstructor.prototype[classes.GUID] = [];
+    classes.inher.call(classConstructor, classConstructor);
   }
   var objRef = classes.newInstance(classConstructor);
   objRef[classes.GUID] = [classConstructor];
 	classConstructor.apply(objRef, classes.Array(arguments).slice(1));
-	classConstructor[classes.GUID] = true;
+  delete objRef[classes.GUID];
 	return objRef;
 };
 
-classes.derive = function (classConstructor, construct) {
-	if (!classes.IN(classConstructor, this[classes.GUID])){
-		classes.isa(this.constructor.prototype, classConstructor.prototype);
-    classes.isa(this.constructor.prototype.superClass, classConstructor.prototype);
+classes.inher = function(classConstructor){
+  if (typeof classConstructor.ISA === "object"  && typeof classConstructor.ISA.length === "number")
+    for (var i = 0; i < classConstructor.ISA.length; i++)
+      if (!classes.IN(classConstructor.ISA[i], this.prototype[classes.GUID])){
+        classes.isa(this.prototype, classConstructor.ISA[i].prototype);
+        classes.isa(this.prototype.superClass, classConstructor.ISA[i].prototype);
+        this.prototype[classes.GUID].push(classConstructor.ISA[i]);
+        classes.inher.call(this, classConstructor.ISA[i])
+      }
+}
+
+classes.derive = function (classConstructor) {
+  if (!classes.IN(classConstructor, this[classes.GUID])) {
     this[classes.GUID].push(classConstructor);
-    if (construct) {
-      classConstructor.apply(this, classes.Array(arguments).slice(2));
-    }
+    classConstructor.apply(this, classes.Array(arguments).slice(1));
   }
 	return this;
 };
