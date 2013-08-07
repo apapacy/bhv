@@ -64,7 +64,7 @@ classes.newInstance = function ( classConstructor ) {
   return objRef;
 };
 
-classes.create = function ( classConstructor ) {
+classes.createnew = function ( classConstructor ) {
   if ( !classConstructor[classes.GUID] ) {
     classConstructor.prototype.construct = classes.construct;
     classConstructor.prototype.superClass = {};

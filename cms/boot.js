@@ -1,4 +1,3 @@
-
 requirejs.config({
   waitSeconds:120,
    baseUrl: 'bhv/vendors',
@@ -13,12 +12,9 @@ requirejs.config({
    }
 });
 
-requirejs(['jquery', 'bhv/util', 'bhv/classes', 'underscore', 'backbone', 'domReady'],
-function (jQ, util, classes, us, bb) {
-window.bhv = util;
-alert(jQ)
-alert(_)
-alert(Backbone)
+requirejs(['cms/cms', 'domReady!'],
+function (a,b) {
+alert(a)
 });
 
 
