@@ -12,7 +12,7 @@ requirejs.config({
    }
 });
 
-requirejs(['cms/cms', 'domReady!'],
+requirejs(['cms/cms', 'cms/modules/login/login' ,'domReady!'],
 function (a,b) {
 alert(a)
 });
