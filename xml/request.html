@@ -1,0 +1,25 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" 
+                      "http://www.w3.org/TR/html4/loose.dtd"> 
+
+<html>
+<head>
+<script src="../bhv/util.js"></script>
+</head>
+<body>
+<script>
+bhv.sendRequest("POST","echo.php","<?xml version='1.0' encoding='windows-1251'?>\n\n<zzz>Русский текст</zzz>",
+  echo,
+  echo,
+  null,
+  [],
+  "application/xml");
+
+function echo(){
+  //alert(this.responseText)
+
+  alert(this.responseXML.documentElement.firstChild.data)
+}
+</script>
+
+</body>
+</html> 

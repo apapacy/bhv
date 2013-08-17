@@ -1,0 +1,99 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" 
+                      "http://www.w3.org/TR/html4/loose.dtd"> 
+<html>
+<head>
+<link rel="stylesheet" type="text/css" href="menu1.css">
+<script type="text/javascript" src="../bhv/util.js"></script>
+</head>
+<body>
+
+<div class="menu" title="Title of some menu">
+<div class="other" 
+onmouseout="this.className='other'"
+onmouseover="this.className='selected';showPopup(this)">
+HTML
+<div class="popup">
+<div class="itemOther"
+onmouseover="this.className='itemSelected' "
+onmouseout="this.className='itemOther'"
+onclick="alertContent(this)">
+HEAD</div>
+<div class="itemOther"
+onmouseover="this.className='itemSelected' "
+onmouseout="this.className='itemOther'"
+onclick="alertContent(this)">
+BODY
+</div>
+<div class="itemOther"
+onmouseover="this.className='itemSelected' "
+onmouseout="this.className='itemOther'"
+onclick="alertContent(this)">
+SCRIPT
+</div>
+</div>
+</div>
+<div class="other" 
+onmouseout="this.className='other'"
+onmouseover="this.className='selected';showPopup(this)">
+CGI
+<div class="popup">
+<div class="itemOther"
+onmouseover="this.className='itemSelected' "
+onmouseout="this.className='itemOther'"
+onclick="alertContent(this)">
+METHOD</div>
+<div class="itemOther"
+onmouseover="this.className='itemSelected' "
+onmouseout="this.className='itemOther'"
+onclick="alertContent(this)">
+GET</div>
+<div class="itemOther"
+onmouseover="this.className='itemSelected' "
+onmouseout="this.className='itemOther'"
+onclick="alertContent(this)">
+POST</div>
+</div>
+</div> 
+<div class="other" 
+onmouseout="this.className='other'"
+onmouseover="this.className='selected';showPopup(this)">
+Perl
+</div> 
+<div class="other" 
+onmouseout="this.className='other'"
+onmouseover="this.className='selected';showPopup(this)">
+PHP
+</div> 
+<div class="other" 
+onmouseout="this.className='other'"
+onmouseover="this.className='selected';showPopup(this)">
+J2EE 
+</div> 
+<div class="other" 
+onmouseout="this.className='other'"
+onmouseover="this.className='selected';showPopup(this)">
+Ajax=HTML+CSS+JavaScript+XMLHttpRequest()</span>
+<div>
+<script>
+function showPopup(element){
+    var popup= firstElement(element.childNodes)
+    if (!popup)
+      return;
+    popup.style.top=bhv.top(element)/*.offsetTop*/+element.offsetHeight+"px"
+    popup.style.left=bhv.left(element)/*.offsetLeft*/+"px"
+    //popup.className="popupDropped";
+    
+}
+function firstElement(nodes){
+  for(var i = 0; i < nodes.length; i++)
+    if (nodes[i].nodeType == 1)
+      return nodes[i];
+  return undefined;
+}
+
+function alertContent(element){
+    alert(element.firstChild.data)
+}
+</script>
+</body>
+</html>

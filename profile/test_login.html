@@ -1,0 +1,16 @@
+<html>
+<head>
+<script src="../bhv/util.js"></script>
+</head>
+<body>
+<script type="text/javascript">
+function login() {
+  bhv.sendRequest("get", "private/test.html", null, false,
+      bhv.util.nullFunction, bhv.util.nullFunction);
+}
+
+</script>
+
+<input type="button" value="Login" onclick="login()">
+</body>
+</html>

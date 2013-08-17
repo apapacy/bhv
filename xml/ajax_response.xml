@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+
+<ajax_response>
+  <product>
+    <id>11</id><name>Товар 11</name>
+    <price>199.99</price>
+    <colors>
+      <color>красный</color>
+      <color>оранжевый</color>
+      <color>желтый</color>
+    </colors>
+  </product>
+  <product>
+    <id>18</id><name>Товар 18</name>
+    <price>99.99</price><count>21</count>
+    <colors>
+      <color>зеленый</color>
+      <color>голубой</color>
+      <color>синий</color>
+      <color>фиолетовый</color>
+    </colors>
+  </product>
+</ajax_response>

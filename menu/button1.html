@@ -1,0 +1,57 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" 
+                      "http://www.w3.org/TR/html4/loose.dtd"> 
+<html>
+<head>
+<title>Ajax: accordion</title>
+<link rel="stylesheet" type="text/css" href="button.css">
+</head>
+<body>
+<div style="padding:8px">
+<span id="button">Кнопка</span>
+<script type="text/javascript">
+
+new Button("button");
+
+function Button(span){
+  if (typeof span == "string")
+    span = document.getElementById(span);
+  span.className = "button";
+  span.onclick = togglePressed;
+  span.model = this;
+  this.pressed = false;
+  this.span = span;
+  this.count = 0;
+}
+
+
+Button.prototype.togglePressed = function() {
+  this.pressed = ! this.pressed;
+  this.count ++;
+  if (this.count >7)
+    this.destroy();
+}
+
+
+Button.prototype.destroy = function() {
+  this.span.button = undefined;
+  delete this.span.button;
+  this.span.onclick = undefined;
+  this.span = undefined;
+  delete this.span;
+}
+
+function renderButton(span) {
+  if (span.model.pressed)
+    span.className = "buttonPressed";
+  else
+    span.className = "button";
+}
+
+
+function togglePressed() {
+  this.model.togglePressed();
+  renderButton(this);
+}
+</script>
+</body>
+</html>

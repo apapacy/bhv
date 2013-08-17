@@ -1,0 +1,6 @@
+<input type="radio" name="color" value="13">оливковый<br>
+
+<input type="radio" name="color" value="19" checked>хаки<br>
+
+<input type="radio" name="color" value="21">индиго<br>
+

@@ -1,0 +1,121 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" 
+                      "http://www.w3.org/TR/html4/loose.dtd"> 
+<html>
+<head>
+<script src="../bhv/util.js"></script>
+<script src="validator.js"></script>
+</head>
+<body>
+<div style="overflow:hidden">
+<div style="float:left;margin:5px;padding:10px;background:#bbbccc;text-align:center">
+<input style="width:200px;margin:4px" type=button value="Регистрация" onclick="register()"><br>
+<input style="width:200px;margin:4px" type=button value="Войти в систему" onclick="login()"><br>
+<input style="width:200px;margin:4px"type=button value="Выйти из системы" onclick="logout()">
+</div>
+<div style="float:left;margin:5px;padding:10px;background:#bbbccc;text-align:right">
+Имя пользователя <input type=text id=user><br>
+Пароль <input type=password id=password1><br>
+Пароль(поворите ввод) <input type=password id=password2><br>
+E-mail <input type=text id=email><br>
+</div>
+</div>
+
+<script>
+function register() {
+  var param = "user="+encodeURIComponent(document.getElementById("user").value)
+    + "&password1="+encodeURIComponent(document.getElementById("password1").value)
+    + "&password2="+encodeURIComponent(document.getElementById("password2").value)
+    + "&email="+encodeURIComponent(document.getElementById("email").value);
+
+  bhv.sendRequest("get", "register.php", param, false, callbackReigster)
+}
+
+function callbackReigster() {
+  var dom = this.responseXML;
+  var message = dom.getElementsByTagName("message");
+  if (typeof message == 'object')
+    for (var i = 0; i< message.length; i++)
+      document.getElementById(message[i].getAttribute('id')).validator.show(message[i].firstChild.data);
+  var alertMessage = dom.getElementsByTagName("alert");
+  if ((typeof alertMessage == 'object') && alertMessage.length)
+    alert(alertMessage[0].firstChild.data)
+}
+
+
+
+function logout() {
+while (true) {
+ var http = bhv.util.getXMLHttpRequest();
+ http.open("post", "logout.php", false);
+ http.send("rand="+Math.random());
+ if (http.status == 200)
+    break;
+}
+}
+
+
+function login() {
+  bhv.sendRequest("get", "login.php", "", false, callbackLogin,callbackLogin)
+}
+
+
+
+
+function callbackLogout() {}
+function callbackLogin() {}
+
+
+
+new Validator (document.getElementById("user"), "onkeyup",  function() {
+var self = this;
+bhv.sendRequest("get", "validate_user.php", "user="+encodeURIComponent(self.value),true,
+validateUser,null,[self])
+}
+)
+
+function validateUser(self){
+  var dom =this.responseXML;
+  var errors = dom.getElementsByTagName("error");
+  if (typeof errors == "object" && errors.length) {
+    var message = dom.getElementsByTagName("message")[0].firstChild.data;
+    self.validator.show(message)
+  }else
+    self.validator.hide();
+}
+
+new Validator (document.getElementById("password1"), "onkeyup",  function() {
+  var password = document.getElementById("password2");
+  if (password.value != this.value) 
+    this.validator.show("Пароли не совпадают")
+  else {
+    this.validator.hide()
+    password.validator.hide()
+  }
+}
+)
+
+new Validator (document.getElementById("password2"), "onkeyup",  function() {
+  var password = document.getElementById("password1");
+  if (password.value != this.value) 
+    this.validator.show("Пароли не совпадают")
+  else {
+    this.validator.hide()
+    password.validator.hide() 
+  }
+}
+)
+
+new Validator (document.getElementById("email"), "onkeyup",  function() {
+
+  if (! this.value.match(/^[^@ ]{1,64}@[^@ ]{1,255}$/)) 
+    this.validator.show("Ошибка в email")
+  else 
+    this.validator.hide()
+}
+)
+
+
+
+</script>
+</body>
+</html>

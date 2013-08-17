@@ -1,0 +1,175 @@
+body {
+    margin: 0px;
+    border: none;
+    padding: 0px
+}
+
+div.tabbed {
+    position: static;
+    padding: 0px 5% 0px 5%;
+    margin: 0px 0px 0px 0px;
+    border: none;
+    overflow: hidden
+}
+
+div.tabbedBar {
+    position: static;
+    padding: 0px;
+    margin: 10px 0px 0px 0px;
+    border: none;
+    overflow: hidden;
+    width: 89%
+}
+
+div.tabbedSpace {
+    position: static;
+    padding: 0px;
+    margin: -1px;
+    border: none;
+    overflow: visible;
+    width: 89%;
+    height: 21px;
+    background-image: url("tabselect.gif");
+    background-repeat: repeat
+}
+
+div.tabbedPane {
+    position: static;
+    padding: 0px;
+    margin: 0px 0px 0px 0px;
+    border: none 0px;
+    overflow: auto;
+    width: 89%
+}
+
+span.tab {
+    margin: 0px 4px 0px 4px;
+    padding: 0px 0px 0px 0px;
+    color: blue;
+    position: static;
+    border: none ;
+    text-align:center;
+    overflow: visible
+}
+
+span.tab span.tabLeft {
+    margin: 0px 0px 0px 0px;
+    padding: 0px 0px 0px 0px;
+    border: none;
+    text-align: center;
+    overflow: visible;
+    background-image: url("tableft.gif");
+    background-repeat: no-repeat;
+    background-position: left top
+}
+
+span.tab span.tabCenter {
+    margin: 0px 0px 0px 0px;
+    padding: 0px 4px 0px 4px;
+    border: none ;
+    text-align:center;
+    overflow: visible;
+    background-image: url("tabcenter.gif");
+    background-repeat: repeat-x;
+    background-position: left top
+}
+
+span.tab span.tabRight {
+    margin: 0px 0px 0px 0px;
+    padding: 0px 0px 0px 0px;
+    border: none;
+    text-align: center;
+    overflow: visible;
+    background-image: url("tabright.gif");
+    background-repeat: no-repeat;
+    background-position: right top
+}
+
+span.tabSelected {
+    margin: 0px 2px 0px 2px;
+    padding: 0px 0px 0px 0px;
+    color: blue;
+    position: static;
+    border: none;
+    text-align:center;
+    overflow: visible
+}
+
+span.tabSelected span.tabLeft {
+    margin: 0px 0px 0px 0px;
+    padding: 0px 0px 0px 0px;
+    border: none;
+    text-align: center;
+    overflow: hiddeh;
+    background-image: url("tabselectleft.gif");
+    background-repeat: no-repeat;
+    background-position: left top;
+    width: 5px
+}
+
+span.tabSelected span.tabLeftBefor {
+    margin: 0px 0px 0px 0px;
+    padding: 0px 0px 0px 0px;
+    border: none;
+    text-align: center;
+    overflow: hidden;
+    background-image: url("tabselectleftbefor.gif");
+    background-repeat: no-repeat;
+    background-position: left bottom;
+    width: 5px
+}
+
+span.tabSelected span.tabCenter {
+    margin: 0px 0px 0px 0px;
+    padding: 0px 8px 0px 4px;
+    border: none;
+    text-align: center;
+    overflow: visible;
+    background-image: url("tabselectcenter.gif");
+    background-repeat: repeat-x;
+    background-position: left top;
+}
+
+span.tabSelected span.tabRight {
+    margin: 0px 0px 0px 0px;
+    padding: 0px 0px 0px 0px;
+    border: none;
+    text-align: center;
+    overflow: hidden;
+    background-image: url("tabselectright.gif");
+    background-repeat: no-repeat;
+    background-position: left top;
+    width: 5px
+}
+
+span.tabSelected span.tabRightAfter {
+    margin: 0px 0px 0px 0px;
+    padding: 0px 0px 0px 0px;
+    border: none;
+    text-align: center;
+    overflow: hidden;
+    background-image: url("tabselectrightafter.gif");
+    background-repeat: no-repeat;
+    background-position: left bottom;
+    width: 5px
+}
+
+div.pane {
+    display: none;
+    position: static
+}
+
+div.paneSelected {
+    margin: 0px 0px 0px 0px;
+    padding: 0px;
+    position: static;
+    display: block;
+    color: blue;
+    border: solid green;
+    border-width: 0px 0px 0px 0px;
+    overflow: scroll;
+    top: 0px;
+    left: 0px;
+    height: 100%;
+    width: 100%
+}

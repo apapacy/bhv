@@ -1,0 +1,80 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" 
+                      "http://www.w3.org/TR/html4/loose.dtd"> 
+<html>
+<head>
+<title>Простой PHP - редактор/отладчик в веб-браузере</title>
+<link rel=stylesheet type="text/css" href=editor.css>
+<script type="text/javascript" src="../bhv/util.js"></script>
+</head>
+<body>
+Файл для редактирования /<input type="text" style="width:30%" id="filename"  /> 
+
+<input type="button" value="Загрузить" onclick="loadFile()" /> 
+
+<input type="button" value="Выполнить с параметрами:" onclick="testFile()" /> 
+
+<input type="text" id="parameters" size="" /> 
+
+<input type="button" value="Сохранить" onclick="saveFile()" /> 
+
+<textarea id="sourcecode" class="programEditPane"></textarea>
+
+<div id="programoutput"></div>
+
+<script type="text/javascript">
+
+function loadFile(){
+
+    var filename = document.getElementById("filename");
+
+    var sourcecode = document.getElementById("sourcecode");
+
+    bhv.sendRequest("get", "editor_load.php", "rand="+Math.random()+"&filename="+filename.value, true,
+        function(){
+            sourcecode.value = this.responseText;
+        }
+    )
+
+}
+
+function saveFile(){
+
+    var filename = document.getElementById("filename");
+
+    var sourcecode = document.getElementById("sourcecode");
+
+    bhv.sendRequest("post", "editor_save.php", 
+        "rand="+Math.random()+"&filename="+filename.value+"&sourcecode="
+                +encodeURIComponent(sourcecode.value.replace(/(\r\n)|(\n)/g,"\r\n")), false,
+         function(){
+             alert(this.responseText);
+         }
+    )
+
+}
+
+function testFile(){
+
+    var filename = document.getElementById("filename");
+
+    var sourcecode = document.getElementById("sourcecode");
+
+    var programoutput = document.getElementById("programoutput");
+
+    var parameters = document.getElementById("parameters");
+
+    bhv.sendRequest("post", "editor_test.php",
+        "rand="+Math.random()+"&filename="+encodeURIComponent(""+filename.value)
+        +"&sourcecode="+encodeURIComponent(""+sourcecode.value)
+        +"&"+parameters.value, true,
+        function(){
+            programoutput.innerHTML=this.responseText;
+        } 
+    )
+
+}
+
+</script>
+
+</body>
+</html>

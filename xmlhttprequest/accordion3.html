@@ -1,0 +1,28 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd"> 
+<html>
+<head>
+<title>Ajax: accordion</title>
+<link rel="stylesheet" type="text/css" href="accordion.css">
+
+<script type="text/javascript" src="../bhv/util.js"></script>
+<script type="text/javascript" src="accordion.js"></script>
+
+</head>
+
+<h1>Компонент "Аккордеон"</h1>
+
+<div id="accordion1">
+
+</div>
+<script>
+var accordionModel = [
+["Первый раздел","../text/text1.html"],
+["Второй раздел","../text/text2.html"],
+["Третий раздел","../text/text3.html"]
+];
+accordionAddBehivior("accordion1", accordionModel, 1);
+</script>
+
+</body>
+</html>
+

@@ -1,0 +1,17 @@
+body {
+background-color:rgb(220,206,192);
+}
+
+
+*.error {
+border:4px solid red;
+color:red;
+}
+
+*.programEditPane{
+background-color:#bbcccc;
+color:blue;
+padding:4px;
+width:100%;
+height:200px
+}

@@ -1,0 +1,17 @@
+<script>
+
+xhr = new (window.XMLHttpRequest || ActiveXObject)("Msxml2.XMLHTTP");
+
+xhr.open("GET", "ajax_response.xml", false);
+xhr.send(null);
+
+alert(xhr.responseText);
+alert(xhr.responseXML);
+
+var doc = xhr.responseXML;
+var products = doc.getElementsByTagName("product")
+alert(products[0].getElementsByTagName("id").item(0).firstChild.nodeType)
+var id = products[0].getElementsByTagName("id").item(0).firstChild.data;
+
+alert(id)
+</script>

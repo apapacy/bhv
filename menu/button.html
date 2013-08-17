@@ -1,0 +1,32 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" 
+                      "http://www.w3.org/TR/html4/loose.dtd"> 
+<html>
+<head>
+<title>Ajax: accordion</title>
+<link rel="stylesheet" type="text/css" href="button.css">
+</head>
+<body>
+<div style="padding:8px">
+<span id="button">Кнопка</span>
+</div>
+<script type="text/javascript">
+buttonAddBehivior("button");
+
+function buttonAddBehivior(button) {
+  if (typeof button == "string")
+    button = document.getElementById(button);
+  button.className = "button";
+  button.pressed = false;
+  button.onclick = togglePressed;
+}
+
+function togglePressed() {
+  this.pressed = ! this.pressed;
+  if (this.pressed)
+    this.className = "buttonPressed";
+  else
+    this.className = "button";
+}
+</script>
+</body>
+</html>

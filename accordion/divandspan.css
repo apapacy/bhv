@@ -1,0 +1,25 @@
+H1, .header1{
+  color: indigo;
+  font: italic bold 28pt/150% sans-serif
+}
+
+
+.paragraf1 {
+  color: white;
+  background-color: green;
+  border: solid 2px blue;
+  font: 14pt/150% sans-serif
+}
+
+.bold1 {
+  font: bold 14pt/150% sans-serif
+}
+
+.italic1 {
+  font: italic 14pt/150% sans-serif
+}
+
+#mySpan {
+  border: solid 2px;
+  border-color: orange blue red yellow
+}
