@@ -48,13 +48,13 @@
 $active_group = 'default';
 $active_record = TRUE;
 
-$db['default']['hostname'] = 'C16-btz-1';
+$db['default']['hostname'] = 'localhost';
 $db['default']['username'] = 'root';
 $db['default']['password'] = '26682316';
 $db['default']['database'] = 'Ceh16';
 $db['default']['dbdriver'] = 'postgre';
 $db['default']['dbprefix'] = '';
-$db['default']['pconnect'] = FALSE;
+$db['default']['pconnect'] = TRUE;
 $db['default']['db_debug'] = TRUE;
 $db['default']['cache_on'] = FALSE;
 $db['default']['cachedir'] = '';

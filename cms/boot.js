@@ -1,5 +1,5 @@
 requirejs.config({
-  waitSeconds:120,
+  waitSeconds:240,
    baseUrl: 'bhv/vendors',
    paths: {
      bhv: '..',
@@ -12,8 +12,8 @@ requirejs.config({
    }
 });
 
-requirejs(['cms/cms', 'cms/modules/login/login' ,'domReady!'],
-function (a,b) {
+requirejs(['cms/cms', 'cms/modules/login/main' ,'domReady!'],
+function (j,a,b) {
 alert(a)
 });
 
