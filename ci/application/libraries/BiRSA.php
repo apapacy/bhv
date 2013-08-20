@@ -54,8 +54,16 @@ class Birsa{
 		$this->chunkSize = ($count - 1) * 2;
 	}
 
-	function encode($s, $utf_encoded = FALSE){
-		if ($utf_encoded)
+  /**
+   * Encode string with RSA to comma separated list of HEX very big integer
+   * If string is not utf8 encoded - set second parametr to TRUE
+   * @param   string    - string to encode
+   * @param   boolean   - is string UTF-8 ecoded default TRUE
+   * @return  string    - RSA encoded conmma separated list of very big integer
+   */
+
+   function encode($s, $utf_encoded = TRUE){
+		if (!$utf_encoded)
 			$s = utf8_encode($s);
 		$s = str_replace(chr(0), chr(255), $s);
 		$s .= chr(254);
@@ -81,7 +89,15 @@ class Birsa{
 		return $result; // Remove last space.
 	}
 
-	function decode($s, $utf8_decoded = FALSE){
+  /**
+   * Decode comma separated list of HEX very big integer with RSA to string
+   * into UTF-8 string. To decode from UTF-8 set second parametr to TRUE
+   * @param   string    - RSA encoded conmma separated list of very big integer
+   * @param   boolean   - to decode string from UTF-8 set to TRUE, default FALSE
+   * @return  string    - ecoded string
+   */
+  
+	function decode($s, $utf8_decode = FALSE){
 		$blocks = preg_split("/,/", $s);
 		$result = "";
 		for ($i = 0; $i < count($blocks); $i++){
@@ -94,7 +110,7 @@ class Birsa{
 		}
 		$result = str_replace(chr(255), chr(0), $result);
 		$result = substr($result, 0, strpos($result, chr(254)));
-		return $utf8_decoded ? utf8_decode($result) : $result;
+		return $utf8_decode ? utf8_decode($result) : $result;
 	}
 	
 	static $hex = array('0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f');

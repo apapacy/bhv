@@ -1,3 +1,4 @@
+<?php header('Content-type: text/javascript');?>
 define(['jquery'], function(){
 /*
 The MIT License
@@ -63,6 +64,7 @@ function biRSAKeyPair(encryptionExponent, decryptionExponent, modulus){
 
 biRSAKeyPair.prototype.encrypt = biRSAKeyPair.prototype.biEncryptedString = biEncryptedString;
 biRSAKeyPair.prototype.decrypt = biRSAKeyPair.prototype.biDecryptedString = biDecryptedString;
+biRSAKeyPair.salt='<?php echo $cms_model_login_salt;?>';
 
 function biEncryptedString(s){
 // UTF-8 encode added. So some symbol is non-UTF-8 - #254, #255.
