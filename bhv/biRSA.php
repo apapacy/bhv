@@ -1,5 +1,5 @@
 <?php header('Content-type: text/javascript');?>
-define(['jquery'], function(){
+define([], function(){
 /*
 The MIT License
 

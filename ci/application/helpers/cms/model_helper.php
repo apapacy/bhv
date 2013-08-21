@@ -33,8 +33,8 @@ function get_contents( ) {
 }
 
 function no_cache( ) {
-  //header("Cache-Control: no-store, no-cache,  must-revalidate");
-  //header("Expires: " .  date("r"));
+  header("Cache-Control: no-store, no-cache,  must-revalidate");
+  header("Expires: " .  date("r"));
 }
 
 function error_model_header( ) {

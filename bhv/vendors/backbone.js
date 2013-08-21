@@ -1127,7 +1127,7 @@
   // it difficult to read the body of `PUT` requests.
   Backbone.sync = function(method, model, options) {
     var type = methodMap[method];
-    alert(type)
+
 
     // Default options, unless specified.
     _.defaults(options || (options = {}), {
