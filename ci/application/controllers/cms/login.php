@@ -25,6 +25,7 @@ class Login extends CI_Controller {
     $this->birsa->init( '5abb','1146bd07f0b74c086df00b37c602a0b','1d7777c38863aec21ba2d91ee0faf51' );
     $this->action = \cms\model\action( );
     $this->contents = \cms\model\get_contents( );
+    // Name of action from Backbone REST API, sorry.
     if ( $this->action === 'create' ) { // register new user
       $this->register_create();
     } else if ( $this->action === 'update' ) { // user is try to login
