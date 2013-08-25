@@ -2,7 +2,7 @@
 
 class MY_Controller extends CI_Controller {}
 
-class REST_Controller extends CI_Controller {
+class REST_Controller extends MY_Controller {
 
   const TABLE = 'no valid table name';
   
@@ -111,7 +111,7 @@ class REST_Controller extends CI_Controller {
         return 'update';
         break;
       case 'DELETE';
-        return 'create';
+        return 'delete';
         break;
       case 'PATCH';
         return 'patch';
