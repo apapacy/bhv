@@ -19,8 +19,8 @@ class REST_Controller extends MY_Controller {
   function test( $msg ) {
     die( $msg );
   }
-
-  protected function create( $fields, $sid=FALSE ) {
+ 
+  protected function create( $fields, $sid='id' ) {
   // require:
   // $model['id'] NOT is set (by REST API from Backbone.js)
     $model = $this->from_json( $this->contents, $fields );
@@ -28,13 +28,15 @@ class REST_Controller extends MY_Controller {
     // not valid _____________________________________^^^^^^^^^^^^^^^^^^^^^^^^^
     //  $model[$id] = $model['id'];
     //}
-    $this->db->insert( TABLE, $model );
+    @$this->db->insert( $this->get_table_name( ), $model );
     if ( $this->db->affected_rows( ) === 0 ) {
       $this->error_model_header( );
       die( '{"error":"SQL - not inserted"}' );
     }
-    if ( $sid !== FALSE && ! isset( $model[$id] ) ) {
+    if ( ! isset( $model[$sid] ) ) {
       $model['id'] = $model[$sid] = $this->db->insert_id();
+    } else {
+      $model['id'] = $model[$sid];
     }
     echo $this->to_json( $model );
   }
@@ -42,7 +44,7 @@ class REST_Controller extends MY_Controller {
   protected function read( $fields, $id, $sid='id' ) {
   // requires: $id IS set ($sid is name key column in real SQL table)
   // returns: $model['id'] IS set AND $model[$sid] IS set
-    $query = $db->select( $fields )->get_where( TABLE, array( $sid => $id ), 1 /* LIMIT 1 */ );
+    $query = $db->select( $fields )->get_where( $this->get_table_name( ), array( $sid => $id ), 1 /* LIMIT 1 */ );
     if ( $this->db->affected_rows( ) === 0 ) {
       $this->error_model_header( );
       die( '{"error":"SQL - not selected"}' );
@@ -54,19 +56,21 @@ class REST_Controller extends MY_Controller {
     echo $this->to_json( $model );
   }
 
-  protected function update( $fields, $sid='id' ) {
+  protected function update( $fields, $id, $sid='id' ) {
   // requires: $id IS set ($sid is name key column in real SQL table)
   // $model['id'] IS set (by REST API from Backbone.js)
     $model = $this->from_json( $this->contents, $fields );
-    if ( $sid !== 'id' && ! isset( $model[$sid] ) ) {
-      $model[$sid] = $model['id'];
+    if ( $sid !== 'id'  ) {
+      if ( ! isset( $model[$sid] ) ){
+        $model[$sid] = $model['id'];
+      }
       unset( $model['id'] );
     }
     if ( ! isset( $model[$sid] ) ) {
       $this->error_model_header( );
       die( '{"error":"SQL - key value is not set"}' );
     }
-    $this->db->update( TABLE, $model, array( $sid => $model[$sid]), 1 /* LIMIT 1 */ );
+    $this->db->update( $this->get_table_name( ), $model, array( $sid => $id ) );
     if ( $this->db->affected_rows( ) === 0 ) {
       $this->error_model_header( );
       die( '{"error":"SQL - not updated"}' );
@@ -80,7 +84,7 @@ class REST_Controller extends MY_Controller {
   protected function delete( $fields, $id, $sid='id' ) {
   // requires: $id IS set ($sid is name key column in real SQL table)
   // returns: $model['id'] IS set AND $model[$sid] IS set
-    $query = $db->delete( TABLE, array( $sid => $id ), 1 /* LIMIT 1 */ );
+    $query = $db->delete( $this->get_table_name( ), array( $sid => $id ), 1 /* LIMIT 1 */ );
     if ( $this->db->affected_rows( ) === 0 ) {
       $this->error_model_header( );
       die( '{"error":"SQL - not deleted"}' );
@@ -137,7 +141,7 @@ class REST_Controller extends MY_Controller {
   private function from_json( $json, $filter=FALSE ) {
     $assoc = json_decode( $json, TRUE );
     if ( $filter !== FALSE ) {
-      return assoc_fields( $assoc, $filter );
+      return $this->assoc_fields( $assoc, $filter );
     } else {
       return $assoc;
     }
@@ -145,7 +149,7 @@ class REST_Controller extends MY_Controller {
 
   private function to_json( $assoc, $filter=FALSE ) {
     if ( $filter !== FALSE ) {
-      $result = assoc_fields( $assoc, $filter );
+      $result = $this->assoc_fields( $assoc, $filter );
       return json_encode( $result );
     } else {
       return json_encode( $assoc );
