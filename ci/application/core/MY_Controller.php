@@ -20,7 +20,7 @@ class REST_Controller extends MY_Controller {
     die( $msg );
   }
 
-  protected function create( $name, $fields, $sid=FALSE ) {
+  protected function create( $fields, $sid=FALSE ) {
   // require:
   // $model['id'] NOT is set (by REST API from Backbone.js)
     $model = $this->from_json( $this->contents, $fields );
@@ -28,7 +28,7 @@ class REST_Controller extends MY_Controller {
     // not valid _____________________________________^^^^^^^^^^^^^^^^^^^^^^^^^
     //  $model[$id] = $model['id'];
     //}
-    $this->db->insert( $name, $model );
+    $this->db->insert( TABLE, $model );
     if ( $this->db->affected_rows( ) === 0 ) {
       $this->error_model_header( );
       die( '{"error":"SQL - not inserted"}' );
@@ -39,15 +39,10 @@ class REST_Controller extends MY_Controller {
     echo $this->to_json( $model );
   }
 
-  protected function read( $name, $fields, $id, $sid=FALSE ) {
+  protected function read( $fields, $id, $sid='id' ) {
   // requires: $id IS set ($sid is name key column in real SQL table)
   // returns: $model['id'] IS set AND $model[$sid] IS set
-    if ( $sid !== FALSE ) {
-      $key = $sid;
-    } else {
-      $key = 'id';
-    }
-    $query = $db->select( $fields )->get_where( $name, array( $key => $id ) );
+    $query = $db->select( $fields )->get_where( TABLE, array( $sid => $id ), 1 /* LIMIT 1 */ );
     if ( $this->db->affected_rows( ) === 0 ) {
       $this->error_model_header( );
       die( '{"error":"SQL - not selected"}' );
@@ -59,15 +54,19 @@ class REST_Controller extends MY_Controller {
     echo $this->to_json( $model );
   }
 
-  protected function update( $name, $fields, $sid=FALSE ) {
+  protected function update( $fields, $sid='id' ) {
   // requires: $id IS set ($sid is name key column in real SQL table)
   // $model['id'] IS set (by REST API from Backbone.js)
     $model = $this->from_json( $this->contents, $fields );
-    if ( $sid !== FALSE && ! isset( $model[$sid] ) && $sid !== 'id' ) {
+    if ( $sid !== 'id' && ! isset( $model[$sid] ) ) {
       $model[$sid] = $model['id'];
       unset( $model['id'] );
     }
-    $this->db->update( $name, $model );
+    if ( ! isset( $model[$sid] ) ) {
+      $this->error_model_header( );
+      die( '{"error":"SQL - key value is not set"}' );
+    }
+    $this->db->update( TABLE, $model, array( $sid => $model[$sid]), 1 /* LIMIT 1 */ );
     if ( $this->db->affected_rows( ) === 0 ) {
       $this->error_model_header( );
       die( '{"error":"SQL - not updated"}' );
@@ -78,24 +77,15 @@ class REST_Controller extends MY_Controller {
     echo $this->to_json( $model );
   }
 
-  protected function delete( $name, $fields, $id, $sid=FALSE ) {
+  protected function delete( $fields, $id, $sid='id' ) {
   // requires: $id IS set ($sid is name key column in real SQL table)
   // returns: $model['id'] IS set AND $model[$sid] IS set
-    if ( $sid !== FALSE ) {
-      $key = $sid;
-    } else {
-      $key = 'id';
-    }
-    $query = $db->delete( $name, array( $key => $id ) );
+    $query = $db->delete( TABLE, array( $sid => $id ), 1 /* LIMIT 1 */ );
     if ( $this->db->affected_rows( ) === 0 ) {
       $this->error_model_header( );
-      die( '{"error":"SQL - not selected"}' );
+      die( '{"error":"SQL - not deleted"}' );
     }
-    $model = $query->row_array( 0 );
-    if ( $sid !== FALSE ) {
-      $model['id'] = $model[$sid];
-    }
-    echo $this->to_json( $model );
+    echo "{ /* record $sid='$id' is deleted */  }";
   }
 
   
