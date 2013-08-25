@@ -50,7 +50,7 @@ class REST_Controller extends MY_Controller {
       die( '{"error":"SQL - not selected"}' );
     }
     $model = $query->row_array( 0 );
-    if ( $sid !== FALSE ) {
+    if ( $sid !== 'id' ) {
       $model['id'] = $model[$sid];
     }
     echo $this->to_json( $model );
@@ -75,7 +75,7 @@ class REST_Controller extends MY_Controller {
       $this->error_model_header( );
       die( '{"error":"SQL - not updated"}' );
     }
-    if ( $sid !== FALSE  ) {
+    if ( $sid !== 'id'  ) {
       $model['id'] = $model[$sid];
     }
     echo $this->to_json( $model );
