@@ -1,14 +1,13 @@
 <?php if ( ! defined( 'BASEPATH' ) ) exit( 'No direct script access allowed' );
 
-class Login extends CI_Controller {
+class Login extends REST_Controller {
 
   /**
    * Index Page for this controller.
    */
 
-  private $action;
-  private $contents;
-   
+  const TABLE = 'login';
+  
   public function birsa( ) {
     $this->load->helper( 'cms/model' );
     \cms\model\no_cache( );
@@ -23,8 +22,8 @@ class Login extends CI_Controller {
     $this->load->helper( 'cms/model' );
     $this->load->library( 'birsa' );
     $this->birsa->init( '5abb','1146bd07f0b74c086df00b37c602a0b','1d7777c38863aec21ba2d91ee0faf51' );
-    $this->action = \cms\model\action( );
-    $this->contents = \cms\model\get_contents( );
+    //$this->action = \cms\model\action( );
+    //$this->contents = \cms\model\get_contents( );
     // Name of action from Backbone REST API, sorry.
     if ( $this->action === 'create' ) { // register new user
       $this->register_create();
@@ -62,7 +61,7 @@ class Login extends CI_Controller {
         die( '{"error":"Not valid password"}' );       
       }  
       $user = $query->row_array( 0 );
-      $user['logged'] = TRUE;
+      $user['logged'] = parent::get_table_name( );
       $this->session->set_userdata( 'cms:login:user:name', $user['name'] );
       echo \cms\model\to_json( $user, array( 'name', 'email', 'id', 'logged' ) );
   }

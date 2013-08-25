@@ -1,11 +1,6 @@
 <?php namespace cms\model;
 if (!defined('BASEPATH')) exit('No direct script access allowed');
 
-function test( ){
-  //echo $_SERVER['REQUEST_METHOD'];
-  //echo __NAMESPACE__;
-}
-
 function action( ) {
   switch ( $_SERVER['REQUEST_METHOD'] ) {
     case 'POST';
@@ -42,7 +37,7 @@ function error_model_header( ) {
 }
 
 function assoc_fields( $assoc, $filter ) {
- $result = array();
+ $result = array( );
   foreach ( $assoc as $key => $value ) {
     if ( in_array( $key, $filter ) ) {
       $result[$key] = $value;
@@ -52,9 +47,9 @@ function assoc_fields( $assoc, $filter ) {
 }
 
 function from_json( $json, $filter=FALSE ) {
-  $assoc = json_decode($json, TRUE);
+  $assoc = json_decode( $json, TRUE );
   if ( $filter !== FALSE ) {
-    return assoc_fields($assoc, $filter);
+    return assoc_fields( $assoc, $filter );
   } else {
     return $assoc;
   }
@@ -62,10 +57,22 @@ function from_json( $json, $filter=FALSE ) {
 
 function to_json( $assoc, $filter=FALSE ) {
   if ( $filter !== FALSE ) {
-    $result = assoc_fields($assoc, $filter);
-    return json_encode($result);
+    $result = assoc_fields( $assoc, $filter );
+    return json_encode( $result );
   } else {
-    return json_encode($assoc);
+    return json_encode( $assoc );
   }
 }
 
+function get_login( ) {
+  $salt = $this->session->userdata( 'cms:rsa:salt' );
+  if ($salt === FALSE || mb_strlen( trim( $salt ) ) !== 32 ) {
+    return FALSE;
+  }
+  $login = $this->session->userdata( 'cms:login:user:name' );
+  if ($login === FALSE || ! $login || mb_strlen( trim( $login ) ) < 4 ) {
+    return FALSE;
+  } else {
+    return trim( $login );
+  }
+}
