@@ -1,6 +1,6 @@
 <?php if ( ! defined( 'BASEPATH' ) ) exit( 'No direct script access allowed' );
 
-class MY_Controller extends CI_Controller {}
+class MY_Controller extends CI_Controller { }
 
 class REST_Controller extends MY_Controller {
 
@@ -11,7 +11,6 @@ class REST_Controller extends MY_Controller {
 
   function __construct( ) {
     parent::__construct();
-    //$this->load->helper( 'cms/model' );
     $this->action = $this->get_action( );
     $this->contents = $this->get_contents( );
   }
@@ -86,21 +85,21 @@ class REST_Controller extends MY_Controller {
       $this->error_model_header( );
       die( '{"error":"SQL - not updated"}' );
     }
-    //if ( $sid !== 'id'  ) { // it is possible that value(id) != value(sid)
-    //  $model['id'] = $model[$sid];
-    //}
+    if ( $sid !== 'id'  ) { // it is possible that value(id) != value(sid)
+      $model['id'] = $id;
+    }
     echo $this->to_json( $model );
   }
 
   protected function _delete( $fields, $id, $sid='id' ) {
   // requires: $id IS set ($sid is name key column in real SQL table)
-  // returns: $model['id'] IS set AND $model[$sid] IS set
+  // effects: delete record $$sid === $id and output @todo
     $query = $this->db->delete( $this->get_table_name( ), array( $sid => $id )/*,1 LIMIT 1*/ );
     if ( $this->db->affected_rows( ) === 0 ) {
       $this->error_model_header( );
       die( '{"error":"SQL - not deleted"}' );
     }
-    echo "{ /* record $sid='$id' is deleted */  }";
+    echo "{ /* record $sid='$id' is deleted */  }"; // @todo
   }
   
   private function get_action( ) {
