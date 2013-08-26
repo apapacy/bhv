@@ -21,19 +21,19 @@ class Test extends REST_Controller {
   //}
   
   protected function create( ) {
-    parent::create(array( 'name', 'email', 'password'), 'name');
+    parent::_create(array( 'name', 'email', 'password'), 'name');
   }
   
   protected function read( $id ) {
-    parent::read(array( 'name', 'email', 'password'), $id, 'name');
+    parent::_read(array( 'name', 'email', 'password'), $id, 'name');
   }
 
   protected function update( $id ) {
-    parent::update(array( 'name', 'email', 'password'), $id, 'name');
+    parent::_update(array( 'name', 'email', 'password'), $id, 'name');
   }
 
   protected function delete( $id ) {
-    parent::delete(array( 'name', 'email', 'password'), $id, 'name');
+    parent::_delete(array( 'name', 'email', 'password'), $id, 'name');
   }
   
 }

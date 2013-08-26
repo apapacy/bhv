@@ -33,7 +33,7 @@ class REST_Controller extends MY_Controller {
   }
 
   
-  protected function create( $fields, $sid='id' ) {
+  protected function _create( $fields, $sid='id' ) {
   // require:
   // $model['id'] NOT is set (by REST API from Backbone.js)
     $model = $this->from_json( $this->contents, $fields );
@@ -54,7 +54,7 @@ class REST_Controller extends MY_Controller {
     echo $this->to_json( $model );
   }
 
-  protected function read( $fields, $id, $sid='id' ) {
+  protected function _read( $fields, $id, $sid='id' ) {
   // requires: $id IS set ($sid is name key column in real SQL table)
   // output: $model['id'] IS set AND $model[$sid] IS set AND ===
     $query = $this->db->select( $fields )->get_where( $this->get_table_name( ), array( $sid => $id ), 1 /* LIMIT 1 */ );
@@ -69,7 +69,7 @@ class REST_Controller extends MY_Controller {
     echo $this->to_json( $model );
   }
 
-  protected function update( $fields, $id, $sid='id' ) {
+  protected function _update( $fields, $id, $sid='id' ) {
   // requires: $id IS set ($sid is name key column in real SQL table)
   // requires: $model['id'] IS set (by REST API from Backbone.js) and $model['id'] === $id
   // effects: to update SQL table and to print JSON object
@@ -95,7 +95,7 @@ class REST_Controller extends MY_Controller {
     echo $this->to_json( $model );
   }
 
-  protected function delete( $fields, $id, $sid='id' ) {
+  protected function _delete( $fields, $id, $sid='id' ) {
   // requires: $id IS set ($sid is name key column in real SQL table)
   // returns: $model['id'] IS set AND $model[$sid] IS set
     $query = $this->db->delete( $this->get_table_name( ), array( $sid => $id )/*,1 LIMIT 1*/ );
