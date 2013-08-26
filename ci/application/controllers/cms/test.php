@@ -24,15 +24,15 @@ class Test extends REST_Controller {
     parent::create(array( 'name', 'email', 'password'), 'name');
   }
   
-  protected final function read( $id ) {
+  protected function read( $id ) {
     parent::read(array( 'name', 'email', 'password'), $id, 'name');
   }
 
-  protected final function update( $id ) {
+  protected function update( $id ) {
     parent::update(array( 'name', 'email', 'password'), $id, 'name');
   }
 
-  protected final function delete( $id ) {
+  protected function delete( $id ) {
     parent::delete(array( 'name', 'email', 'password'), $id, 'name');
   }
   

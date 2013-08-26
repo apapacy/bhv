@@ -28,7 +28,7 @@ class REST_Controller extends MY_Controller {
     } else if ( $this->action === 'update' ) {
       $this->update( $id );
     } else if ( $this->action === 'delete' ) {
-      $this->update( $id );
+      $this->delete( $id );
     }
   }
 
@@ -98,7 +98,7 @@ class REST_Controller extends MY_Controller {
   protected function delete( $fields, $id, $sid='id' ) {
   // requires: $id IS set ($sid is name key column in real SQL table)
   // returns: $model['id'] IS set AND $model[$sid] IS set
-    $query = $db->delete( $this->get_table_name( ), array( $sid => $id ), 1 /* LIMIT 1 */ );
+    $query = $this->db->delete( $this->get_table_name( ), array( $sid => $id )/*,1 LIMIT 1*/ );
     if ( $this->db->affected_rows( ) === 0 ) {
       $this->error_model_header( );
       die( '{"error":"SQL - not deleted"}' );

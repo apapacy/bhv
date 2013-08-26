@@ -31,12 +31,13 @@ error:function(model,xhr,options){alert(xhr.responseText);alert("2"+JSON.stringi
 
 
 var Test =  Backbone.Model.extend({
-  urlRoot: cms.bhv.getApplicationFolder() + 'ci/index.php/cms/test/model'
+  urlRoot: cms.bhv.getApplicationFolder() + 'ci/index.php/cms/test/model',
+  destroy: function(){ this.constructor.__super__.destroy.apply(this, arguments); this.clear()}
 });
 
-var test = new Test({id:'Test3',email:'test3@gmail.com', password:'русский текст'});
+test = new Test({'id':'qwerty1',email:'test3@gmail.com', password:'русский текст',name:'qwerty1'});
 
-test.fetch({
+test.destroy ( {
 success:function(model,xhr,options){alert(JSON.stringify(xhr));alert("1"+JSON.stringify(model.attributes));},
 error:function(model,xhr,options){alert(xhr.responseText);alert("2"+JSON.stringify(model.attributes));}}
 );
