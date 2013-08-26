@@ -28,6 +28,11 @@ success:function(model,xhr,options){alert(JSON.stringify(xhr));alert("1"+JSON.st
 error:function(model,xhr,options){alert(xhr.responseText);alert("2"+JSON.stringify(model.attributes));}}
 );*/
 
+O1=Backbone.Model.extend({a1:1})
+O2=Backbone.Model.extend({a2:2})
+o1=new O1()
+o2=new O2()
+
 
 
 var Test =  Backbone.Model.extend({

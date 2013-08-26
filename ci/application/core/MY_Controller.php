@@ -20,7 +20,7 @@ class REST_Controller extends MY_Controller {
     die( $msg );
   }
 
-  public function model( $id='undefined' ) {
+  public function model( $id=NULL ) {
     if ( $this->action === 'create' ) {
       $this->create( );
     } else if ( $this->action === 'read' ) {
@@ -34,21 +34,17 @@ class REST_Controller extends MY_Controller {
 
   
   protected function _create( $fields, $sid='id' ) {
-  // require:
-  // $model['id'] NOT is set (by REST API from Backbone.js)
+  // require: $model['id'] NOT set (by REST API from Backbone.js)
     $model = $this->from_json( $this->contents, $fields );
-    //if ( $sid !== FALSE && ! isset( $model[$id] ) && isset( $model['id'] ) ) {
-    // not valid _____________________________________^^^^^^^^^^^^^^^^^^^^^^^^^
-    //  $model[$id] = $model['id'];
-    //}
     $this->db->insert( $this->get_table_name( ), $model );
     if ( $this->db->affected_rows( ) === 0 ) {
       $this->error_model_header( );
       die( '{"error":"SQL - not inserted"}' );
     }
     if ( ! isset( $model[$sid] ) ) {
-      $model['id'] = $model[$sid] = $this->db->insert_id();
-    } else {
+      $model[$sid] = $this->db->insert_id();
+    } 
+    if ( $sid !== 'id' ) {
       $model['id'] = $model[$sid];
     }
     echo $this->to_json( $model );
@@ -57,7 +53,8 @@ class REST_Controller extends MY_Controller {
   protected function _read( $fields, $id, $sid='id' ) {
   // requires: $id IS set ($sid is name key column in real SQL table)
   // output: $model['id'] IS set AND $model[$sid] IS set AND ===
-    $query = $this->db->select( $fields )->get_where( $this->get_table_name( ), array( $sid => $id ), 1 /* LIMIT 1 */ );
+    $query = $this->db->select( $fields )->get_where( $this->get_table_name( ),
+             array( $sid => $id ), 1 /* LIMIT 1 */ );
     if ( $query->num_rows() === 0 ) {
       $this->error_model_header( );
       die( '{"error":"SQL - not selected"}' );
@@ -105,7 +102,6 @@ class REST_Controller extends MY_Controller {
     }
     echo "{ /* record $sid='$id' is deleted */  }";
   }
-
   
   private function get_action( ) {
     switch ( $_SERVER['REQUEST_METHOD'] ) {
