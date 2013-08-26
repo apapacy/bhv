@@ -11,7 +11,7 @@ class REST_Controller extends MY_Controller {
 
   function __construct( ) {
     parent::__construct();
-    $this->load->helper( 'cms/model' );
+    //$this->load->helper( 'cms/model' );
     $this->action = $this->get_action( );
     $this->contents = $this->get_contents( );
   }
@@ -19,7 +19,20 @@ class REST_Controller extends MY_Controller {
   function test( $msg ) {
     die( $msg );
   }
- 
+
+  public function model( $id='undefined' ) {
+    if ( $this->action === 'create' ) {
+      $this->create( );
+    } else if ( $this->action === 'read' ) {
+      $this->read( $id );
+    } else if ( $this->action === 'update' ) {
+      $this->update( $id );
+    } else if ( $this->action === 'delete' ) {
+      $this->update( $id );
+    }
+  }
+
+  
   protected function create( $fields, $sid='id' ) {
   // require:
   // $model['id'] NOT is set (by REST API from Backbone.js)
@@ -28,7 +41,7 @@ class REST_Controller extends MY_Controller {
     // not valid _____________________________________^^^^^^^^^^^^^^^^^^^^^^^^^
     //  $model[$id] = $model['id'];
     //}
-    @$this->db->insert( $this->get_table_name( ), $model );
+    $this->db->insert( $this->get_table_name( ), $model );
     if ( $this->db->affected_rows( ) === 0 ) {
       $this->error_model_header( );
       die( '{"error":"SQL - not inserted"}' );
@@ -43,9 +56,9 @@ class REST_Controller extends MY_Controller {
 
   protected function read( $fields, $id, $sid='id' ) {
   // requires: $id IS set ($sid is name key column in real SQL table)
-  // returns: $model['id'] IS set AND $model[$sid] IS set
-    $query = $db->select( $fields )->get_where( $this->get_table_name( ), array( $sid => $id ), 1 /* LIMIT 1 */ );
-    if ( $this->db->affected_rows( ) === 0 ) {
+  // output: $model['id'] IS set AND $model[$sid] IS set AND ===
+    $query = $this->db->select( $fields )->get_where( $this->get_table_name( ), array( $sid => $id ), 1 /* LIMIT 1 */ );
+    if ( $query->num_rows() === 0 ) {
       $this->error_model_header( );
       die( '{"error":"SQL - not selected"}' );
     }
@@ -58,11 +71,12 @@ class REST_Controller extends MY_Controller {
 
   protected function update( $fields, $id, $sid='id' ) {
   // requires: $id IS set ($sid is name key column in real SQL table)
-  // $model['id'] IS set (by REST API from Backbone.js)
+  // requires: $model['id'] IS set (by REST API from Backbone.js) and $model['id'] === $id
+  // effects: to update SQL table and to print JSON object
     $model = $this->from_json( $this->contents, $fields );
     if ( $sid !== 'id'  ) {
-      if ( ! isset( $model[$sid] ) ){
-        $model[$sid] = $model['id'];
+      if ( ! isset( $model[$sid] ) ) {
+        $model[$sid] = $id;
       }
       unset( $model['id'] );
     }
@@ -75,9 +89,9 @@ class REST_Controller extends MY_Controller {
       $this->error_model_header( );
       die( '{"error":"SQL - not updated"}' );
     }
-    if ( $sid !== 'id'  ) {
-      $model['id'] = $model[$sid];
-    }
+    //if ( $sid !== 'id'  ) { // it is possible that value(id) != value(sid)
+    //  $model['id'] = $model[$sid];
+    //}
     echo $this->to_json( $model );
   }
 
