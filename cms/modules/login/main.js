@@ -40,7 +40,7 @@ var Test =  Backbone.Model.extend({
   destroy: function(){ this.constructor.__super__.destroy.apply(this, arguments)}
 });
 
-test = new Test({id:'qwerty6',email:'test3@gmail.com', password:'русский текст',name:'qwerty2'});
+test = new Test({id:'qwerty6',email:'test3@gmail.com', password:'русский текст',name:'qwerty'});
 
 /*test.save ({}, {wait:true,
 success:function(model,xhr,options){alert(JSON.stringify(xhr));model.clear;alert("1"+JSON.stringify(model.attributes));},

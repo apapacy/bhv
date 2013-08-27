@@ -29,7 +29,7 @@ class Test extends REST_Controller {
   }
 
   protected function update( $id ) {
-    parent::_update(array( 'name', 'email', 'password'), $id, 'name');
+    parent::_update(array( 'name', 'email', 'password'), $id, 'password');
   }
 
   protected function delete( $id ) {

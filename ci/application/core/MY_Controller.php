@@ -86,6 +86,13 @@ class REST_Controller extends MY_Controller {
       $this->error_model_header( );
       die( '{"error":"SQL - key value is not set"}' );
     }
+    $query = $this->db->get_where($this->get_table_name( ), array( $sid => $model[$sid]) );
+    if ( $query->num_rows() === 0 ) {
+      $this->error_model_header( );
+      die( '{"error":"SQL - not selected"}' );
+    } else if ( $query->num_rows() > 1 ) {
+      die( '{"error":"SQL - don\'t permit multiply update"}' );
+    }
     $this->db->update( $this->get_table_name( ), $model, array( $sid => $model[$sid] ) );
     if ( $this->db->affected_rows( ) === 0 ) {
       $this->error_model_header( );
@@ -108,6 +115,15 @@ class REST_Controller extends MY_Controller {
     echo "{ /* record $sid='$id' is deleted */  }"; // @todo
   }
 
+  protected function no_cache( ) {
+    header("Cache-Control: no-store, no-cache,  must-revalidate");
+    header("Expires: " .  date("r"));
+  }
+
+  protected function error_model_header( ) {
+    header("HTTP/1.0 409 Conflict");
+  }
+  
   private function get_action( ) {
     switch ( $_SERVER['REQUEST_METHOD'] ) {
       case 'POST';
@@ -132,15 +148,6 @@ class REST_Controller extends MY_Controller {
 
   private function get_contents( ) {
     return file_get_contents('php://input');
-  }
-
-  private function no_cache( ) {
-    header("Cache-Control: no-store, no-cache,  must-revalidate");
-    header("Expires: " .  date("r"));
-  }
-
-  private function error_model_header( ) {
-    header("HTTP/1.0 409 Conflict");
   }
 
   private function assoc_fields( $assoc, $filter ) {
