@@ -36,11 +36,12 @@ o2=new O2()
 
 
 var Test =  Backbone.Model.extend({
+  idAttribute: "name",
   urlRoot: cms.bhv.getApplicationFolder() + 'ci/index.php/cms/test/model',
   destroy: function(){ this.constructor.__super__.destroy.apply(this, arguments)}
 });
 
-test = new Test({id:'qwerty6',email:'test3@gmail.com', password:'русский текст',name:'qwerty'});
+test = new Test({id:'qwerty1',email:'test3@gmail.com', password:'русский текст',name:'qwerty'});
 
 /*test.save ({}, {wait:true,
 success:function(model,xhr,options){alert(JSON.stringify(xhr));model.clear;alert("1"+JSON.stringify(model.attributes));},
@@ -56,7 +57,7 @@ error:function(model,xhr,options){alert(xhr.responseText);alert("2"+JSON.stringi
 );
 
 return
-alert(0)*/
+alert(0)
 
 test.save ({}, {
 success:function(model,xhr,options){alert(JSON.stringify(xhr));alert("1"+JSON.stringify(model.attributes));},
@@ -64,8 +65,8 @@ error:function(model,xhr,options){alert(xhr.responseText);alert("2"+JSON.stringi
 );
 return
 alert(0)
-
-test.destroy ( {wait:true,
+*/
+test.destroy ( {
 success:function(model,xhr,options){alert(JSON.stringify(xhr));model.clear;alert("1"+JSON.stringify(model.attributes));},
 error:function(model,xhr,options){alert(xhr.responseText);alert("2"+JSON.stringify(model.attributes));}}
 );

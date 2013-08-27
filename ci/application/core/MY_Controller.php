@@ -91,6 +91,7 @@ class REST_Controller extends MY_Controller {
       $this->error_model_header( );
       die( '{"error":"SQL - not selected"}' );
     } else if ( $query->num_rows() > 1 ) {
+      $this->error_model_header( );
       die( '{"error":"SQL - don\'t permit multiply update"}' );
     }
     $this->db->update( $this->get_table_name( ), $model, array( $sid => $model[$sid] ) );
@@ -107,7 +108,15 @@ class REST_Controller extends MY_Controller {
   protected function _delete( $fields, $id, $sid='id' ) {
   // requires: $id IS set ($sid is name key column in real SQL table)
   // effects: delete record $$sid === $id and output @todo
-    $query = $this->db->delete( $this->get_table_name( ), array( $sid => $id )/*,1 LIMIT 1*/ );
+    $query = $this->db->get_where( $this->get_table_name( ), array( $sid => $id ));
+    if ( $query->num_rows() === 0 ) {
+      $this->error_model_header( );
+      die( '{"error":"SQL - not deleted"}' );
+    } else if ( $query->num_rows() > 1 ) {
+      $this->error_model_header( );
+      die( '{"error":"SQL - don\'t permit multiply delete"}' );
+    }
+    $this->db->delete( $this->get_table_name( ), array( $sid => $id )/*,1 LIMIT 1*/ );
     if ( $this->db->affected_rows( ) === 0 ) {
       $this->error_model_header( );
       die( '{"error":"SQL - not deleted"}' );
