@@ -40,9 +40,32 @@ var Test =  Backbone.Model.extend({
   destroy: function(){ this.constructor.__super__.destroy.apply(this, arguments)}
 });
 
-test = new Test({'id':'Test2',email:'test3@gmail.com', password:'русский текст',name:'qwerty1'});
+test = new Test({id:'qwerty6',email:'test3@gmail.com', password:'русский текст',name:'qwerty2'});
 
-test.destroy ( {
+/*test.save ({}, {wait:true,
+success:function(model,xhr,options){alert(JSON.stringify(xhr));model.clear;alert("1"+JSON.stringify(model.attributes));},
+error:function(model,xhr,options){alert(xhr.responseText);alert("2"+JSON.stringify(model.attributes));}}
+);
+
+return
+alert(0)
+
+test.fetch ( {
+success:function(model,xhr,options){alert(JSON.stringify(xhr));model.clear;alert("1"+JSON.stringify(model.attributes));},
+error:function(model,xhr,options){alert(xhr.responseText);alert("2"+JSON.stringify(model.attributes));}}
+);
+
+return
+alert(0)*/
+
+test.save ({}, {
+success:function(model,xhr,options){alert(JSON.stringify(xhr));alert("1"+JSON.stringify(model.attributes));},
+error:function(model,xhr,options){alert(xhr.responseText);alert("2"+JSON.stringify(model.attributes));}}
+);
+return
+alert(0)
+
+test.destroy ( {wait:true,
 success:function(model,xhr,options){alert(JSON.stringify(xhr));model.clear;alert("1"+JSON.stringify(model.attributes));},
 error:function(model,xhr,options){alert(xhr.responseText);alert("2"+JSON.stringify(model.attributes));}}
 );

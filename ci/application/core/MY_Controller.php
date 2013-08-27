@@ -5,7 +5,7 @@ class MY_Controller extends CI_Controller { }
 class REST_Controller extends MY_Controller {
 
   const TABLE = 'no valid table name';
-  
+
   protected $action;
   protected $contents;
 
@@ -31,10 +31,16 @@ class REST_Controller extends MY_Controller {
     }
   }
 
-  
   protected function _create( $fields, $sid='id' ) {
   // require: $model['id'] NOT set (by REST API from Backbone.js)
     $model = $this->from_json( $this->contents, $fields );
+    if ( $sid !== 'id' ) {
+      $query = $this->db->get_where( $this->get_table_name( ), array( $sid => $model[$sid] ) );
+      if ( $query->num_rows() !== 0 ) {
+        $this->error_model_header( );
+        die( "{\"error\":\"SQL - dupplicate key $sid='${model[$sid]}'\"}" );
+      }
+    }
     $this->db->insert( $this->get_table_name( ), $model );
     if ( $this->db->affected_rows( ) === 0 ) {
       $this->error_model_header( );
@@ -42,7 +48,7 @@ class REST_Controller extends MY_Controller {
     }
     if ( ! isset( $model[$sid] ) ) {
       $model[$sid] = $this->db->insert_id();
-    } 
+    }
     if ( $sid !== 'id' ) {
       $model['id'] = $model[$sid];
     }
@@ -80,7 +86,7 @@ class REST_Controller extends MY_Controller {
       $this->error_model_header( );
       die( '{"error":"SQL - key value is not set"}' );
     }
-    $this->db->update( $this->get_table_name( ), $model, array( $sid => $id ) );
+    $this->db->update( $this->get_table_name( ), $model, array( $sid => $model[$sid] ) );
     if ( $this->db->affected_rows( ) === 0 ) {
       $this->error_model_header( );
       die( '{"error":"SQL - not updated"}' );
@@ -101,7 +107,7 @@ class REST_Controller extends MY_Controller {
     }
     echo "{ /* record $sid='$id' is deleted */  }"; // @todo
   }
-  
+
   private function get_action( ) {
     switch ( $_SERVER['REQUEST_METHOD'] ) {
       case 'POST';
@@ -164,7 +170,7 @@ class REST_Controller extends MY_Controller {
       return json_encode( $assoc );
     }
   }
-  
+
   protected function get_table_name( ) {
     return static::TABLE;
   }
