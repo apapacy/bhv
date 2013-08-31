@@ -6,7 +6,7 @@ class Test extends REST_Controller {
    * Index Page for this controller.
    */
 
-  const TABLE = 'cms_user';
+  const TABLE = 'cennic';
   
   //public function model( $id='undefined' ) {
   //  if ( $this->action === 'create' ) {
@@ -37,11 +37,10 @@ class Test extends REST_Controller {
   }
   
   protected function read_collection( ) {
-    parent::_read_collection( array( 'name', 'email', 'password'),
-                  'name',
-                  array( 'name >=' => ""),
-                  $limit,
-                  $page
+    parent::_read_collection( array( 'kod', 'det', 'name'),
+                  'det',
+                  'det >=', 'с',
+                  1000, 0
     );
   }
   

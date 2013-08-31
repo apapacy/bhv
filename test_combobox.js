@@ -17,15 +17,16 @@ requirejs(['bhv/widget/combobox/Combobox', 'domReady!'], function ( cmb ) {
 combobox1 = new cmb({
   url: 'ci/index.php/cms/test/collection'
 });
-alert(combobox1.items.fetch)
-combobox1.items.fetch({
+
+combobox1.input.set('serachValue', 'qwerty1');
+combobox1.read();
+/*combobox1.fetch( {
 data:{name:'qwerty'},
 
-success:function(model,xhr,options){alert(JSON.stringify(xhr));model.clear;alert("1"+JSON.stringify(model.attributes));},
-error:function(model,xhr,options){alert(xhr.responseText);alert("2"+JSON.stringify(model.attributes));}
-}
-);
-alert(combobox1.items.fetch)
+success:function(model,xhr,options){alert("1"+JSON.stringify(xhr))},
+error:function(model,xhr,options){alert(2)}
+} 
+);*/
 
 });
 

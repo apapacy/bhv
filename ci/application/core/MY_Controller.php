@@ -139,12 +139,13 @@ class REST_Controller extends MY_Controller {
     echo "{ /* record $sid='$id' is deleted */  }"; // @todo
   }
 
-  protected function _read_collection( $fields, $order, $where, $limit, $offset ) {
+  protected function _read_collection( $fields, $order, $where, $key, $limit, $offset ) {
     $query = $this->db->select( $fields )->order_by( $order )->
-              get_where($this->get_table_name( ), $where, $limit, $offset );
+              where( $where, $key )->
+              get($this->get_table_name( ), $limit, $offset );
     $model = array();
     for ( $i = 0; $i < $query->num_rows( ); $i++ ) {
-      $model[] = $query->row_array( $i );
+      $model[] = array_merge( $query->row_array( $i ),  array( 'backbone:combobox:item:id' => $i ) );
     }
     echo $this->to_json( $model );
   }

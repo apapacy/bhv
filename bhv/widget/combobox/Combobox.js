@@ -5,39 +5,60 @@
  * @copyright Andrey Ovcharenko <An6rey@google.com>
  * @exports Constructor
  */
-define( [ /* require Requiejs, jQuery, Backbone( =>Underscore, JSON2 ) */ 'domReady!' ], function(){
+define( [ /* require Requirejs, jQuery, Backbone( =>Underscore, JSON2 ) */ 'domReady!' ], function( ) {
 
 /** default setting if not redefined */
 var defaults = {
   limit: 10,
-  searchedValue: ''
+  page: 0,
+  searchValue: '',
+  keyName: 'kod', /** SQL column name */
+  searchName: 'search', /** SQL column name may be == keyName */
+  displayName: 'name' /** SQL column name may be == searchName */
 };
 
 var util = new utils( );
 
-var Item = Backbone.Model.extend( {} );
-var Items = Backbone.Collection.extend( {
-  model: Item,
-  limit: defaults.limit,
-  searchedValue: defaults.searchedValue,
-  currentPage: 0
-});
+var Item = Backbone.Model.extend( {
+  idAttribute: 'backbone:combobox:item:id'
+} );
 
-function Constructor( settings ) {
-  util.ISA( this, settings); // all of settings
-  util.isa( this, defaults); // only missing
-  var url = this.url
-  alert(this.url);
-  this.items = new Items([], {url: url} );
-    alert(this.items.url)
-}  
+var Constructor = Backbone.Collection.extend( {
+  model: Item
+} );
+
+var Input = Backbone.Model.extend( {
+  idAttribute: 'backbone:combobox:input:id',
+  keyValue: '',
+  searchValue: '',
+  displayValue: ''
+} ); 
+
 
 /** member of Constructor */
 var fn = {
+  initialize: function( settings ) {
+    _.extend( this, defaults);
+    _.extend( this, settings);
+    this.input = new Input( );
+    if ( typeof this.init === 'function' ) {
+      this.init.apply( this, arguments );
+    }
+  },
+  
+  read: function( ) {
+    this.fetch( {
+      searchValue: this.input.serachValue,
+      page: this.page,
+      limit: this.limit,
+      success: function(m,r,o) {alert(JSON.stringify(r))}
+    } );
+  }
+
 };
 
 /** attach member to this object (via Constructor.prototype) */
-util.ISA( Constructor.prototype, fn);
+util.ISA( Constructor.prototype, fn );
 
 
 
