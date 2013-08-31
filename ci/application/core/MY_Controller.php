@@ -19,6 +19,21 @@ class REST_Controller extends MY_Controller {
     die( $msg );
   }
 
+  public function collection( $id=NULL ) {
+    if ( $this->action === 'create' ) {
+      $this->test( 'REST create not provided for collection' );
+    } else if ( $this->action === 'read' ) {
+      $this->read_collection( $id );
+    } else if ( $this->action === 'update' ) {
+      $this->test( 'REST update not provided for collection' );
+    } else if ( $this->action === 'delete' ) {
+      $this->test( 'REST delete not provided for collection' );
+    }
+  }
+
+
+
+
   public function model( $id=NULL ) {
     if ( $this->action === 'create' ) {
       $this->create( );
@@ -122,6 +137,16 @@ class REST_Controller extends MY_Controller {
       die( '{"error":"SQL - not deleted"}' );
     }
     echo "{ /* record $sid='$id' is deleted */  }"; // @todo
+  }
+
+  protected function _read_collection( $fields, $order, $where, $limit, $offset ) {
+    $query = $this->db->select( $fields )->order_by( $order )->
+              get_where($this->get_table_name( ), $where, $limit, $offset );
+    $model = array();
+    for ( $i = 0; $i < $query->num_rows( ); $i++ ) {
+      $model[] = $query->row_array( $i );
+    }
+    echo $this->to_json( $model );
   }
 
   protected function no_cache( ) {

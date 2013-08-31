@@ -36,5 +36,14 @@ class Test extends REST_Controller {
     parent::_delete(array( 'name', 'email', 'password'), $id, 'name');
   }
   
+  protected function read_collection( ) {
+    parent::_read_collection( array( 'name', 'email', 'password'),
+                  'name',
+                  array( 'name >=' => ""),
+                  $limit,
+                  $page
+    );
+  }
+  
 }
   
