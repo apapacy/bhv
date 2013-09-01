@@ -21,16 +21,14 @@ var defaults = {
 
 var util = new utils( );
 
-var Item = Backbone.Model.extend ( 
-  {
-    /**
-     * @property {integer} idAttribute - contain [0..limit-1] number,
-     * bat not real SQL primary key. It is model of widget, not business logic 
-     */
-    defaults: defaults,
-    idAttribute: 'backbone:combobox:item:id'
-  } 
-);
+var Item = Backbone.Model.extend ( {
+  /**
+   * @property {integer} idAttribute - contain [0..limit-1] number,
+   * bat not real SQL primary key. It is model of widget, not business logic 
+   */
+  //defaults: defaults,
+  idAttribute: defaults.idAttribute
+} );
 
 var Items = Backbone.Collection.extend( {
 
@@ -59,18 +57,15 @@ var Items = Backbone.Collection.extend( {
     );
   }
     
-  }
-);
+} );
 
-var Input = Backbone.Model.extend ( 
-  {
-    keyValue: '',
-    searchValue: '',
-    displayValue: '',
-    active: false,
-    defaults:defaults
-  } 
-);
+var Input = Backbone.Model.extend ( {
+  keyValue: '',
+  searchValue: '',
+  displayValue: '',
+  active: false,
+  defaults:defaults
+} );
 
 /**
  * @constructor {Backbone.Collection}
@@ -91,112 +86,96 @@ function Constructor( settings ) {
   this.itemsView = new ItemsView( settings );
   this.itemsView.$el.appendTo( document.body );
   for ( var i = 0; i < this.limit; i++ ) {
-    var item = new Item( { 'backbone:combobox:item:id': String(i), 'qqqqqqq': 11111111} );
-    item.on('change',function(){})
-    this.items.add( item, {merge: true} );
+    var item = new Item( { 'backbone:combobox:item:id': String(i) } );
+    //item.on('change',function(){})
+    this.items.add( item );
     var itemView = new ItemView( _.extend( { model: item }, settings) );
     itemView.$el.appendTo( this.itemsView.$el );
   }  
 }
 
-_.extend( Constructor.prototype,
- {
+_.extend( Constructor.prototype, {
   
-    read: function( ) {
-      this.items.fetch( 
-        {
-          data: 
-            {
-              searchValue: this.input.get( 'searchValue' ),
-              page: this.page,
-              limit: this.limit
-            },
-          success: function(m,r,o) {alert(JSON.stringify(r))}
-        } 
-      );
-    }
+  read: function( ) {
+    this.items.fetch( {
+      data:{
+        searchValue: this.input.get( 'searchValue' ),
+        page: this.page,
+        limit: this.limit
+      },
+      success: function(m,r,o) {alert(JSON.stringify(r))}
+    } );
   }
- );
+} );
 
 
-var InputView = Backbone.View.extend (
-  {
-    defaults: defaults,
+var InputView = Backbone.View.extend( {
+  defaults: defaults,
     
-    tagName: 'input type="text"',
+  tagName: 'input type="text"',
     
-    handleTimeout: null,
+  handleTimeout: null,
     
-    initialize: function( settings ) {
-      _.extend( this, defaults);
-      _.extend( this, settings);
-      this.setSearchValue = _.bind(
-        function( ) {
-          this.model.set( 'searchValue', this.$el.val( ) );
-        },
-        this
-      );
-      if ( typeof this.init === 'function' ) {
-        this.init.apply( this, arguments );
-      }
-    },
+  initialize: function( settings ) {
+    _.extend( this, defaults);
+    _.extend( this, settings);
+    this.setSearchValue = _.bind(
+      function( ) {
+        this.model.set( 'searchValue', this.$el.val( ) );
+      },
+      this
+    );
+    if ( typeof this.init === 'function' ) {
+     this.init.apply( this, arguments );
+   }
+  },
     
-    events: {
-      'click': 'onclick',
-      'keyup': 'onkeyup',
-    },
+  events: {
+    'click': 'onclick',
+    'keyup': 'onkeyup',
+  },
 
-    onclick: function( ) {
-      if ( ! this.model.get('active') ) {
-        this.model.set( 'active', true );
-        this.$el.val( this.model.get( 'searchValue' ) );
-        this.$el.select();
-      }
-    },
+  onclick: function( ) {
+    if ( ! this.model.get('active') ) {
+      this.model.set( 'active', true );
+      this.$el.val( this.model.get( 'searchValue' ) );
+      this.$el.select();
+    }
+  },
   
-    onkeyup: function( ) {
-      if ( this.handleTimeout !== null ) {
-        window.clearTimeout( this.handleTimeout );
-      }
-      this.handleTimeout = window.setTimeout( this.setSearchValue, this.delay );
+  onkeyup: function( ) {
+    if ( this.handleTimeout !== null ) {
+      window.clearTimeout( this.handleTimeout );
     }
+    this.handleTimeout = window.setTimeout( this.setSearchValue, this.delay );
   }
-);
+} );
 
-var ItemsView = Backbone.View.extend (
-  {
-    tagName: 'div',
+var ItemsView = Backbone.View.extend( {
+  tagName: 'div',
     
-    initialize: function( settings ) {
-      _.extend( this, defaults);
-      _.extend( this, settings);
-    }
-    
+  initialize: function( settings ) {
+    _.extend( this, defaults);
+    _.extend( this, settings);
   }
-);
-
-var ItemView = Backbone.View.extend (
-  {
-    tagName: 'div',
     
-    initialize: function( settings ) {
-      _.extend( this, defaults);
-      _.extend( this, settings);
-      this.listenTo( this.model, 'change', this.render );
-    },
+} );
 
-    render: function( ) {
-      this.$el.text( this.model.get( this.displayName ) );
-    }
+var ItemView = Backbone.View.extend( {
 
+  tagName: 'div',
+    
+  initialize: function( settings ) {
+    _.extend( this, defaults);
+    _.extend( this, settings);
+    this.listenTo( this.model, 'change', this.render );
+  },
+
+  render: function( ) {
+    this.$el.text( this.model.get( this.displayName ) );
   }
-);
 
-
-
-
-
-
+} );
 
 
 //* use with Requirejs define( ['combobox/Combobox'], function (cmb) {new cmb({});...} ) */
