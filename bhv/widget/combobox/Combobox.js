@@ -17,8 +17,6 @@ var defaults = {
   limit: 10,
   /** Current page for pagination */
   page: 0,
-  /** Current search value for sent to server*/
-  searchValue: '',
   /** SQL column name */
   keyName: 'kod',
   /** SQL column name may be == keyName */
@@ -45,14 +43,10 @@ var Items = Backbone.Collection.extend( {
 
   model: Item,
 
-  initialize: function( settings ) {
+  init: function( settings ) {
     _.extend( this, defaults );
     _.extend( this, settings );
-
-  /** user defined initialization of instance */
-    if ( typeof this.init === 'function' ) {
-      this.init.apply( this, arguments );
-    }
+    return this;
   },
 
 } );
@@ -71,13 +65,15 @@ var Input = Backbone.Model.extend ( {
 
   active: false,
 
-  initialize: function( settings ) {
-  alert('init')
+  init: function( settings ) {
+    _.extend( this, defaults );
     _.extend( this, settings );
+    delete this.url;
     this.set(this.searchName, '' );
     this.set(this.displayName, '' );
     this.set(this.keyName, undefined );
     this.idAttribute = this.keyName;
+    return this;
   }
 //  defaults0: defaults
 
@@ -90,23 +86,19 @@ var Input = Backbone.Model.extend ( {
 function Constructor( settings ) {
   _.extend( this, defaults );
   _.extend( this, settings );
-  this.items = new Items( );
-  this.items.url = this.url;
-  this.input = new Input( settings );
-  //this.input.idAttribute = this.keyName;
-  //this.input.urlRoot = this.urlRoot;
+  this.items = ( new Items( ) ).init( settings );
+  //this.items.url = this.url;
+  this.input = ( new Input( ) ).init( settings );
   this.input.on( 'change:' + this.searchName, this.read, this );
-  this.inputView = new InputView( _.extend( { model: this.input }, settings) );
-  //this.inputView.model = this.input;
+  this.inputView = ( new InputView( {model: this.input} ) ).init( settings );
   this.inputView.$el.appendTo( document.body );
-  this.itemsView = new ItemsView( settings );
+  this.itemsView = ( new ItemsView( ) ).init( settings );
   this.itemsView.$el.appendTo( document.body );
   for ( var i = 0; i < this.limit; i++ ) {
     var item = new Item( );
     item.id = i;
-    //item.on('change',function(){})
     this.items.add( item );
-    var itemView = new ItemView( _.extend( { model: item }, settings) );
+    var itemView = ( new ItemView( {model: item} ) ).init( settings );
     itemView.$el.appendTo( this.itemsView.$el );
   }
 }
@@ -150,7 +142,7 @@ var InputView = Backbone.View.extend( {
 
   handleTimeout: null,
 
-  initialize: function( settings ) {
+  init: function( settings ) {
     _.extend( this, defaults);
     _.extend( this, settings);
     this.setSearchValue = _.bind( function( ) {
@@ -158,9 +150,7 @@ var InputView = Backbone.View.extend( {
       },
       this
     );
-    if ( typeof this.init === 'function' ) {
-      this.init.apply( this, arguments );
-    }
+    return this;
   },
 
   events: {
@@ -187,9 +177,10 @@ var InputView = Backbone.View.extend( {
 var ItemsView = Backbone.View.extend( {
   tagName: 'div',
 
-  initialize: function( settings ) {
+  init: function( settings ) {
     _.extend( this, defaults);
     _.extend( this, settings);
+    return this;
   }
 
 } );
@@ -198,10 +189,11 @@ var ItemView = Backbone.View.extend( {
 
   tagName: 'div',
 
-  initialize: function( settings ) {
+  init: function( settings ) {
     _.extend( this, defaults);
     _.extend( this, settings);
     this.listenTo( this.model, 'change', this.render );
+    return this;
   },
 
   render: function( ) {
