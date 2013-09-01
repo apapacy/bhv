@@ -25,7 +25,7 @@ class Test extends REST_Controller {
   }
   
   protected function read( $id ) {
-    parent::_read(array( 'name', 'email', 'password'), $id, 'name');
+    parent::_read(array( 'kod', 'det', 'name'), $id, 'kod');
   }
 
   protected function update( $id ) {

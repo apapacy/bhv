@@ -9,127 +9,160 @@ define( [ /* require Requirejs, jQuery, Backbone( =>Underscore, JSON2 ) */ 'domR
 
 /** default setting if not redefined */
 var defaults = {
+  /** Surrogate IDs to prevent item model adding/removing */
   idAttribute: 'backbone:combobox:item:id',
+  /** To prevent item model adding/removing fill server response with undefined value */
+  undefinedValue: 'backbone:combobox:undefined',
+  /** Count of item */
   limit: 10,
+  /** Current page for pagination */
   page: 0,
+  /** Current search value for sent to server*/
   searchValue: '',
-  keyName: 'kod', /** SQL column name */
-  searchName: 'search', /** SQL column name may be == keyName */
-  displayName: 'name', /** SQL column name may be == searchName */
-  delay: 5000 /** delay request to server, ms */
+  /** SQL column name */
+  keyName: 'kod',
+  /** SQL column name may be == keyName */
+  searchName: 'search',
+  /** SQL column name may be == searchName */
+  displayName: 'name',
+  /** delay request to server, ms */
+  delay: 5000
 };
 
 var util = new utils( );
 
 var Item = Backbone.Model.extend ( {
+
   /**
    * @property {integer} idAttribute - contain [0..limit-1] number,
-   * bat not real SQL primary key. It is model of widget, not business logic 
+   * bat not real SQL primary key. It is model of widget, not business logic
    */
-  //defaults: defaults,
   idAttribute: defaults.idAttribute
+
 } );
 
 var Items = Backbone.Collection.extend( {
 
   model: Item,
-    
+
   initialize: function( settings ) {
     _.extend( this, defaults );
     _.extend( this, settings );
-    /** user defined initialization of instance */
+
+  /** user defined initialization of instance */
     if ( typeof this.init === 'function' ) {
       this.init.apply( this, arguments );
     }
   },
 
-  read: function( ) {
-    this.fetch( 
-      {
-        data: 
-          {
-            searchValue: this.input.get( 'searchValue' ),
-            page: this.page,
-            limit: this.limit
-          },
-        success: function(m,r,o) {m.at(0).set('wwwwwwwwwwwwwwwwwwwwww', "5555555555555555")}
-      } 
-    );
-  }
-    
-} );
-
-var Input = Backbone.Model.extend ( {
-  keyValue: '',
-  searchValue: '',
-  displayValue: '',
-  active: false,
-  defaults:defaults
 } );
 
 /**
- * @constructor {Backbone.Collection}
- * @overview contains model Item and some other model
- * @todo or better Constructor( ) { this.items = new Items( ); } ?
+ * @constructor
+ * @overview represent current state of  winget
  */
-  
+var Input = Backbone.Model.extend ( {
+
+  keyValue: undefined,
+
+  searchValue: '',
+
+  displayValue: '',
+
+  active: false,
+
+  initialize: function( settings ) {
+  alert('init')
+    _.extend( this, settings );
+    this.set(this.searchName, '' );
+    this.set(this.displayName, '' );
+    this.set(this.keyName, undefined );
+    this.idAttribute = this.keyName;
+  }
+//  defaults0: defaults
+
+} );
+
+/**
+ * @constructor
+ * @overview construct all of need for combobox
+ */
 function Constructor( settings ) {
   _.extend( this, defaults );
   _.extend( this, settings );
   this.items = new Items( );
-  this.items.url = settings.url;
+  this.items.url = this.url;
   this.input = new Input( settings );
-  this.input.on('change:searchValue', this.read, this);
-  this.inputView = new InputView( settings );
-  this.inputView.model = this.input;
+  //this.input.idAttribute = this.keyName;
+  //this.input.urlRoot = this.urlRoot;
+  this.input.on( 'change:' + this.searchName, this.read, this );
+  this.inputView = new InputView( _.extend( { model: this.input }, settings) );
+  //this.inputView.model = this.input;
   this.inputView.$el.appendTo( document.body );
   this.itemsView = new ItemsView( settings );
   this.itemsView.$el.appendTo( document.body );
   for ( var i = 0; i < this.limit; i++ ) {
-    var item = new Item( { 'backbone:combobox:item:id': String(i) } );
+    var item = new Item( );
+    item.id = i;
     //item.on('change',function(){})
     this.items.add( item );
     var itemView = new ItemView( _.extend( { model: item }, settings) );
     itemView.$el.appendTo( this.itemsView.$el );
-  }  
+  }
 }
 
 _.extend( Constructor.prototype, {
-  
+  /** Fetch collection from server with current searchValue */
   read: function( ) {
     this.items.fetch( {
-      data:{
-        searchValue: this.input.get( 'searchValue' ),
+      data: {
+        searchValue: this.input.get( this.searchName ),
         page: this.page,
         limit: this.limit
       },
       success: function(m,r,o) {alert(JSON.stringify(r))}
     } );
+  },
+  
+  getValue: function( ) {
+    var value = this.input.get( 'keyValue' );
+    if ( value === defaults.undefinedValue ) {
+      return undefined;
+    } else {
+      return value
+    }
+  },
+
+  setValue: function( value ) {
+    this.input.set( this.keyName, value );
+    this.input.fetch( );
+    // @todo - refresh state of component from server with 
   }
+
+
 } );
 
-
 var InputView = Backbone.View.extend( {
+
   defaults: defaults,
-    
+
   tagName: 'input type="text"',
-    
+
   handleTimeout: null,
-    
+
   initialize: function( settings ) {
     _.extend( this, defaults);
     _.extend( this, settings);
-    this.setSearchValue = _.bind(
-      function( ) {
-        this.model.set( 'searchValue', this.$el.val( ) );
+    this.setSearchValue = _.bind( function( ) {
+        this.model.set( this.searchName, this.$el.val( ) );
       },
       this
     );
     if ( typeof this.init === 'function' ) {
-     this.init.apply( this, arguments );
-   }
+      this.init.apply( this, arguments );
+    }
   },
-    
+
   events: {
     'click': 'onclick',
     'keyup': 'onkeyup',
@@ -138,11 +171,11 @@ var InputView = Backbone.View.extend( {
   onclick: function( ) {
     if ( ! this.model.get('active') ) {
       this.model.set( 'active', true );
-      this.$el.val( this.model.get( 'searchValue' ) );
+      this.$el.val( this.model.get( this.searchName ) );
       this.$el.select();
     }
   },
-  
+
   onkeyup: function( ) {
     if ( this.handleTimeout !== null ) {
       window.clearTimeout( this.handleTimeout );
@@ -153,18 +186,18 @@ var InputView = Backbone.View.extend( {
 
 var ItemsView = Backbone.View.extend( {
   tagName: 'div',
-    
+
   initialize: function( settings ) {
     _.extend( this, defaults);
     _.extend( this, settings);
   }
-    
+
 } );
 
 var ItemView = Backbone.View.extend( {
 
   tagName: 'div',
-    
+
   initialize: function( settings ) {
     _.extend( this, defaults);
     _.extend( this, settings);
@@ -189,10 +222,10 @@ return Constructor;
 
  /*
   * @constructor utils
-  * @overview provide less functionality 
+  * @overview provide less functionality
   */
 function utils( ) {
-  
+
   /*
    * @overview copy missing parameters from to Object
    * @param {object} toObject - target object (changed)
@@ -205,7 +238,7 @@ function utils( ) {
       }
     }
   }
-  
+
   /*
    * @overview copy missing parameters from to Object
    * @param {object} toObject - target object (changed)
@@ -247,7 +280,7 @@ function utils( ) {
     }
     return false;
   }
-  
+
   this.key = {};
 
   this.key.BACKSPACE = 8;
