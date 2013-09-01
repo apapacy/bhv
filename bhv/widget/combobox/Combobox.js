@@ -286,10 +286,16 @@ function utils( ) {
     }
     return false;
   }
-  
-  this.mergeArray = function( obj, attrs ) {
+
+  /*
+   * @overview overwrite selected properties from source object
+   * @param obj {object} - destination object
+   * @param filtr {array} - selected properties
+   * @param[, ...] {object} - source object
+   */  
+  this.mergeArray = function( obj, filtr, source0 /*, source1, ... */ ) {
     for ( var i = 2; i < arguments.length; i++ ) {
-      for ( var j = 0; j < attrs.length; j++ ) {
+      for ( var j = 0; j < filtr.length; j++ ) {
         if ( typeof arguments[i][attrs[j]] !== 'undefined' ) {
           obj[attrs[j]] = arguments[i][attrs[j]];
         }
