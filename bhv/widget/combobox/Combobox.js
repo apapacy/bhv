@@ -61,8 +61,6 @@ var Items = Backbone.Collection.extend( {
   actualLength: 0,
 
   init: function( settings ) {
-    //_.extend( this, defaults );
-    //_.extend( this, settings );
     util.mergeArray( this, ['url'], defaults, settings );
     return this;
   },
@@ -80,11 +78,8 @@ var Input = Backbone.Model.extend ( {
   },
 
   init: function( settings ) {
-    //_.extend( this, defaults );
-    //_.extend( this, settings );
     util.mergeArray( this, [ 'urlRoot', 'keyName', 'searchName', 'displayName'],
                       defaults, settings );
-    delete this.url; // this.url override this.urlRoot
     this.set(this.searchName, '' );
     this.set(this.displayName, '' );
     this.set(this.keyName, undefined );
@@ -160,8 +155,6 @@ var InputView = Backbone.View.extend( {
   handleTimeout: null,
 
   init: function( settings ) {
-    //_.extend( this, defaults);
-    //_.extend( this, settings);
     util.mergeArray( this, ['delay', 'searchName'],defaults, settings );
     this.setSearchValue = _.bind( function( ) {
         this.model.set( defaults.searchField, this.$el.val( ) );
@@ -197,9 +190,7 @@ var ItemsView = Backbone.View.extend( {
   tagName: 'div',
 
   init: function( settings ) {
-    //_.extend( this, defaults);
-    //_.extend( this, settings);
-    util.mergeArray( this, [], defaults, settings);
+    util.mergeArray( this, [], defaults, settings );
     return this;
   }
 
@@ -232,15 +223,8 @@ var ItemView = Backbone.View.extend( {
 
 } );
 
-
 //* use with Requirejs define( ['combobox/Combobox'], function (cmb) {new cmb({});...} ) */
 return Constructor;
-
-/*
- *
- *
- *
- */
 
  /*
   * @constructor utils
