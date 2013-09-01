@@ -15,11 +15,20 @@ requirejs.config({
 requirejs(['bhv/widget/combobox/Combobox', 'domReady!'], function ( cmb ) {
 
 combobox1 = new cmb({
-  url: 'ci/index.php/cms/test/collection'
+  url: 'ci/index.php/cms/test/collection',
+  keyName: 'kod',
+  searchName: 'det',
+  displayName: 'name'
 });
-
-combobox1.input.set('serachValue', 'qwerty1');
+alert('hi')
+alert(combobox1.items.length)
+//combobox1.items.add({id:162})
+//combobox1.items.add({id:165})
+//combobox1.input.set('searchValue', 'класс');
+//combobox1.items.at(0).set('ttttttttttttt', "5555555555555555")
 combobox1.read();
+
+
 /*combobox1.fetch( {
 data:{name:'qwerty'},
 

@@ -147,6 +147,11 @@ class REST_Controller extends MY_Controller {
     for ( $i = 0; $i < $query->num_rows( ); $i++ ) {
       $model[] = array_merge( $query->row_array( $i ),  array( 'backbone:combobox:item:id' => $i ) );
     }
+    for ( $i = $query->num_rows( ); $i < $limit; $i++ ) {
+      $model[] = array_merge( array_fill_keys( $fields, 'backbone:combobox:item:undefined' ),
+                                array( 'backbone:combobox:item:id' => $i ) );
+    }
+    
     echo $this->to_json( $model );
   }
 
