@@ -29,7 +29,7 @@ alert(combobox1.items.length)
 //combobox1.items.at(0).set('ttttttttttttt', "5555555555555555")
 combobox1.read();
 combobox1.setValue(19);
-combobox1.setValue(25);
+//combobox1.setValue(25);
 
 
 /*combobox1.fetch( {

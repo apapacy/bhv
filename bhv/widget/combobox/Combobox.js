@@ -12,7 +12,9 @@ var defaults = {
   /** Surrogate IDs to prevent item model adding/removing */
   idAttribute: 'backbone:combobox:item:id',
   /** To prevent item model adding/removing fill server response with undefined value */
-  undefinedValue: 'backbone:combobox:undefined',
+  undefinedValue: 'backbone:combobox:item:undefined',
+  /** Represent input value for search */
+  searchField: 'backbone:combobox:searchfield',
   /** Count of item */
   limit: 10,
   /** Current page for pagination */
@@ -24,11 +26,19 @@ var defaults = {
   /** SQL column name may be == searchName */
   displayName: 'name',
   /** delay request to server, ms */
-  delay: 5000
+  delay: 1000,
+  /** URL for Items fetching */
+  url: '',
+  /** URL for Item fetching */
+  urlRoot: ''
 };
 
 var util = new utils( );
 
+/**
+ * @constructor
+ * @overview represent item of list
+ */
 var Item = Backbone.Model.extend ( {
 
   /**
@@ -39,13 +49,21 @@ var Item = Backbone.Model.extend ( {
 
 } );
 
+/**
+ * @constructor
+ * @overview represent set of list items
+ */
 var Items = Backbone.Collection.extend( {
 
   model: Item,
+  
+  /** Count of fetched item */
+  actualLength: 0,
 
   init: function( settings ) {
-    _.extend( this, defaults );
-    _.extend( this, settings );
+    //_.extend( this, defaults );
+    //_.extend( this, settings );
+    util.mergeArray( this, ['url'], defaults, settings );
     return this;
   },
 
@@ -53,29 +71,27 @@ var Items = Backbone.Collection.extend( {
 
 /**
  * @constructor
- * @overview represent current state of  winget
+ * @overview represent current state of  widget
  */
 var Input = Backbone.Model.extend ( {
-
-  keyValue: undefined,
-
-  searchValue: '',
-
-  displayValue: '',
-
-  active: false,
+  
+  defaults: {
+    active: false,
+  },
 
   init: function( settings ) {
-    _.extend( this, defaults );
-    _.extend( this, settings );
-    delete this.url;
+    //_.extend( this, defaults );
+    //_.extend( this, settings );
+    util.mergeArray( this, [ 'urlRoot', 'keyName', 'searchName', 'displayName'],
+                      defaults, settings );
+    delete this.url; // this.url override this.urlRoot
     this.set(this.searchName, '' );
     this.set(this.displayName, '' );
     this.set(this.keyName, undefined );
+    this.set(defaults.searchField, '');
     this.idAttribute = this.keyName;
     return this;
   }
-//  defaults0: defaults
 
 } );
 
@@ -87,9 +103,8 @@ function Constructor( settings ) {
   _.extend( this, defaults );
   _.extend( this, settings );
   this.items = ( new Items( ) ).init( settings );
-  //this.items.url = this.url;
   this.input = ( new Input( ) ).init( settings );
-  this.input.on( 'change:' + this.searchName, this.read, this );
+  this.input.on( 'change:' + defaults.searchField, this.read, this );
   this.inputView = ( new InputView( {model: this.input} ) ).init( settings );
   this.inputView.$el.appendTo( document.body );
   this.itemsView = ( new ItemsView( ) ).init( settings );
@@ -104,15 +119,16 @@ function Constructor( settings ) {
 }
 
 _.extend( Constructor.prototype, {
+
   /** Fetch collection from server with current searchValue */
   read: function( ) {
     this.items.fetch( {
       data: {
-        searchValue: this.input.get( this.searchName ),
+        searchValue: this.input.get( defaults.searchField ),
         page: this.page,
         limit: this.limit
       },
-      success: function(m,r,o) {alert(JSON.stringify(r))}
+      success: function(m,r,o) {(JSON.stringify(r))}
     } );
   },
   
@@ -121,14 +137,15 @@ _.extend( Constructor.prototype, {
     if ( value === defaults.undefinedValue ) {
       return undefined;
     } else {
-      return value
+      return value;
     }
   },
 
   setValue: function( value ) {
     this.input.set( this.keyName, value );
-    this.input.fetch( );
-    // @todo - refresh state of component from server with 
+    this.input.fetch( {async:false} );
+    alert(JSON.stringify(this.input.attributes))
+    // @todo - refresh state of component from server 
   }
 
 
@@ -136,17 +153,18 @@ _.extend( Constructor.prototype, {
 
 var InputView = Backbone.View.extend( {
 
-  defaults: defaults,
+  //defaults: defaults,
 
   tagName: 'input type="text"',
 
   handleTimeout: null,
 
   init: function( settings ) {
-    _.extend( this, defaults);
-    _.extend( this, settings);
+    //_.extend( this, defaults);
+    //_.extend( this, settings);
+    util.mergeArray( this, ['delay', 'searchName'],defaults, settings );
     this.setSearchValue = _.bind( function( ) {
-        this.model.set( this.searchName, this.$el.val( ) );
+        this.model.set( defaults.searchField, this.$el.val( ) );
       },
       this
     );
@@ -162,7 +180,7 @@ var InputView = Backbone.View.extend( {
     if ( ! this.model.get('active') ) {
       this.model.set( 'active', true );
       this.$el.val( this.model.get( this.searchName ) );
-      this.$el.select();
+      this.$el.select( );
     }
   },
 
@@ -175,11 +193,13 @@ var InputView = Backbone.View.extend( {
 } );
 
 var ItemsView = Backbone.View.extend( {
+  
   tagName: 'div',
 
   init: function( settings ) {
-    _.extend( this, defaults);
-    _.extend( this, settings);
+    //_.extend( this, defaults);
+    //_.extend( this, settings);
+    util.mergeArray( this, [], defaults, settings);
     return this;
   }
 
@@ -190,14 +210,24 @@ var ItemView = Backbone.View.extend( {
   tagName: 'div',
 
   init: function( settings ) {
-    _.extend( this, defaults);
-    _.extend( this, settings);
+    //_.extend( this, defaults);
+    //_.extend( this, settings);
+    util.mergeArray( this, ['keyName', 'searchName', 'displayName'],
+                      defaults, settings);
     this.listenTo( this.model, 'change', this.render );
     return this;
   },
 
   render: function( ) {
-    this.$el.text( this.model.get( this.displayName ) );
+    var displayValue = this.model.get( this.displayName );
+    if ( displayValue === defaults.undefinedValue ) {
+      this.model.collection.actualLength = Math.min( this.model.collection.actualLength, this.model.id );
+      this.$el.hide( );
+    } else {
+      this.model.collection.actualLength = Math.max( this.model.collection.actualLength, this.model.id + 1 );
+      this.$el.show( );
+    }
+    this.$el.text( displayValue );
   }
 
 } );
@@ -240,8 +270,8 @@ function utils( ) {
     for ( var p in fromObject ) {
         toObject[p] = fromObject[p];
       }
-    }
   }
+  
 
   /*
    * @overview create new Array object from parameter (main usage with
@@ -271,6 +301,16 @@ function utils( ) {
       }
     }
     return false;
+  }
+  
+  this.mergeArray = function( obj, attrs ) {
+    for ( var i = 2; i < arguments.length; i++ ) {
+      for ( var j = 0; j < attrs.length; j++ ) {
+        if ( typeof arguments[i][attrs[j]] !== 'undefined' ) {
+          obj[attrs[j]] = arguments[i][attrs[j]];
+        }
+      }
+    }
   }
 
   this.key = {};
@@ -313,7 +353,7 @@ function utils( ) {
   this.key.F10 = 121;
   this.key.F11 = 122;
   this.key.F12 = 123;
-
+}
 
 // end of wrapper function for Requirejs
 });
