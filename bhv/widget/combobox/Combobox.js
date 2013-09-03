@@ -20,17 +20,22 @@ var defaults = {
   /** Current page for pagination */
   page: 0,
   /** SQL column name */
-  keyName: 'kod',
+  keyName: 'key',
   /** SQL column name may be == keyName */
   searchName: 'search',
   /** SQL column name may be == searchName */
-  displayName: 'name',
+  displayName: 'value',
   /** delay request to server, ms */
   delay: 1000,
   /** URL for Items fetching */
   url: '',
   /** URL for Item fetching */
-  urlRoot: ''
+  urlRoot: '',
+  
+  cssItem: {
+    itemSelected: 'bbcombobox_item_selected',
+    item: 'bbcombobox_item',
+  }
 };
 
 var util = new utils( );
@@ -39,7 +44,7 @@ var util = new utils( );
  * @constructor
  * @overview represent item of list
  */
-var Item = Backbone.Model.extend ( {
+var Item = Backbone.Model.extend( {
 
   /**
    * @property {integer} idAttribute - contain [0..limit-1] number,
@@ -57,11 +62,11 @@ var Items = Backbone.Collection.extend( {
 
   model: Item,
   
-  /** Count of fetched item */
+  /** Count of fetched items */
   actualLength: 0,
 
   init: function( settings ) {
-    util.mergeArray( this, ['url'], defaults, settings );
+    util.mergeArray( this, [ 'url' ], defaults, settings );
     return this;
   },
 
@@ -71,19 +76,19 @@ var Items = Backbone.Collection.extend( {
  * @constructor
  * @overview represent current state of  widget
  */
-var Input = Backbone.Model.extend ( {
+var Input = Backbone.Model.extend( {
   
   defaults: {
     active: false,
   },
 
   init: function( settings ) {
-    util.mergeArray( this, [ 'urlRoot', 'keyName', 'searchName', 'displayName'],
+    util.mergeArray( this, [ 'urlRoot', 'keyName', 'searchName', 'displayName' ],
                       defaults, settings );
-    this.set(this.searchName, '' );
-    this.set(this.displayName, '' );
-    this.set(this.keyName, undefined );
-    this.set(defaults.searchField, '');
+    this.set( this.searchName, '' );
+    this.set( this.displayName, '' );
+    this.set( this.keyName, undefined );
+    this.set( defaults.searchField, '' );
     this.idAttribute = this.keyName;
     return this;
   }
@@ -99,7 +104,7 @@ function Constructor( settings ) {
   _.extend( this, settings );
   this.items = ( new Items( ) ).init( settings );
   this.input = ( new Input( ) ).init( settings );
-  this.input.on( 'change:' + defaults.searchField, this.read, this );
+  this.input.on( 'change:' + this.searchField, this.read, this );
   this.inputView = ( new InputView( {model: this.input} ) ).init( settings );
   this.inputView.$el.appendTo( document.body );
   this.itemsView = ( new ItemsView( ) ).init( settings );
@@ -123,12 +128,12 @@ _.extend( Constructor.prototype, {
         page: this.page,
         limit: this.limit
       },
-      success: function(m,r,o) {(JSON.stringify(r))}
+      success: function( m, r, o ) {(JSON.stringify(r))}
     } );
   },
   
   getValue: function( ) {
-    var value = this.input.get( 'keyValue' );
+    var value = this.input.get( this.keyName );
     if ( value === defaults.undefinedValue ) {
       return undefined;
     } else {
@@ -148,14 +153,12 @@ _.extend( Constructor.prototype, {
 
 var InputView = Backbone.View.extend( {
 
-  //defaults: defaults,
-
   tagName: 'input type="text"',
 
   handleTimeout: null,
 
   init: function( settings ) {
-    util.mergeArray( this, ['delay', 'searchName'],defaults, settings );
+    util.mergeArray( this, ['delay', 'searchName'], defaults, settings );
     this.setSearchValue = _.bind( function( ) {
         this.model.set( defaults.searchField, this.$el.val( ) );
       },
@@ -177,7 +180,9 @@ var InputView = Backbone.View.extend( {
     }
   },
 
-  onkeyup: function( ) {
+  onkeyup: function( e ) {
+    me = e;
+    alert(e.which)
     if ( this.handleTimeout !== null ) {
       window.clearTimeout( this.handleTimeout );
     }
@@ -190,7 +195,7 @@ var ItemsView = Backbone.View.extend( {
   tagName: 'div',
 
   init: function( settings ) {
-    util.mergeArray( this, [], defaults, settings );
+    //util.mergeArray( this, [ ], defaults, settings );
     return this;
   }
 
@@ -201,10 +206,8 @@ var ItemView = Backbone.View.extend( {
   tagName: 'div',
 
   init: function( settings ) {
-    //_.extend( this, defaults);
-    //_.extend( this, settings);
-    util.mergeArray( this, ['keyName', 'searchName', 'displayName'],
-                      defaults, settings);
+    util.mergeArray( this, [ 'keyName', 'searchName', 'displayName', 'cssItem' ],
+                      defaults, settings );
     this.listenTo( this.model, 'change', this.render );
     return this;
   },
@@ -219,6 +222,14 @@ var ItemView = Backbone.View.extend( {
       this.$el.show( );
     }
     this.$el.text( displayValue );
+    if ( this.model.id === 0 ) {
+      this.$el.removeClass(this.cssItem.item);
+      this.$el.addClass(this.cssItem.itemSelected);    
+    } else {
+      this.$el.removeClass(this.cssItem.itemSelected);
+      this.$el.addClass(this.cssItem.item);    
+    }
+
   }
 
 } );
@@ -293,11 +304,11 @@ function utils( ) {
    * @param filtr {array} - selected properties
    * @param[, ...] {object} - source object
    */  
-  this.mergeArray = function( obj, filtr, source0 /*, source1, ... */ ) {
+  this.mergeArray = function( obj, filter/*, source0, source1 ...*/ ) {
     for ( var i = 2; i < arguments.length; i++ ) {
-      for ( var j = 0; j < filtr.length; j++ ) {
-        if ( typeof arguments[i][attrs[j]] !== 'undefined' ) {
-          obj[attrs[j]] = arguments[i][attrs[j]];
+      for ( var j = 0; j < filter.length; j++ ) {
+        if ( typeof arguments[i][filter[j]] !== 'undefined' ) {
+          obj[filter[j]] = arguments[i][filter[j]];
         }
       }
     }
