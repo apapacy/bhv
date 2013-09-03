@@ -91,9 +91,58 @@ var Items = Backbone.Collection.extend( {
       this.get(this.selectedItem).unselect( );
       this.selectedItem = 1 + this.selectedItem;
       this.get( this.selectedItem ).select( );
+    } else if ( this.actualLength === this.length ) {
+      this.trigger( 'backbone:combobox:page:nextpage' );
     }
-  }
+  },
 
+  selectPreviousItem: function( ) {
+    if ( this.selectedItem > 0 ) {
+      this.get(this.selectedItem).unselect( );
+      this.selectedItem = -1 + this.selectedItem;
+      this.get( this.selectedItem ).select( );
+    }
+  },
+  
+  selectNextPage: function( ) {
+    if ( this.selectedItem < this.actualLength - 1 ) {
+      this.get(this.selectedItem).unselect( );
+      this.selectedItem = -1 + this.actualLength;
+      this.get( this.selectedItem ).select( );
+    } else if ( this.actualLength === this.length ) {
+      this.trigger( 'backbone:combobox:page:nextpage' );
+    }
+  },
+
+  selectLastItem: function( ) {
+    if ( this.selectedItem < this.actualLength - 1 ) {
+      this.get(this.selectedItem).unselect( );
+      this.selectedItem = -1 + this.actualLength;
+      this.get( this.selectedItem ).select( );
+    }
+  },
+  
+  selectPreviousPage: function( ) {
+    if ( this.selectedItem > 0 ) {
+      this.get(this.selectedItem).unselect( );
+      this.selectedItem = 0;
+      this.get( this.selectedItem ).select( );
+    }
+  },
+
+  selectFirstItem: function( ) {
+    if ( this.selectedItem > 0 ) {
+      this.get(this.selectedItem).unselect( );
+      this.selectedItem = 0;
+      this.get( this.selectedItem ).select( );
+    }
+  },
+  
+  
+
+
+  
+  
 } );
 
 /**
@@ -126,10 +175,12 @@ var Input = Backbone.Model.extend( {
 function Constructor( settings ) {
   _.extend( this, defaults );
   _.extend( this, settings );
+  _.extend( this, Backbone.Events );
   this.items = ( new Items( ) ).init( settings );
+  this.listenTo( this.items, 'backbone:combobox:page:nextpage', this.readNextPage);
   this.input = ( new Input( ) ).init( settings );
   this.input.items = this.items;
-  this.input.on( 'change:' + this.searchField, this.read, this );
+  this.input.on( 'change:' + this.searchField, this.readFirstPage, this );
   this.inputView = ( new InputView( {model: this.input} ) ).init( settings );
   this.inputView.$el.appendTo( document.body );
   this.itemsView = ( new ItemsView( ) ).init( settings );
@@ -168,7 +219,24 @@ _.extend( Constructor.prototype, {
       }
     } );
   },
+
+  readFirstPage: function( ) {
+    this.page = 0;
+    this.read( );
+  },
+
+  readNextPage: function( ) {
+    this.page = 1 + this.page;
+    this.read( );
+  },
   
+  readPreviousPage: function( ) {
+    if ( this.page > 0 ) {
+      this.page = -1 + this.page;
+      this.read( );
+    }
+  },
+
   getValue: function( ) {
     var value = this.input.get( this.keyName );
     if ( value === defaults.undefinedValue ) {
@@ -221,7 +289,8 @@ var InputView = Backbone.View.extend( {
     if ( this.handleTimeout !== null ) {
       window.clearTimeout( this.handleTimeout );
     }
-    if ( e.which > util.key.DELETE || e.witch == util.key.SPACE) {
+    if ( e.which >= util.key.DELETE || e.witch == util.key.SPACE 
+        || e.witch == util.key.BACKSPACE) {
       this.handleTimeout = window.setTimeout( this.setSearchValue, this.delay );
     } else if ( e.which === util.key.UP ) {
       this.model.items.selectPreviousItem( );
@@ -230,11 +299,11 @@ var InputView = Backbone.View.extend( {
     } else if ( e.which === util.key.PAGEUP ) {
       this.model.items.selectPreviousPage( );
     } else if ( e.which === util.key.PAGEDOWN ) {
-      this.model.items.selectNextPage;  
+      this.model.items.selectNextPage( );  
     } else if ( e.which === util.key.HOME ) {
-      this.model.items.selectFirstItem;
+      this.model.items.selectFirstItem( );
     } else if ( e.which === util.key.END ) {
-      this.model.items.selectLastItem;
+      this.model.items.selectLastItem( );
     }
   }
 } );
