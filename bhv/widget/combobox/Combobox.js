@@ -51,6 +51,7 @@ var Item = Backbone.Model.extend( {
    * bat not real SQL primary key. It is model of widget, not business logic
    */
   idAttribute: defaults.idAttribute
+  // @todo to init( )
 
 } );
 
