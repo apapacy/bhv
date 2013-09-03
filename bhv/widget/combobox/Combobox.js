@@ -50,9 +50,23 @@ var Item = Backbone.Model.extend( {
    * @property {integer} idAttribute - contain [0..limit-1] number,
    * bat not real SQL primary key. It is model of widget, not business logic
    */
-  idAttribute: defaults.idAttribute
+  idAttribute: defaults.idAttribute,
   // @todo to init( )
+  init: function( settings ) {
+    //util.mergeArray( this, [ 'idAttribute' ], defaults, settings );
+    return this;
+  },
 
+  
+  unselect: function( ) {
+    this.trigger( 'backbone:combobox:item:unselect' );
+  },
+
+  select: function( ) {
+    this.trigger( 'backbone:combobox:item:select' );
+  }
+
+  
 } );
 
 /**
@@ -65,11 +79,20 @@ var Items = Backbone.Collection.extend( {
   
   /** Count of fetched items */
   actualLength: 0,
+  selectedItem: undefined,
 
   init: function( settings ) {
     util.mergeArray( this, [ 'url' ], defaults, settings );
     return this;
   },
+  
+  selectNextItem: function( ) {
+    if ( this.selectedItem < this.actualLength - 1 ) {
+      this.get(this.selectedItem).unselect( );
+      this.selectedItem = 1 + this.selectedItem;
+      this.get( this.selectedItem ).select( );
+    }
+  }
 
 } );
 
@@ -105,13 +128,14 @@ function Constructor( settings ) {
   _.extend( this, settings );
   this.items = ( new Items( ) ).init( settings );
   this.input = ( new Input( ) ).init( settings );
+  this.input.items = this.items;
   this.input.on( 'change:' + this.searchField, this.read, this );
   this.inputView = ( new InputView( {model: this.input} ) ).init( settings );
   this.inputView.$el.appendTo( document.body );
   this.itemsView = ( new ItemsView( ) ).init( settings );
   this.itemsView.$el.appendTo( document.body );
   for ( var i = 0; i < this.limit; i++ ) {
-    var item = new Item( );
+    var item = ( new Item( ) ).init( settings );
     item.id = i;
     this.items.add( item );
     var itemView = ( new ItemView( {model: item} ) ).init( settings );
@@ -129,7 +153,19 @@ _.extend( Constructor.prototype, {
         page: this.page,
         limit: this.limit
       },
-      success: function( m, r, o ) {(JSON.stringify(r))}
+      success: function( model, r, o ) {
+        if ( model.selectedItem !== undefined) {
+          model.get( model.selectedItem ).unselect( );
+        }
+        if ( model.actualLength > 0) {
+          model.selectedItem = 0;
+        } else {
+          model.selectedItem = undefined;
+        }
+        if ( model.selectedItem !== undefined) {
+          model.get( model.selectedItem ).select( );
+        }     
+      }
     } );
   },
   
@@ -182,12 +218,24 @@ var InputView = Backbone.View.extend( {
   },
 
   onkeyup: function( e ) {
-    me = e;
-    alert(e.which)
     if ( this.handleTimeout !== null ) {
       window.clearTimeout( this.handleTimeout );
     }
-    this.handleTimeout = window.setTimeout( this.setSearchValue, this.delay );
+    if ( e.which > util.key.DELETE || e.witch == util.key.SPACE) {
+      this.handleTimeout = window.setTimeout( this.setSearchValue, this.delay );
+    } else if ( e.which === util.key.UP ) {
+      this.model.items.selectPreviousItem( );
+    } else if ( e.which === util.key.DOWN ) {
+      this.model.items.selectNextItem( );
+    } else if ( e.which === util.key.PAGEUP ) {
+      this.model.items.selectPreviousPage( );
+    } else if ( e.which === util.key.PAGEDOWN ) {
+      this.model.items.selectNextPage;  
+    } else if ( e.which === util.key.HOME ) {
+      this.model.items.selectFirstItem;
+    } else if ( e.which === util.key.END ) {
+      this.model.items.selectLastItem;
+    }
   }
 } );
 
@@ -210,6 +258,8 @@ var ItemView = Backbone.View.extend( {
     util.mergeArray( this, [ 'keyName', 'searchName', 'displayName', 'cssItem' ],
                       defaults, settings );
     this.listenTo( this.model, 'change', this.render );
+    this.listenTo( this.model, 'backbone:combobox:item:select', this.select );
+    this.listenTo( this.model, 'backbone:combobox:item:unselect', this.unselect );
     return this;
   },
 
@@ -223,16 +273,19 @@ var ItemView = Backbone.View.extend( {
       this.$el.show( );
     }
     this.$el.text( displayValue );
-    if ( this.model.id === 0 ) {
+  },
+  
+  select: function( ) {
       this.$el.removeClass(this.cssItem.item);
       this.$el.addClass(this.cssItem.itemSelected);    
-    } else {
+  },
+
+  unselect: function( ) {
       this.$el.removeClass(this.cssItem.itemSelected);
       this.$el.addClass(this.cssItem.item);    
-    }
-
   }
 
+  
 } );
 
 //* use with Requirejs define( ['combobox/Combobox'], function (cmb) {new cmb({});...} ) */
