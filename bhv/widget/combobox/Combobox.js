@@ -51,11 +51,9 @@ var Item = Backbone.Model.extend( {
    * bat not real SQL primary key. It is model of widget, not business logic
    */
   idAttribute: defaults.idAttribute,
-  // @todo to init( )
-  init: function( settings ) {
-    //util.mergeArray( this, [ 'idAttribute' ], defaults, settings );
-    return this;
-  },
+  // @todo to init( ) why in not work init?
+ 
+  init: function(){return this;},
 
   
   unselect: function( ) {
