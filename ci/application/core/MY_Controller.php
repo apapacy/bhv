@@ -139,9 +139,9 @@ class REST_Controller extends MY_Controller {
     echo "{ /* record $sid='$id' is deleted */  }"; // @todo
   }
 
-  protected function _read_collection( $fields, $order, $name, $key, $limit, $offset ) {
+  protected function _read_collection( $fields, $order, $name, $value, $limit, $offset ) {
     $query = $this->db->select( $fields )->order_by( $order )->
-              like( $name, $key, 'after' )->
+              like( $name, $value, 'after' )->
               get($this->get_table_name( ), $limit, $offset );
     $model = array();
     for ( $i = 0; $i < $query->num_rows( ); $i++ ) {

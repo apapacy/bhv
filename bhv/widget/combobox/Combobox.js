@@ -99,6 +99,8 @@ var Items = Backbone.Collection.extend( {
       this.get(this.selectedItem).unselect( );
       this.selectedItem = -1 + this.selectedItem;
       this.get( this.selectedItem ).select( );
+    } else {
+      this.trigger( 'backbone:combobox:page:previouspage' );
     }
   },
   
@@ -125,6 +127,8 @@ var Items = Backbone.Collection.extend( {
       this.get(this.selectedItem).unselect( );
       this.selectedItem = 0;
       this.get( this.selectedItem ).select( );
+    } else {
+      this.trigger( 'backbone:combobox:page:previouspage' );
     }
   },
 
@@ -135,11 +139,6 @@ var Items = Backbone.Collection.extend( {
       this.get( this.selectedItem ).select( );
     }
   },
-  
-  
-
-
-  
   
 } );
 
@@ -176,6 +175,7 @@ function Constructor( settings ) {
   _.extend( this, Backbone.Events );
   this.items = ( new Items( ) ).init( settings );
   this.listenTo( this.items, 'backbone:combobox:page:nextpage', this.readNextPage);
+  this.listenTo( this.items, 'backbone:combobox:page:previouspage', this.readPreviousPage);
   this.input = ( new Input( ) ).init( settings );
   this.input.items = this.items;
   this.input.on( 'change:' + this.searchField, this.readFirstPage, this );

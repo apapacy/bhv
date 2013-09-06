@@ -18,7 +18,7 @@ combobox1 = new cmb({
   url: 'ci/index.php/cms/test/collection',
   urlRoot: 'ci/index.php/cms/test/model',
   keyName: 'kod',
-  searchName: 'det',
+  searchName: 'name',
   displayName: 'name'
 });
 alert('hi')
@@ -28,7 +28,7 @@ alert(combobox1.items.length)
 //combobox1.input.set('searchValue', 'класс');
 //combobox1.items.at(0).set('ttttttttttttt', "5555555555555555")
 combobox1.read();
-combobox1.setValue(19);
+combobox1.setValue(1);
 //combobox1.setValue(25);
 
 
