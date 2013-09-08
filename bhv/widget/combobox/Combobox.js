@@ -66,7 +66,11 @@ var Item = Backbone.Model.extend( {
   idAttribute: CONSTANT.idAttribute,
   // @todo to init( ) why in not work init?
  
-  init: function(){return this;},
+  init: function( settings ){
+    util.mergeArray( this, [ 'keyName', 'searchName', 'displayName', 'undefinedValue' ], defaults, settings, CONSTANT );
+    this.set( this.keyName, this.undefinedValue );
+    return this;
+  },
 
   
   unselect: function( ) {
@@ -94,6 +98,9 @@ var Items = Backbone.Collection.extend( {
 
   init: function( settings ) {
     util.mergeArray( this, [ 'url' ], defaults, settings, CONSTANT );
+    this.actualLength = 0
+    this.selectedItem = undefined;
+
     return this;
   },
   
@@ -201,9 +208,9 @@ function Constructor( settings ) {
   this.itemsView.$el.appendTo( document.body );
   for ( var i = 0; i < this.limit; i++ ) {
     var item = ( new Item( ) ).init( settings );
+    var itemView = ( new ItemView( {model: item} ) ).init( settings );
     item.id = i;
     this.items.add( item );
-    var itemView = ( new ItemView( {model: item} ) ).init( settings );
     itemView.$el.appendTo( this.itemsView.$el );
   }
 }
@@ -283,6 +290,9 @@ _.extend( Constructor.prototype, {
   setValue: function( value ) {
     this.input.set( this.keyName, value );
     this.input.fetch( {async:false} );
+    this.items.each( function( element, index, list){element.set( this.keyName, this.undefinedValue );}, this  );
+    this.items.at( 0 ).set( this.input.toJSON( ) );
+    this.inputView.$el.val(this.input.get(this.displayName))
     alert(JSON.stringify(this.input.attributes))
     // @todo - refresh state of component from server 
   }
@@ -367,6 +377,7 @@ var ItemView = Backbone.View.extend( {
     this.listenTo( this.model, 'backbone:combobox:item:select', this.select );
     this.listenTo( this.model, 'backbone:combobox:item:unselect', this.unselect );
     this.$el.addClass( this.cssItem.item );
+    this.$el.hide();
     return this;
   },
 
@@ -377,8 +388,8 @@ var ItemView = Backbone.View.extend( {
       this.$el.hide( );
     } else {
       this.model.collection.actualLength = Math.max( this.model.collection.actualLength, this.model.id + 1 );
-      this.$el.removeClass(this.cssItem.item);
-      this.$el.addClass(this.cssItem.item);    
+      //this.$el.removeClass(this.cssItem.item);
+      //this.$el.addClass(this.cssItem.item);    
       this.$el.show( );
     }
     this.$el.text( displayValue );
