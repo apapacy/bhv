@@ -97,7 +97,7 @@ var Items = Backbone.Collection.extend( {
   selectedItem: undefined,
 
   init: function( settings ) {
-    util.mergeArray( this, [ 'url' ], defaults, settings, CONSTANT );
+    util.mergeArray( this, [ 'url', 'limit' ], defaults, settings, CONSTANT );
     this.actualLength = 0
     this.selectedItem = undefined;
 
@@ -110,7 +110,8 @@ var Items = Backbone.Collection.extend( {
       this.selectedItem = 1 + this.selectedItem;
       this.get( this.selectedItem ).select( );
     } else if ( this.actualLength === this.length ) {
-      this.trigger( 'backbone:combobox:page:nextpage' );
+      this.selectNextPage( );
+      //this.trigger( 'backbone:combobox:page:nextpage' );
     }
   },
 
@@ -120,16 +121,18 @@ var Items = Backbone.Collection.extend( {
       this.selectedItem = -1 + this.selectedItem;
       this.get( this.selectedItem ).select( );
     } else {
-      this.trigger( 'backbone:combobox:page:previouspage' );
+      this.selectPreviousPage( );
+      //this.trigger( 'backbone:combobox:page:previouspage' );
     }
   },
   
   selectNextPage: function( ) {
+    this.get(this.selectedItem).unselect( );
     if ( this.selectedItem < this.actualLength - 1 ) {
-      this.get(this.selectedItem).unselect( );
       this.selectedItem = -1 + this.actualLength;
       this.get( this.selectedItem ).select( );
     } else if ( this.actualLength === this.length ) {
+      this.selectedItem = 0;
       this.trigger( 'backbone:combobox:page:nextpage' );
     }
   },
@@ -143,11 +146,13 @@ var Items = Backbone.Collection.extend( {
   },
   
   selectPreviousPage: function( ) {
+    this.get(this.selectedItem).unselect( );
     if ( this.selectedItem > 0 ) {
-      this.get(this.selectedItem).unselect( );
       this.selectedItem = 0;
       this.get( this.selectedItem ).select( );
     } else {
+      this.selectedItem = this.limit - 1;
+      //this.get(this.selectedItem).select( );
       this.trigger( 'backbone:combobox:page:previouspage' );
     }
   },
@@ -155,10 +160,16 @@ var Items = Backbone.Collection.extend( {
   selectFirstItem: function( ) {
     if ( this.selectedItem > 0 ) {
       this.get(this.selectedItem).unselect( );
+    }
       this.selectedItem = 0;
       this.get( this.selectedItem ).select( );
-    }
   },
+  
+  unselectItem: function( ) {
+    if ( typeof this.get(this.selectedItem) === 'object' ) {
+      this.get(this.selectedItem).unselect( );
+    }
+  }
   
 } );
 
@@ -250,7 +261,9 @@ _.extend( Constructor.prototype, {
           model.get( model.selectedItem ).unselect( );
         }
         if ( model.actualLength > 0) {
-          model.selectedItem = 0;
+          if ( ! model.selectedItem ) {
+            model.selectedItem = 0;
+          }
         } else {
           model.selectedItem = undefined;
         }
@@ -269,12 +282,14 @@ _.extend( Constructor.prototype, {
   readNextPage: function( ) {
     this.page = 1 + this.page;
     this.read( false );
+    //this.items.at( 0 ).select( );
   },
   
   readPreviousPage: function( ) {
     if ( this.page > 0 ) {
       this.page = -1 + this.page;
       this.read( false );
+      //this.items.at( this.limit - 1 ).select( );
     }
   },
 
@@ -293,6 +308,7 @@ _.extend( Constructor.prototype, {
     this.items.each( function( element, index, list){element.set( this.keyName, this.undefinedValue );}, this  );
     this.items.at( 0 ).set( this.input.toJSON( ) );
     this.inputView.$el.val(this.input.get(this.displayName))
+    this.items.selectFirstItem();
     alert(JSON.stringify(this.input.attributes))
     // @todo - refresh state of component from server 
   }
@@ -311,6 +327,10 @@ var InputView = Backbone.View.extend( {
     this.$el.addClass( this.cssInput.input );
     this.setSearchValue = _.bind( function( ) {
         this.model.set( CONSTANT.searchField, this.$el.val( ) );
+        //this.model.items.selectFirstItem( );
+        this.model.items.unselectItem( );
+        this.model.items.selectedItem = 0;
+        //
       },
       this
     );
