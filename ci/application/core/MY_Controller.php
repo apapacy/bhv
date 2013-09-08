@@ -140,7 +140,7 @@ class REST_Controller extends MY_Controller {
   }
 
   protected function _read_collection( $fields, $order, $name, $value, $limit, $offset ) {
-    $query = $this->db->select( $fields )->order_by( $order )->
+    $query = $this->db->select( $fields, false )->order_by( $order )->
               like( $name, $value, 'after' )->
               get($this->get_table_name( ), $limit, $offset );
     $model = array();

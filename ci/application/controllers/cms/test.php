@@ -38,7 +38,7 @@ class Test extends REST_Controller {
   
   protected function read_collection( ) {
     parent::_read_collection( 
-                  array( 'kod', 'det', 'name'),
+                  array( 'kod', "kod||'#'||det as det", 'name'),
                   'name',
                   'name',
                   implode( '%', preg_split( '//u', $_GET['searchValue'] ) ),

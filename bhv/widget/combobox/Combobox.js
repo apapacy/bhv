@@ -127,11 +127,12 @@ var Items = Backbone.Collection.extend( {
   },
   
   selectNextPage: function( ) {
-    this.get(this.selectedItem).unselect( );
     if ( this.selectedItem < this.actualLength - 1 ) {
+      this.get(this.selectedItem).unselect( );
       this.selectedItem = -1 + this.actualLength;
       this.get( this.selectedItem ).select( );
     } else if ( this.actualLength === this.length ) {
+      this.get(this.selectedItem).unselect( );
       this.selectedItem = 0;
       this.trigger( 'backbone:combobox:page:nextpage' );
     }
@@ -146,12 +147,12 @@ var Items = Backbone.Collection.extend( {
   },
   
   selectPreviousPage: function( ) {
-    this.get(this.selectedItem).unselect( );
     if ( this.selectedItem > 0 ) {
+      this.get(this.selectedItem).unselect( );
       this.selectedItem = 0;
       this.get( this.selectedItem ).select( );
     } else {
-      this.selectedItem = this.limit - 1;
+      //this.selectedItem = this.limit - 1;
       //this.get(this.selectedItem).select( );
       this.trigger( 'backbone:combobox:page:previouspage' );
     }
@@ -214,11 +215,13 @@ function Constructor( settings ) {
   this.input.on( 'change:' + this.searchField, this.readFirstPage, this );
   this.inputView = ( new InputView( {model: this.input} ) ).init( settings );
   this.inputView.$el.appendTo( this.parentElement );
-  this.listenTo( this.inputView, 'click', this.showItems );
+  this.listenTo( this.inputView, 'backbone:combobox:items:show', this.showItems );
+  this.listenTo( this.inputView, 'backbone:combobox:items:hide', this.hideItems );
   this.itemsView = ( new ItemsView( ) ).init( settings );
   this.itemsView.$el.appendTo( document.body );
   for ( var i = 0; i < this.limit; i++ ) {
     var item = ( new Item( ) ).init( settings );
+    item.set( this.keyName, this.undefinedValue );
     var itemView = ( new ItemView( {model: item} ) ).init( settings );
     item.id = i;
     this.items.add( item );
@@ -241,7 +244,10 @@ _.extend( Constructor.prototype, {
     var deltaLeft = input.offset( ).left - conteiner.offset( ).left;
 		conteiner.offset( {left: input.offset( ).left + 2 * deltaLeft} );
 		conteiner.outerWidth( input.outerWidth( ) );
+  },
 
+  hideItems: function( ) {
+    this.itemsView.$el.hide( );
   },
 
   /** Fetch collection from server with current searchValue */
@@ -304,12 +310,12 @@ _.extend( Constructor.prototype, {
 
   setValue: function( value ) {
     this.input.set( this.keyName, value );
-    this.input.fetch( {async:false} );
+    this.input.fetch( {async:false, success:function(m,r,o){},error:function(m,r,o){alert('error')}});
     this.items.each( function( element, index, list){element.set( this.keyName, this.undefinedValue );}, this  );
     this.items.at( 0 ).set( this.input.toJSON( ) );
     this.inputView.$el.val(this.input.get(this.displayName))
     this.items.selectFirstItem();
-    alert(JSON.stringify(this.input.attributes))
+    //alert(JSON.stringify(this.input.attributes))
     // @todo - refresh state of component from server 
   }
 
@@ -343,7 +349,7 @@ var InputView = Backbone.View.extend( {
   },
 
   onclick: function( ) {
-    this.trigger('click');
+    this.trigger('backbone:combobox:items:show');
     if ( ! this.model.get('active') ) {
       this.model.set( 'active', true );
       this.$el.val( this.model.get( this.searchName ) );
@@ -355,6 +361,13 @@ var InputView = Backbone.View.extend( {
     if ( this.handleTimeout !== null ) {
       window.clearTimeout( this.handleTimeout );
     }
+    if ( e.which === util.key.ENTER) {
+      if ( this.model.get( 'active' ) ) {
+        this.model.set( 'active', false);
+        this.trigger('backbone:combobox:items:hide');
+      }
+    }
+    
     if ( e.which >= util.key.DELETE || e.witch == util.key.SPACE 
         || e.witch == util.key.BACKSPACE) {
       this.handleTimeout = window.setTimeout( this.setSearchValue, this.delay );

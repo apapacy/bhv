@@ -20,7 +20,7 @@ combobox1 = new cmb({
   urlRoot: 'ci/index.php/cms/test/model',
   keyName: 'kod',
   searchName: 'name',
-  displayName: 'name'
+  displayName: 'det'
 });
 alert('hi')
 alert(combobox1.items.length)
@@ -29,7 +29,7 @@ alert(combobox1.items.length)
 //combobox1.input.set('searchValue', 'класс');
 //combobox1.items.at(0).set('ttttttttttttt', "5555555555555555")
 //combobox1.read();
-combobox1.setValue(1);
+combobox1.setValue(-1789);
 //combobox1.setValue(25);
 combobox2 = new cmb({
   parent: 'combo2',
@@ -37,7 +37,7 @@ combobox2 = new cmb({
   urlRoot: 'ci/index.php/cms/test/model',
   keyName: 'kod',
   searchName: 'name',
-  displayName: 'name'
+  displayName: 'det'
 });
 
 
