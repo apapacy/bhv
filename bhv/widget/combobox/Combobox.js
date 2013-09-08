@@ -7,14 +7,18 @@
  */
 define( [ /* require Requirejs, jQuery, Backbone( =>Underscore, JSON2 ) */ 'domReady!' ], function( ) {
 
-/** default setting if not redefined */
-var defaults = {
+var CONSTANT = {
   /** Surrogate IDs to prevent item model adding/removing */
   idAttribute: 'backbone:combobox:item:id',
   /** To prevent item model adding/removing fill server response with undefined value */
   undefinedValue: 'backbone:combobox:item:undefined',
   /** Represent input value for search */
   searchField: 'backbone:combobox:searchfield',
+}
+
+
+/** default setting if not redefined */
+var defaults = {
   /** Count of item */
   limit: 10,
   /** Current page for pagination */
@@ -35,7 +39,16 @@ var defaults = {
   cssItem: {
     itemSelected: 'bbcombobox_item_selected',
     item: 'bbcombobox_item',
+  },
+  
+  cssItems: {
+    listPane: 'bbcombobox_list_pane'
+  },
+
+  cssInput: {
+    input: 'bbcombobox_input'
   }
+  
 };
 
 var util = new utils( );
@@ -50,7 +63,7 @@ var Item = Backbone.Model.extend( {
    * @property {integer} idAttribute - contain [0..limit-1] number,
    * bat not real SQL primary key. It is model of widget, not business logic
    */
-  idAttribute: defaults.idAttribute,
+  idAttribute: CONSTANT.idAttribute,
   // @todo to init( ) why in not work init?
  
   init: function(){return this;},
@@ -80,7 +93,7 @@ var Items = Backbone.Collection.extend( {
   selectedItem: undefined,
 
   init: function( settings ) {
-    util.mergeArray( this, [ 'url' ], defaults, settings );
+    util.mergeArray( this, [ 'url' ], defaults, settings, CONSTANT );
     return this;
   },
   
@@ -154,11 +167,11 @@ var Input = Backbone.Model.extend( {
 
   init: function( settings ) {
     util.mergeArray( this, [ 'urlRoot', 'keyName', 'searchName', 'displayName' ],
-                      defaults, settings );
+                      defaults, settings, CONSTANT );
     this.set( this.searchName, '' );
     this.set( this.displayName, '' );
     this.set( this.keyName, undefined );
-    this.set( defaults.searchField, '' );
+    this.set( CONSTANT.searchField, '' );
     this.idAttribute = this.keyName;
     return this;
   }
@@ -172,7 +185,9 @@ var Input = Backbone.Model.extend( {
 function Constructor( settings ) {
   _.extend( this, defaults );
   _.extend( this, settings );
+  _.extend( this, CONSTANT );
   _.extend( this, Backbone.Events );
+  this.parentElement = $('#'+this.parent);
   this.items = ( new Items( ) ).init( settings );
   this.listenTo( this.items, 'backbone:combobox:page:nextpage', this.readNextPage);
   this.listenTo( this.items, 'backbone:combobox:page:previouspage', this.readPreviousPage);
@@ -180,7 +195,8 @@ function Constructor( settings ) {
   this.input.items = this.items;
   this.input.on( 'change:' + this.searchField, this.readFirstPage, this );
   this.inputView = ( new InputView( {model: this.input} ) ).init( settings );
-  this.inputView.$el.appendTo( document.body );
+  this.inputView.$el.appendTo( this.parentElement );
+  this.listenTo( this.inputView, 'click', this.showItems );
   this.itemsView = ( new ItemsView( ) ).init( settings );
   this.itemsView.$el.appendTo( document.body );
   for ( var i = 0; i < this.limit; i++ ) {
@@ -193,12 +209,32 @@ function Constructor( settings ) {
 }
 
 _.extend( Constructor.prototype, {
+  
+  showItems: function( ) {
+    var conteiner = this.itemsView.$el;
+    var input = this.inputView.$el;
+    this.itemsView.$el.show( );
+ 		conteiner.offset( {top: input.offset( ).top} );
+    // In some version of FF has not valid value jQuery.offset() when CSS margin > 0
+    var deltaTop = input.offset( ).top - conteiner.offset( ).top;
+		conteiner.offset( {top:input.outerHeight( ) + input.offset( ).top + 2 * deltaTop + 5} );
+		conteiner.offset( {left: input.offset( ).left } );
+    // In some version of FF has not valid value jQuery.offset() when CSS margin > 0
+    var deltaLeft = input.offset( ).left - conteiner.offset( ).left;
+		conteiner.offset( {left: input.offset( ).left + 2 * deltaLeft} );
+		conteiner.outerWidth( input.outerWidth( ) );
+
+  },
 
   /** Fetch collection from server with current searchValue */
-  read: function( ) {
+  read: function( async ) {
+    if ( async !== false ) {
+      async = true;
+    }
     this.items.fetch( {
+      async: async,
       data: {
-        searchValue: this.input.get( defaults.searchField ),
+        searchValue: this.input.get( CONSTANT.searchField ),
         page: this.page,
         limit: this.limit
       },
@@ -225,19 +261,19 @@ _.extend( Constructor.prototype, {
 
   readNextPage: function( ) {
     this.page = 1 + this.page;
-    this.read( );
+    this.read( false );
   },
   
   readPreviousPage: function( ) {
     if ( this.page > 0 ) {
       this.page = -1 + this.page;
-      this.read( );
+      this.read( false );
     }
   },
 
   getValue: function( ) {
     var value = this.input.get( this.keyName );
-    if ( value === defaults.undefinedValue ) {
+    if ( value === CONSTANT.undefinedValue ) {
       return undefined;
     } else {
       return value;
@@ -261,9 +297,10 @@ var InputView = Backbone.View.extend( {
   handleTimeout: null,
 
   init: function( settings ) {
-    util.mergeArray( this, ['delay', 'searchName'], defaults, settings );
+    util.mergeArray( this, ['delay', 'searchName', 'cssInput' ], defaults, settings, CONSTANT );
+    this.$el.addClass( this.cssInput.input );
     this.setSearchValue = _.bind( function( ) {
-        this.model.set( defaults.searchField, this.$el.val( ) );
+        this.model.set( CONSTANT.searchField, this.$el.val( ) );
       },
       this
     );
@@ -276,6 +313,7 @@ var InputView = Backbone.View.extend( {
   },
 
   onclick: function( ) {
+    this.trigger('click');
     if ( ! this.model.get('active') ) {
       this.model.set( 'active', true );
       this.$el.val( this.model.get( this.searchName ) );
@@ -311,7 +349,8 @@ var ItemsView = Backbone.View.extend( {
   tagName: 'div',
 
   init: function( settings ) {
-    //util.mergeArray( this, [ ], defaults, settings );
+    util.mergeArray( this, [ 'cssItems' ], defaults, settings );
+    this.$el.addClass( this.cssItems.listPane );
     return this;
   }
 
@@ -323,20 +362,23 @@ var ItemView = Backbone.View.extend( {
 
   init: function( settings ) {
     util.mergeArray( this, [ 'keyName', 'searchName', 'displayName', 'cssItem' ],
-                      defaults, settings );
+                      defaults, settings, CONSTANT );
     this.listenTo( this.model, 'change', this.render );
     this.listenTo( this.model, 'backbone:combobox:item:select', this.select );
     this.listenTo( this.model, 'backbone:combobox:item:unselect', this.unselect );
+    this.$el.addClass( this.cssItem.item );
     return this;
   },
 
   render: function( ) {
     var displayValue = this.model.get( this.displayName );
-    if ( displayValue === defaults.undefinedValue ) {
+    if ( this.model.get(this.keyName) === CONSTANT.undefinedValue ) {
       this.model.collection.actualLength = Math.min( this.model.collection.actualLength, this.model.id );
       this.$el.hide( );
     } else {
       this.model.collection.actualLength = Math.max( this.model.collection.actualLength, this.model.id + 1 );
+      this.$el.removeClass(this.cssItem.item);
+      this.$el.addClass(this.cssItem.item);    
       this.$el.show( );
     }
     this.$el.text( displayValue );

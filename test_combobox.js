@@ -15,6 +15,7 @@ requirejs.config({
 requirejs(['bhv/widget/combobox/Combobox', 'domReady!'], function ( cmb ) {
 
 combobox1 = new cmb({
+  parent: 'combo1',
   url: 'ci/index.php/cms/test/collection',
   urlRoot: 'ci/index.php/cms/test/model',
   keyName: 'kod',
