@@ -95,11 +95,13 @@ var Items = Backbone.Collection.extend( {
   /** Count of fetched items */
   actualLength: 0,
   selectedItem: undefined,
+  page: 0,
 
   init: function( settings ) {
     util.mergeArray( this, [ 'url', 'limit' ], defaults, settings, CONSTANT );
     this.actualLength = 0
     this.selectedItem = undefined;
+    this.page = undefined;
 
     return this;
   },
@@ -151,9 +153,10 @@ var Items = Backbone.Collection.extend( {
       this.get(this.selectedItem).unselect( );
       this.selectedItem = 0;
       this.get( this.selectedItem ).select( );
-    } else {
-      //this.selectedItem = this.limit - 1;
-      //this.get(this.selectedItem).select( );
+    } else  if ( this.page > 0 ) {
+      this.unselectItem();
+      this.selectedItem = this.limit - 1;
+      this.get(this.selectedItem).select( );
       this.trigger( 'backbone:combobox:page:previouspage' );
     }
   },
@@ -279,7 +282,7 @@ _.extend( Constructor.prototype, {
       async: async,
       data: {
         searchValue: this.input.get( CONSTANT.searchField ),
-        page: this.page,
+        page: this.items.page,
         limit: this.limit
       },
       success: function( model, r, o ) {
@@ -301,19 +304,19 @@ _.extend( Constructor.prototype, {
   },
 
   readFirstPage: function( ) {
-    this.page = 0;
+    this.items.page = 0;
     this.read( );
   },
 
   readNextPage: function( ) {
-    this.page = 1 + this.page;
+    this.items.page = 1 + this.items.page;
     this.read( false );
     //this.items.at( 0 ).select( );
   },
   
   readPreviousPage: function( ) {
-    if ( this.page > 0 ) {
-      this.page = -1 + this.page;
+    if ( this.items.page > 0 ) {
+      this.items.page = -1 + this.items.page;
       this.read( false );
       //this.items.at( this.limit - 1 ).select( );
     }
@@ -365,7 +368,7 @@ var InputView = Backbone.View.extend( {
 
   events: {
     'click': 'onclick',
-    'keyup': 'onkeyup',
+    'keydown': 'onkeydown',
   },
 
   onclick: function( ) {
@@ -377,7 +380,7 @@ var InputView = Backbone.View.extend( {
     }
   },
 
-  onkeyup: function( e ) {
+  onkeydown: function( e ) {
     if ( this.handleTimeout !== null ) {
       window.clearTimeout( this.handleTimeout );
     }
