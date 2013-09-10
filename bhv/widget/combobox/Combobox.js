@@ -232,20 +232,40 @@ function Constructor( settings ) {
 _.extend( Constructor.prototype, {
   
   showItems: function( ) {
+    if ( this.POFF20 === true) {
+      this.showItems = this.showItemsPOFF20;
+      this.showItemsPOFF20( );
+      return;
+    }
     var conteiner = this.itemsView.$el;
     var input = this.inputView.$el;
     this.itemsView.$el.show( );
  		conteiner.offset( {top: input.offset( ).top} );
     // In some version of FF has not valid value jQuery.offset() when CSS margin > 0
     var deltaTop = input.offset( ).top - conteiner.offset( ).top;
-		conteiner.offset( {top:input.outerHeight( ) + input.offset( ).top + 2 * deltaTop + 5} );
+		conteiner.offset( {top:input.height( ) + input.offset( ).top + 2 * deltaTop + 5} );
 		conteiner.offset( {left: input.offset( ).left } );
     // In some version of FF has not valid value jQuery.offset() when CSS margin > 0
     var deltaLeft = input.offset( ).left - conteiner.offset( ).left;
 		conteiner.offset( {left: input.offset( ).left + 2 * deltaLeft} );
-		conteiner.outerWidth( input.outerWidth( ) );
+		conteiner.outerWidth( input.width( ) );
+  },
+  
+  /** For plain old FireFox2.0 */
+  showItemsPOFF20: function( ) {
+    this.itemsView.$el.show( );
+    var conteiner = this.itemsView.el;
+    var input = this.inputView.el;
+		conteiner.style.top = util.top( input ) + "px";
+    var deltaTop = util.top( input ) - util.top( conteiner );
+		conteiner.style.top = input.offsetHeight + util.top( input ) + 2 * deltaTop + 2 + "px";
+		conteiner.style.left = util.left( input ) + "px";
+    var deltaLeft = util.left( input ) - util.left( conteiner );
+		conteiner.style.left =  util.left( input ) + 2 * deltaLeft  + "px";
+		conteiner.style.width = input.clientWidth + "px";
   },
 
+  
   hideItems: function( ) {
     this.itemsView.$el.hide( );
   },
@@ -461,7 +481,7 @@ function utils( ) {
         toObject[p] = fromObject[p];
       }
     }
-  }
+  };
 
   /*
    * @overview copy missing parameters from to Object
@@ -471,8 +491,8 @@ function utils( ) {
   this.ISA = function ( toObject, fromObject ) {
     for ( var p in fromObject ) {
         toObject[p] = fromObject[p];
-      }
-  }
+    }
+  };
   
 
   /*
@@ -487,7 +507,7 @@ function utils( ) {
       arr[i] = obj[i];
     }
     return arr;
-  }
+  };
 
   /*
    * @overview search value in Array object
@@ -503,7 +523,7 @@ function utils( ) {
       }
     }
     return false;
-  }
+  };
 
   /*
    * @overview overwrite selected properties from source object
@@ -519,8 +539,33 @@ function utils( ) {
         }
       }
     }
-  }
+  };
 
+  this.top = function ( element ) {
+    var top = 0;
+    try{top = element.offsetTop;
+        while(element.offsetParent){
+            element = element.offsetParent;
+            top += element.offsetTop;
+        }
+    }catch (ex){}
+    return top;
+    return jQuery(element).offset().top;
+  };
+
+  this.left = function ( element ) {
+   var left = 0;
+    try{left = element.offsetLeft;
+        while(element.offsetParent){
+            element = element.offsetParent;
+            left += element.offsetLeft;
+        }
+    }catch (ex){}
+    return left;
+    return jQuery(element).offset().left;
+  };
+
+  
   this.key = {};
 
   this.key.BACKSPACE = 8;

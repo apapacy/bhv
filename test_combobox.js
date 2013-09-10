@@ -37,7 +37,8 @@ combobox2 = new cmb({
   urlRoot: 'ci/index.php/cms/test/model',
   keyName: 'kod',
   searchName: 'name',
-  displayName: 'det'
+  displayName: 'det',
+  POFF20: true
 });
 
 
