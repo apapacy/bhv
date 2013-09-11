@@ -108,9 +108,10 @@ var Items = Backbone.Collection.extend( {
   
   selectNextItem: function( ) {
     if ( this.selectedItem < this.actualLength - 1 ) {
-      this.get(this.selectedItem).unselect( );
-      this.selectedItem = 1 + this.selectedItem;
-      this.get( this.selectedItem ).select( );
+      //this.get(this.selectedItem).unselect( );
+      //this.selectedItem = 1 + this.selectedItem;
+      //this.get( this.selectedItem ).select( );
+      this.selectItem( 1 + this.selectedItem );
     } else if ( this.actualLength === this.length ) {
       this.selectNextPage( );
       //this.trigger( 'backbone:combobox:page:nextpage' );
@@ -119,9 +120,10 @@ var Items = Backbone.Collection.extend( {
 
   selectPreviousItem: function( ) {
     if ( this.selectedItem > 0 ) {
-      this.get(this.selectedItem).unselect( );
-      this.selectedItem = -1 + this.selectedItem;
-      this.get( this.selectedItem ).select( );
+      //this.get(this.selectedItem).unselect( );
+      //this.selectedItem = -1 + this.selectedItem;
+      //this.get( this.selectedItem ).select( );
+      this.selectItem( -1 + this.selectedItem );
     } else {
       this.selectPreviousPage( );
       //this.trigger( 'backbone:combobox:page:previouspage' );
@@ -130,11 +132,12 @@ var Items = Backbone.Collection.extend( {
   
   selectNextPage: function( ) {
     if ( this.selectedItem < this.actualLength - 1 ) {
-      this.get(this.selectedItem).unselect( );
-      this.selectedItem = -1 + this.actualLength;
-      this.get( this.selectedItem ).select( );
+      //this.get(this.selectedItem).unselect( );
+      //this.selectedItem = -1 + this.actualLength;
+      //this.get( this.selectedItem ).select( );
+      this.selectItem( -1 + this.actualLength );
     } else if ( this.actualLength === this.length ) {
-      this.get(this.selectedItem).unselect( );
+      this.unselectItem( );
       this.selectedItem = 0;
       this.trigger( 'backbone:combobox:page:nextpage' );
     }
@@ -142,21 +145,23 @@ var Items = Backbone.Collection.extend( {
 
   selectLastItem: function( ) {
     if ( this.selectedItem < this.actualLength - 1 ) {
-      this.get(this.selectedItem).unselect( );
-      this.selectedItem = -1 + this.actualLength;
-      this.get( this.selectedItem ).select( );
+      //this.get(this.selectedItem).unselect( );
+      //this.selectedItem = -1 + this.actualLength;
+      //this.get( this.selectedItem ).select( );
+      this.selectItem( -1 + this.actualLength );
     }
   },
   
   selectPreviousPage: function( ) {
     if ( this.selectedItem > 0 ) {
-      this.get(this.selectedItem).unselect( );
-      this.selectedItem = 0;
-      this.get( this.selectedItem ).select( );
+      //this.get(this.selectedItem).unselect( );
+      //this.selectedItem = 0;
+      //this.get( this.selectedItem ).select( );
+      this.selectItem( 0 );
     } else  if ( this.page > 0 ) {
       this.unselectItem();
       this.selectedItem = this.limit - 1;
-      this.get(this.selectedItem).select( );
+      //this.get(this.selectedItem).select( );
       this.trigger( 'backbone:combobox:page:previouspage' );
     }
   },
@@ -173,7 +178,18 @@ var Items = Backbone.Collection.extend( {
     if ( typeof this.get(this.selectedItem) === 'object' ) {
       this.get(this.selectedItem).unselect( );
     }
+  },
+  
+  selectItem: function( ind ) {
+    this.unselectItem( );
+    if ( typeof ind !== 'undefined' ) {
+      this.selectedItem = ind;
+    }
+    if ( typeof this.get(this.selectedItem) === 'object' ) {
+      this.get(this.selectedItem).select( );
+    }
   }
+  
   
 } );
 
@@ -220,13 +236,15 @@ function Constructor( settings ) {
   this.inputView.$el.appendTo( this.parentElement );
   this.listenTo( this.inputView, 'backbone:combobox:items:show', this.showItems );
   this.listenTo( this.inputView, 'backbone:combobox:items:hide', this.hideItems );
+  this.listenTo( this.inputView, 'backbone:combobox:items:accept', this.acceptValue );
   this.itemsView = ( new ItemsView( ) ).init( settings );
   this.itemsView.$el.appendTo( document.body );
   for ( var i = 0; i < this.limit; i++ ) {
     var item = ( new Item( ) ).init( settings );
     item.set( this.keyName, this.undefinedValue );
-    var itemView = ( new ItemView( {model: item} ) ).init( settings );
     item.id = i;
+    var itemView = ( new ItemView( {model: item} ) ).init( settings );
+    this.listenTo( itemView, 'backbone:combobox:items:accept', this.acceptValue );
     this.items.add( item );
     itemView.$el.appendTo( this.itemsView.$el );
   }
@@ -268,6 +286,16 @@ _.extend( Constructor.prototype, {
 		conteiner.style.width = input.clientWidth + "px";
   },
 
+  acceptValue: function( ) {
+  alert('accept')
+    if ( this.items.selectedItem < this.items.actualLength && this.items.selectedItem >= 0 ) {
+      this.input.set( this.keyName, this.items.at( this.items.selectedItem ).get( this.keyName ) );
+      this.input.set( this.searchName, this.items.at( this.items.selectedItem ).get( this.searchName ) );
+      this.input.set( this.displayName, this.items.at( this.items.selectedItem ).get( this.displayName ) );
+      this.inputView.$el.val(  this.items.at( this.items.selectedItem ).get( this.displayName ) );
+      this.hideItems( );
+    }
+  },
   
   hideItems: function( ) {
     this.itemsView.$el.hide( );
@@ -286,7 +314,7 @@ _.extend( Constructor.prototype, {
         limit: this.limit
       },
       success: function( model, r, o ) {
-        if ( model.selectedItem !== undefined) {
+        /*if ( model.selectedItem !== undefined) {
           model.get( model.selectedItem ).unselect( );
         }
         if ( model.actualLength > 0) {
@@ -298,7 +326,8 @@ _.extend( Constructor.prototype, {
         }
         if ( model.selectedItem !== undefined) {
           model.get( model.selectedItem ).select( );
-        }     
+        }*/
+        model.selectItem( );
       }
     } );
   },
@@ -387,7 +416,7 @@ var InputView = Backbone.View.extend( {
     if ( e.which === util.key.ENTER) {
       if ( this.model.get( 'active' ) ) {
         this.model.set( 'active', false);
-        this.trigger('backbone:combobox:items:hide');
+        this.trigger('backbone:combobox:items:accept');
       }
     }
     
@@ -451,6 +480,10 @@ var ItemView = Backbone.View.extend( {
     this.$el.text( displayValue );
   },
   
+  events: {
+    'click': 'onclick'
+  },
+  
   select: function( ) {
       this.$el.removeClass(this.cssItem.item);
       this.$el.addClass(this.cssItem.itemSelected);    
@@ -459,8 +492,12 @@ var ItemView = Backbone.View.extend( {
   unselect: function( ) {
       this.$el.removeClass(this.cssItem.itemSelected);
       this.$el.addClass(this.cssItem.item);    
+  },
+  
+  onclick: function( e ) {
+    this.model.collection.selectedItem = this.model.id;
+    this.trigger( 'backbone:combobox:items:accept' );
   }
-
   
 } );
 
