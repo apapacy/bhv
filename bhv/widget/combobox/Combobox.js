@@ -67,7 +67,8 @@ var Item = Backbone.Model.extend( {
   // @todo to init( ) why in not work init?
 
   init: function( settings ){
-    util.mergeArray( this, [ 'keyName', 'searchName', 'displayName', 'undefinedValue' ], defaults, settings, CONSTANT );
+    util.mergeArray( this, [ 'keyName', 'searchName', 'displayName', 'undefinedValue' ],
+                      defaults, settings, CONSTANT );
     this.set( this.keyName, this.undefinedValue );
     return this;
   },
