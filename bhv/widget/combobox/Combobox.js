@@ -35,12 +35,12 @@ var defaults = {
   url: '',
   /** URL for Item fetching */
   urlRoot: '',
-  
+
   cssItem: {
     itemSelected: 'bbcombobox_item_selected',
     item: 'bbcombobox_item',
   },
-  
+
   cssItems: {
     listPane: 'bbcombobox_list_pane'
   },
@@ -48,7 +48,7 @@ var defaults = {
   cssInput: {
     input: 'bbcombobox_input'
   }
-  
+
 };
 
 var util = new utils( );
@@ -65,14 +65,13 @@ var Item = Backbone.Model.extend( {
    */
   idAttribute: CONSTANT.idAttribute,
   // @todo to init( ) why in not work init?
- 
+
   init: function( settings ){
     util.mergeArray( this, [ 'keyName', 'searchName', 'displayName', 'undefinedValue' ], defaults, settings, CONSTANT );
     this.set( this.keyName, this.undefinedValue );
     return this;
   },
 
-  
   unselect: function( ) {
     this.trigger( 'backbone:combobox:item:unselect' );
   },
@@ -81,7 +80,6 @@ var Item = Backbone.Model.extend( {
     this.trigger( 'backbone:combobox:item:select' );
   }
 
-  
 } );
 
 /**
@@ -91,7 +89,7 @@ var Item = Backbone.Model.extend( {
 var Items = Backbone.Collection.extend( {
 
   model: Item,
-  
+
   /** Count of fetched items */
   actualLength: 0,
   selectedItem: undefined,
@@ -105,36 +103,25 @@ var Items = Backbone.Collection.extend( {
 
     return this;
   },
-  
+
   selectNextItem: function( ) {
     if ( this.selectedItem < this.actualLength - 1 ) {
-      //this.get(this.selectedItem).unselect( );
-      //this.selectedItem = 1 + this.selectedItem;
-      //this.get( this.selectedItem ).select( );
       this.selectItem( 1 + this.selectedItem );
     } else if ( this.actualLength === this.length ) {
       this.selectNextPage( );
-      //this.trigger( 'backbone:combobox:page:nextpage' );
     }
   },
 
   selectPreviousItem: function( ) {
     if ( this.selectedItem > 0 ) {
-      //this.get(this.selectedItem).unselect( );
-      //this.selectedItem = -1 + this.selectedItem;
-      //this.get( this.selectedItem ).select( );
       this.selectItem( -1 + this.selectedItem );
     } else {
       this.selectPreviousPage( );
-      //this.trigger( 'backbone:combobox:page:previouspage' );
     }
   },
-  
+
   selectNextPage: function( ) {
     if ( this.selectedItem < this.actualLength - 1 ) {
-      //this.get(this.selectedItem).unselect( );
-      //this.selectedItem = -1 + this.actualLength;
-      //this.get( this.selectedItem ).select( );
       this.selectItem( -1 + this.actualLength );
     } else if ( this.actualLength === this.length ) {
       this.unselectItem( );
@@ -145,23 +132,16 @@ var Items = Backbone.Collection.extend( {
 
   selectLastItem: function( ) {
     if ( this.selectedItem < this.actualLength - 1 ) {
-      //this.get(this.selectedItem).unselect( );
-      //this.selectedItem = -1 + this.actualLength;
-      //this.get( this.selectedItem ).select( );
       this.selectItem( -1 + this.actualLength );
     }
   },
-  
+
   selectPreviousPage: function( ) {
     if ( this.selectedItem > 0 ) {
-      //this.get(this.selectedItem).unselect( );
-      //this.selectedItem = 0;
-      //this.get( this.selectedItem ).select( );
       this.selectItem( 0 );
     } else  if ( this.page > 0 ) {
       this.unselectItem();
       this.selectedItem = this.limit - 1;
-      //this.get(this.selectedItem).select( );
       this.trigger( 'backbone:combobox:page:previouspage' );
     }
   },
@@ -173,13 +153,13 @@ var Items = Backbone.Collection.extend( {
       this.selectedItem = 0;
       this.get( this.selectedItem ).select( );
   },
-  
+
   unselectItem: function( ) {
     if ( typeof this.get(this.selectedItem) === 'object' ) {
       this.get(this.selectedItem).unselect( );
     }
   },
-  
+
   selectItem: function( ind ) {
     this.unselectItem( );
     if ( typeof ind !== 'undefined' ) {
@@ -189,8 +169,7 @@ var Items = Backbone.Collection.extend( {
       this.get(this.selectedItem).select( );
     }
   }
-  
-  
+
 } );
 
 /**
@@ -198,7 +177,7 @@ var Items = Backbone.Collection.extend( {
  * @overview represent current state of  widget
  */
 var Input = Backbone.Model.extend( {
-  
+
   defaults: {
     active: false,
   },
@@ -251,7 +230,7 @@ function Constructor( settings ) {
 }
 
 _.extend( Constructor.prototype, {
-  
+
   showItems: function( ) {
     if ( this.POFF20 === true) {
       this.showItems = this.showItemsPOFF20;
@@ -269,9 +248,9 @@ _.extend( Constructor.prototype, {
     // In some version of FF has not valid value jQuery.offset() when CSS margin > 0
     var deltaLeft = input.offset( ).left - conteiner.offset( ).left;
 		conteiner.offset( {left: input.offset( ).left + 2 * deltaLeft} );
-		conteiner.outerWidth( input.width( ) );
+		conteiner.outerWidth( input.outerWidth( ) );
   },
-  
+
   /** For plain old FireFox2.0 */
   showItemsPOFF20: function( ) {
     this.itemsView.$el.show( );
@@ -287,16 +266,16 @@ _.extend( Constructor.prototype, {
   },
 
   acceptValue: function( ) {
-  alert('accept')
     if ( this.items.selectedItem < this.items.actualLength && this.items.selectedItem >= 0 ) {
       this.input.set( this.keyName, this.items.at( this.items.selectedItem ).get( this.keyName ) );
       this.input.set( this.searchName, this.items.at( this.items.selectedItem ).get( this.searchName ) );
       this.input.set( this.displayName, this.items.at( this.items.selectedItem ).get( this.displayName ) );
       this.inputView.$el.val(  this.items.at( this.items.selectedItem ).get( this.displayName ) );
       this.hideItems( );
+      this.input.set( 'active', false );
     }
   },
-  
+
   hideItems: function( ) {
     this.itemsView.$el.hide( );
   },
@@ -313,20 +292,7 @@ _.extend( Constructor.prototype, {
         page: this.items.page,
         limit: this.limit
       },
-      success: function( model, r, o ) {
-        /*if ( model.selectedItem !== undefined) {
-          model.get( model.selectedItem ).unselect( );
-        }
-        if ( model.actualLength > 0) {
-          if ( ! model.selectedItem ) {
-            model.selectedItem = 0;
-          }
-        } else {
-          model.selectedItem = undefined;
-        }
-        if ( model.selectedItem !== undefined) {
-          model.get( model.selectedItem ).select( );
-        }*/
+      success: function( model, resp, opt ) {
         model.selectItem( );
       }
     } );
@@ -340,14 +306,12 @@ _.extend( Constructor.prototype, {
   readNextPage: function( ) {
     this.items.page = 1 + this.items.page;
     this.read( false );
-    //this.items.at( 0 ).select( );
   },
-  
+
   readPreviousPage: function( ) {
     if ( this.items.page > 0 ) {
       this.items.page = -1 + this.items.page;
       this.read( false );
-      //this.items.at( this.limit - 1 ).select( );
     }
   },
 
@@ -367,8 +331,6 @@ _.extend( Constructor.prototype, {
     this.items.at( 0 ).set( this.input.toJSON( ) );
     this.inputView.$el.val(this.input.get(this.displayName))
     this.items.selectFirstItem();
-    //alert(JSON.stringify(this.input.attributes))
-    // @todo - refresh state of component from server 
   }
 
 
@@ -385,7 +347,6 @@ var InputView = Backbone.View.extend( {
     this.$el.addClass( this.cssInput.input );
     this.setSearchValue = _.bind( function( ) {
         this.model.set( CONSTANT.searchField, this.$el.val( ) );
-        //this.model.items.selectFirstItem( );
         this.model.items.unselectItem( );
         this.model.items.selectedItem = 0;
         //
@@ -401,11 +362,11 @@ var InputView = Backbone.View.extend( {
   },
 
   onclick: function( ) {
-    this.trigger('backbone:combobox:items:show');
     if ( ! this.model.get('active') ) {
       this.model.set( 'active', true );
       this.$el.val( this.model.get( this.searchName ) );
       this.$el.select( );
+      this.trigger('backbone:combobox:items:show');
     }
   },
 
@@ -419,8 +380,8 @@ var InputView = Backbone.View.extend( {
         this.trigger('backbone:combobox:items:accept');
       }
     }
-    
-    if ( e.which >= util.key.DELETE || e.witch == util.key.SPACE 
+
+    if ( e.which >= util.key.DELETE || e.witch == util.key.SPACE
         || e.witch == util.key.BACKSPACE) {
       this.handleTimeout = window.setTimeout( this.setSearchValue, this.delay );
     } else if ( e.which === util.key.UP ) {
@@ -430,7 +391,7 @@ var InputView = Backbone.View.extend( {
     } else if ( e.which === util.key.PAGEUP ) {
       this.model.items.selectPreviousPage( );
     } else if ( e.which === util.key.PAGEDOWN ) {
-      this.model.items.selectNextPage( );  
+      this.model.items.selectNextPage( );
     } else if ( e.which === util.key.HOME ) {
       this.model.items.selectFirstItem( );
     } else if ( e.which === util.key.END ) {
@@ -440,7 +401,7 @@ var InputView = Backbone.View.extend( {
 } );
 
 var ItemsView = Backbone.View.extend( {
-  
+
   tagName: 'div',
 
   init: function( settings ) {
@@ -473,32 +434,30 @@ var ItemView = Backbone.View.extend( {
       this.$el.hide( );
     } else {
       this.model.collection.actualLength = Math.max( this.model.collection.actualLength, this.model.id + 1 );
-      //this.$el.removeClass(this.cssItem.item);
-      //this.$el.addClass(this.cssItem.item);    
       this.$el.show( );
     }
     this.$el.text( displayValue );
   },
-  
+
   events: {
     'click': 'onclick'
   },
-  
+
   select: function( ) {
       this.$el.removeClass(this.cssItem.item);
-      this.$el.addClass(this.cssItem.itemSelected);    
+      this.$el.addClass(this.cssItem.itemSelected);
   },
 
   unselect: function( ) {
       this.$el.removeClass(this.cssItem.itemSelected);
-      this.$el.addClass(this.cssItem.item);    
+      this.$el.addClass(this.cssItem.item);
   },
-  
+
   onclick: function( e ) {
-    this.model.collection.selectedItem = this.model.id;
+    this.model.collection.selectItem( this.model.id );
     this.trigger( 'backbone:combobox:items:accept' );
   }
-  
+
 } );
 
 //* use with Requirejs define( ['combobox/Combobox'], function (cmb) {new cmb({});...} ) */
@@ -533,7 +492,7 @@ function utils( ) {
         toObject[p] = fromObject[p];
     }
   };
-  
+
 
   /*
    * @overview create new Array object from parameter (main usage with
@@ -570,7 +529,7 @@ function utils( ) {
    * @param obj {object} - destination object
    * @param filtr {array} - selected properties
    * @param[, ...] {object} - source object
-   */  
+   */
   this.mergeArray = function( obj, filter/*, source0, source1 ...*/ ) {
     for ( var i = 2; i < arguments.length; i++ ) {
       for ( var j = 0; j < filter.length; j++ ) {
@@ -605,7 +564,6 @@ function utils( ) {
     return jQuery(element).offset().left;
   };
 
-  
   this.key = {};
 
   this.key.BACKSPACE = 8;
