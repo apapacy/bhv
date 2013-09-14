@@ -1,0 +1,41 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" 
+                      "http://www.w3.org/TR/html4/loose.dtd"> 
+
+<html>
+
+
+<head>
+
+<style>
+.bbcombobox_item_selected { background-color: brown;color:#ffffff; padding:2px 5px 2px 10px; overflow: auto}
+
+.bbcombobox_item {background-color: #ffffff; padding:2px 5px 2px 5px; overflow: auto}
+
+.bbcombobox_list_pane {position: absolute; top: 0px; left: 0px; display: none; border: solid 2px #999999}
+
+.bbcombobox_input {width:300px}
+
+</style>
+<script type="text/javascript" src="bhv/vendors/jquery-1.9.1.js"></script>
+<script type="text/javascript" src="bhv/vendors/underscore.js"></script>
+<script type="text/javascript" src="bhv/vendors/json2.js"></script>
+<script type="text/javascript" src="bhv/vendors/backbone.js"></script>
+<script type='text/javascript'>
+function test(){
+alert("RS="+window.readyState)
+}
+
+document.write(
+'<'+'script type="text/javascript" src="bhv/vendors/require.js"  data-main="test_combobox_pdo.js?bust='+ (new Date()).getTime() +'"><'+'/script>'
+);
+</script>
+</head>
+<body style="padding:20px;margin:15px;border:solid 10px red;">
+<br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
+++++++++++++++++++++++++++++++<span id="combo1" style="background: blue;width:300px"></span>
+<div>12346</div>
+<br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
+++++++++++++++++++++++++++++++<span id="combo2" style="background: blue;width:300px"></span>
+<div>12346</div>
+</body>
+</html>
