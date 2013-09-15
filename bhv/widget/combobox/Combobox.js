@@ -98,6 +98,8 @@ var Items = Backbone.Collection.extend( {
 
   init: function( settings ) {
     util.mergeArray( this, [ 'url', 'limit' ], defaults, settings, CONSTANT );
+    var url = this.url;
+    this.url = function( ) { return url + '?bust=' + Math.random( ); };
     this.actualLength = 0
     this.selectedItem = undefined;
     this.page = undefined;
@@ -184,8 +186,13 @@ var Input = Backbone.Model.extend( {
   },
 
   init: function( settings ) {
-    util.mergeArray( this, [ 'urlRoot', 'keyName', 'searchName', 'displayName' ],
+    util.mergeArray( this, [ 'url', 'urlRoot', 'keyName', 'searchName', 'displayName' ],
                       defaults, settings, CONSTANT );
+    var url = this.url;
+    delete this.url;
+    if ( ! this.urlRoot ) {            
+      this.urlRoot = function( ){ return url + '?id=' + this.id + '&bust='+Math.random( ); };
+    }
     this.set( this.searchName, '' );
     this.set( this.displayName, '' );
     this.set( this.keyName, undefined );
@@ -272,6 +279,10 @@ _.extend( Constructor.prototype, {
       this.input.set( this.searchName, this.items.at( this.items.selectedItem ).get( this.searchName ) );
       this.input.set( this.displayName, this.items.at( this.items.selectedItem ).get( this.displayName ) );
       this.inputView.$el.val(  this.items.at( this.items.selectedItem ).get( this.displayName ) );
+      for (var i = new Date().getTime(); new Date().getTime() - i < 500; ){
+        Math.random();
+      }
+      
       this.hideItems( );
       this.input.set( 'active', false );
     }
@@ -349,8 +360,9 @@ var InputView = Backbone.View.extend( {
     this.setSearchValue = _.bind( function( ) {
         this.model.set( CONSTANT.searchField, this.$el.val( ) );
         this.model.items.unselectItem( );
-        this.model.items.selectedItem = 0;
-        //
+        this.model.items.selectItem( 0 );
+        this.model.set( 'active', true );
+        this.trigger('backbone:combobox:items:show');
       },
       this
     );
@@ -360,8 +372,17 @@ var InputView = Backbone.View.extend( {
   events: {
     'click': 'onclick',
     'keydown': 'onkeydown',
+    'blur': 'onblur'
   },
-
+  
+  onblur:  function( ) {
+    if ( this.model.get('active') ) {
+      this.model.set( 'active', false );
+      this.$el.val( this.model.get( this.model.displayName ) );
+      this.trigger('backbone:combobox:items:hide');
+    }
+  },
+  
   onclick: function( ) {
     if ( ! this.model.get('active') ) {
       this.model.set( 'active', true );
@@ -382,8 +403,16 @@ var InputView = Backbone.View.extend( {
       }
     }
 
-    if ( e.which >= util.key.DELETE || e.witch == util.key.SPACE
-        || e.witch == util.key.BACKSPACE) {
+    if ( e.which === util.key.ESC) {
+      if ( this.model.get('active') ) {
+        this.model.set( 'active', false );
+        this.$el.val( this.model.get( this.model.displayName ) );
+        this.trigger('backbone:combobox:items:hide');
+      }
+    }
+    
+    if ( e.which >= util.key.DELETE || e.which == util.key.SPACE
+        || e.which == util.key.BACKSPACE) {
       this.handleTimeout = window.setTimeout( this.setSearchValue, this.delay );
     } else if ( e.which === util.key.UP ) {
       this.model.items.selectPreviousItem( );
@@ -455,6 +484,7 @@ var ItemView = Backbone.View.extend( {
   },
 
   onclick: function( e ) {
+    //this.select( );
     this.model.collection.selectItem( this.model.id );
     this.trigger( 'backbone:combobox:items:accept' );
   }

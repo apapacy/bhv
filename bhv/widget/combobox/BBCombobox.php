@@ -4,9 +4,13 @@ class BBCombobox {
 
   const PDO_CONNECTION_STRING = 'not valid connection string';
   const TABLE = 'no valid table name';
-
+  
+  protected static $FIELDS = array( );
+  
+  
   protected $action;
   protected $contents;
+  //protected static $SINGLETON = new static( );
 
   function __construct( ) {
     $this->action = $this->get_action( );
@@ -42,9 +46,10 @@ class BBCombobox {
     }
   }
 
-  protected function _read( $fields, $id, $sid='id' ) {
+  protected function _read( $id, $sid='id' ) {
   // requires: $id IS set ($sid is name key column in real SQL table)
   // output: $model['id'] IS set AND $model[$sid] IS set AND ===
+    $fields = static::$FIELDS;
     $select = 'select "' . implode( '","', $fields ) . '" from '
         . $this->get_table_name( ) . ' where "' . $sid . '"=? limit 2';
     $dbh = $this->get_pdo_connection( );
@@ -65,7 +70,11 @@ class BBCombobox {
     echo $this->to_json( $result );
   }
 
-  protected function _read_collection( $fields, $order, $name, $value, $limit, $offset ) {
+  protected function _read_collection( $order, $name ) {
+    $fields = static::$FIELDS;
+    $value = $_GET['searchValue'];
+    $limit =  $_GET['limit'];
+    $offset = ( $limit - 1 ) * $_GET['page'];
     $select = 'select "' . implode( '","', $fields ) . '" from '
         . $this->get_table_name( ) 
         . " where \"$name\" like ? order by $order limit $limit offset $offset ";

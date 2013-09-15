@@ -11,21 +11,15 @@ class Test extends BBCombobox {
 
   const PDO_CONNECTION_STRING = "pgsql:host=localhost;dbname=Ceh16;user=root;password=26682316";
   const TABLE = 'cennic';
-  
+  protected static $FIELDS = array( 'kod', 'name"||\'#\'||"kod" as "det', 'name');
 
   
   protected function read( $id ) {
-    parent::_read(array( 'kod', 'det', 'name'), $id, 'kod');
+    parent::_read( $id, 'kod') ;
   }
   
   protected function read_collection( ) {
-    parent::_read_collection( 
-                  array( 'kod', 'name"||\'#\'||"kod" as "det', 'name'),
-                  'name',
-                  'name',
-                  $_GET['searchValue'],
-                  $_GET['limit'], ($_GET['limit']-1)*$_GET['page']
-    );
+    parent::_read_collection( 'name', 'name' );
   }
   
 }

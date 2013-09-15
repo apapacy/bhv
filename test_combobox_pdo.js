@@ -17,7 +17,6 @@ requirejs(['bhv/widget/combobox/Combobox', 'domReady!'], function ( cmb ) {
 combobox1 = new cmb({
   parent: 'combo1',
   url: 'test_pdo.php',
-  urlRoot: function(){return 'test_pdo.php?id='+this.id+'&slash='},
   keyName: 'kod',
   searchName: 'name',
   displayName: 'det'
@@ -34,7 +33,6 @@ combobox1.setValue(65181);
 combobox2 = new cmb({
   parent: 'combo2',
   url: 'test_pdo.php',
-  urlRoot: 'test_pdo.php?id=',
   keyName: 'kod',
   searchName: 'name',
   displayName: 'det',
