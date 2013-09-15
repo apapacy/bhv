@@ -2,17 +2,34 @@
 
 class BBCombobox {
 
-  const PDO_CONNECTION_STRING = 'not valid connection string';
-  const TABLE = 'no valid table name';
-  
-  protected static $FIELDS = array( );
   
   
   protected $action;
   protected $contents;
+  protected $connectionString;
+  protected $table;
+  protected $keyName;
+  protected $searchName;
+  protected $displayName;
+  protected $order;
+  protected $fields;
+  
   //protected static $SINGLETON = new static( );
 
-  function __construct( ) {
+  function __construct( $connectionString, $table, $keyName, $searchName, $displayName, $order, $additionFields=FALSE ) {
+    $this->connectionString = $connectionString;
+    $this->table = $table;
+    $this->keyName = $keyName;
+    $this->searchName = $searchName;
+    $this->displayName = $displayName;
+    $this->order = $order;
+    $this->fields = array( $keyName );
+    if ( $searchName !== $keyName ) {
+      $this->fields[] = $searchName;
+    }
+    if ( $displayName !== $keyName && $displayName !== $searchName ) {
+      $this->fields[] = $displayName;
+    }
     $this->action = $this->get_action( );
     $this->contents = $this->get_contents( );
     if ( isset( $_GET['id'] ) ) {
@@ -21,6 +38,16 @@ class BBCombobox {
       $this->read_collection( );
     }
   }
+  
+  
+  protected function read( $id ) {
+    $this->_read( $id, $this->keyName ) ;
+  }
+  
+  protected function read_collection( ) {
+    $this->_read_collection( $this->searchName, $this->order );
+  }
+
 
   public function collection( $id=NULL ) {
     if ( $this->action === 'create' ) {
@@ -49,7 +76,7 @@ class BBCombobox {
   protected function _read( $id, $sid='id' ) {
   // requires: $id IS set ($sid is name key column in real SQL table)
   // output: $model['id'] IS set AND $model[$sid] IS set AND ===
-    $fields = static::$FIELDS;
+    $fields = $this->fields;
     $select = 'select "' . implode( '","', $fields ) . '" from '
         . $this->get_table_name( ) . ' where "' . $sid . '"=? limit 2';
     $dbh = $this->get_pdo_connection( );
@@ -70,8 +97,8 @@ class BBCombobox {
     echo $this->to_json( $result );
   }
 
-  protected function _read_collection( $order, $name ) {
-    $fields = static::$FIELDS;
+  protected function _read_collection( $name, $order ) {
+    $fields = $this->fields;
     $value = $_GET['searchValue'];
     $limit =  $_GET['limit'];
     $offset = ( $limit - 1 ) * $_GET['page'];
@@ -170,11 +197,11 @@ class BBCombobox {
   }
     
   protected function get_pdo_connection_string( ) {
-    return static::PDO_CONNECTION_STRING;
+    return $this->connectionString;
   }
 
   protected function get_table_name( ) {
-    return static::TABLE;
+    return $this->table;
   }
   
 }
