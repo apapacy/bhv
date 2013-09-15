@@ -4,8 +4,8 @@ class BBCombobox {
 
   
   
-  protected $action;
-  protected $contents;
+  //protected $action;
+  //protected $contents;
   protected $connectionString;
   protected $table;
   protected $keyName;
@@ -30,55 +30,20 @@ class BBCombobox {
     if ( $displayName !== $keyName && $displayName !== $searchName ) {
       $this->fields[] = $displayName;
     }
-    $this->action = $this->get_action( );
-    $this->contents = $this->get_contents( );
+    //$this->action = $this->get_action( );
+    //$this->contents = $this->get_contents( );
     if ( isset( $_GET['id'] ) ) {
-      $this->read( $_GET['id'] );
+      $this->_read( $_GET['id'], $this->keyName );
     } else if ( isset( $_GET['searchValue'] ) ) {
-      $this->read_collection( );
-    }
-  }
-  
-  
-  protected function read( $id ) {
-    $this->_read( $id, $this->keyName ) ;
-  }
-  
-  protected function read_collection( ) {
-    $this->_read_collection( $this->searchName, $this->order );
-  }
-
-
-  public function collection( $id=NULL ) {
-    if ( $this->action === 'create' ) {
-      $this->test( 'REST create not provided for collection' );
-    } else if ( $this->action === 'read' ) {
-      $this->read_collection( $id );
-    } else if ( $this->action === 'update' ) {
-      $this->test( 'REST update not provided for collection' );
-    } else if ( $this->action === 'delete' ) {
-      $this->test( 'REST delete not provided for collection' );
-    }
-  }
-
-  public function model( $id=NULL ) {
-    if ( $this->action === 'create' ) {
-      $this->create( );
-    } else if ( $this->action === 'read' ) {
-      $this->read( $id );
-    } else if ( $this->action === 'update' ) {
-      $this->update( $id );
-    } else if ( $this->action === 'delete' ) {
-      $this->delete( $id );
+      $this->_read_collection( $this->searchName, $this->order  );
     }
   }
 
   protected function _read( $id, $sid='id' ) {
   // requires: $id IS set ($sid is name key column in real SQL table)
   // output: $model['id'] IS set AND $model[$sid] IS set AND ===
-    $fields = $this->fields;
-    $select = 'select "' . implode( '","', $fields ) . '" from '
-        . $this->get_table_name( ) . ' where "' . $sid . '"=? limit 2';
+    $select = 'select "' . implode( '","', $this->fields ) . '" from '
+        . $this->table . ' where "' . $sid . '"=? limit 2';
     $dbh = $this->get_pdo_connection( );
     $sth = $dbh->prepare( $select );
     $sth->execute( array( $id ) );
@@ -98,25 +63,23 @@ class BBCombobox {
   }
 
   protected function _read_collection( $name, $order ) {
-    $fields = $this->fields;
     $value = $_GET['searchValue'];
     $limit =  $_GET['limit'];
     $offset = ( $limit - 1 ) * $_GET['page'];
-    $select = 'select "' . implode( '","', $fields ) . '" from '
-        . $this->get_table_name( ) 
+    $select = 'select "' . implode( '","', $this->fields ) . '" from '
+        . $this->table
         . " where \"$name\" like ? order by $order limit $limit offset $offset ";
     $dbh = $this->get_pdo_connection( );
     $sth = $dbh->prepare( $select );
     $value = $value . '%';
-    //$sth->bindParam( 1, $value);
-    $sth->execute(array($value) );
+    $sth->execute( array( $value ) );
     $model = array();
     $i = 0;
     while ( $result = $sth->fetch( PDO::FETCH_ASSOC ) ) {
       $model[] = array_merge( $result,  array( 'backbone:combobox:item:id' => $i++ ) );
     }
     for ( $i; $i < $limit; $i++ ) {
-      $model[] = array_merge( array_fill_keys( $fields, 'backbone:combobox:item:undefined' ),
+      $model[] = array_merge( array_fill_keys( $this->fields, 'backbone:combobox:item:undefined' ),
                                 array( 'backbone:combobox:item:id' => $i ) );
     }
     echo $this->to_json( $model );
@@ -131,7 +94,7 @@ class BBCombobox {
     header("HTTP/1.0 409 Conflict");
   }
   
-  private function get_action( ) {
+  /*private function get_action( ) {
     switch ( $_SERVER['REQUEST_METHOD'] ) {
       case 'POST';
         return 'create';
@@ -155,7 +118,7 @@ class BBCombobox {
 
   private function get_contents( ) {
     return file_get_contents('php://input');
-  }
+  }*/
 
   private function assoc_fields( $assoc, $filter ) {
     $result = array( );
@@ -187,21 +150,13 @@ class BBCombobox {
 
   private function get_pdo_connection( ) {
     //try {
-      $dbh = new PDO( $this->get_pdo_connection_string( ));
+      $dbh = new PDO( $this->connectionString );
       $dbh->query("set client_encoding to UTF8");
       return $dbh;
     //} catch (PDOException $e) {
     //  $this->error_model_header( );
     //  die( '{"error":"SQL - not connected"}' );
     //} 
-  }
-    
-  protected function get_pdo_connection_string( ) {
-    return $this->connectionString;
-  }
-
-  protected function get_table_name( ) {
-    return $this->table;
   }
   
 }

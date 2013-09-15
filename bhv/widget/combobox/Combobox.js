@@ -375,12 +375,12 @@ var InputView = Backbone.View.extend( {
     'blur': 'onblur'
   },
   
-  onblur:  function( ) {
-    if ( this.model.get('active') ) {
+  onblur:  function( e ) {
+    /*if ( this.model.get('active') ) {
       this.model.set( 'active', false );
       this.$el.val( this.model.get( this.model.displayName ) );
       this.trigger('backbone:combobox:items:hide');
-    }
+    }*/
   },
   
   onclick: function( ) {
@@ -484,7 +484,7 @@ var ItemView = Backbone.View.extend( {
   },
 
   onclick: function( e ) {
-    //this.select( );
+    this.select( );
     this.model.collection.selectItem( this.model.id );
     this.trigger( 'backbone:combobox:items:accept' );
   }
