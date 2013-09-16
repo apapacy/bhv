@@ -44,9 +44,14 @@ var defaults = {
   cssItems: {
     listPane: 'bbcombobox_list_pane'
   },
-
+  
   cssInput: {
     input: 'bbcombobox_input'
+  },
+  
+
+  cssNextPage: {
+    pane: 'bbcombobox_next_page_view'
   }
 
 };
@@ -226,6 +231,9 @@ function Constructor( settings ) {
   this.listenTo( this.inputView, 'backbone:combobox:items:accept', this.acceptValue );
   this.itemsView = ( new ItemsView( ) ).init( settings );
   this.itemsView.$el.appendTo( document.body );
+  this.previousPageView = new PreviousPageView( );
+  this.previousPageView.render( );
+  this.previousPageView.$el.appendTo( this.itemsView.$el );
   for ( var i = 0; i < this.limit; i++ ) {
     var item = ( new Item( ) ).init( settings );
     item.set( this.keyName, this.undefinedValue );
@@ -235,6 +243,11 @@ function Constructor( settings ) {
     this.items.add( item );
     itemView.$el.appendTo( this.itemsView.$el );
   }
+  this.nextPageView = ( new NextPageView( ) ).init(  settings );
+  this.nextPageView.render( );
+  this.nextPageView.$el.appendTo( this.itemsView.$el );
+  this.nextPageView.listenTo( itemView, 'backbone:combobox:item:show', this.nextPageView.show ); 
+  this.nextPageView.listenTo( itemView, 'backbone:combobox:item:hide', this.nextPageView.hide ); 
 }
 
 _.extend( Constructor.prototype, {
@@ -462,9 +475,11 @@ var ItemView = Backbone.View.extend( {
     if ( this.model.get(this.keyName) === CONSTANT.undefinedValue ) {
       this.model.collection.actualLength = Math.min( this.model.collection.actualLength, this.model.id );
       this.$el.hide( );
+      this.trigger( 'backbone:combobox:item:hide' );
     } else {
       this.model.collection.actualLength = Math.max( this.model.collection.actualLength, this.model.id + 1 );
       this.$el.show( );
+      this.trigger( 'backbone:combobox:item:show' );
     }
     this.$el.text( displayValue );
   },
@@ -491,6 +506,52 @@ var ItemView = Backbone.View.extend( {
 
 } );
 
+var NextPageView = Backbone.View.extend( {
+
+  tagName: 'div',
+
+  init: function( settings ) {
+    util.mergeArray( this, [ 'cssNextPage' ],
+                      defaults, settings, CONSTANT );
+    this.$el.addClass( this.cssNextPage.pane );
+    return this;
+  },
+ 
+  render: function( ) {
+    this.$el.html( '<center>▼</center>' );
+    this.$el.hide( );
+  },
+  
+  show: function( ) {
+    this.$el.show( );
+  },
+  
+  hide: function( ) {
+    this.$el.hide( );
+  },
+
+  } );
+
+var PreviousPageView = Backbone.View.extend( {
+
+  tagName: 'div',
+  
+  render: function( ) {
+    this.$el.html( '<center>▲/center>' );
+    this.$el.hide( );
+  },
+  
+  show: function( ) {
+    this.$el.show( );
+  },
+  
+  hide: function( ) {
+    this.$el.hide( );
+  },
+
+  } );
+
+  
 //* use with Requirejs define( ['combobox/Combobox'], function (cmb) {new cmb({});...} ) */
 return Constructor;
 
