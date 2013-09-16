@@ -248,11 +248,14 @@ function Constructor( settings ) {
   this.nextPageView.$el.appendTo( this.itemsView.$el );
   this.nextPageView.listenTo( itemView, 'backbone:combobox:item:show', this.nextPageView.show ); 
   this.nextPageView.listenTo( itemView, 'backbone:combobox:item:hide', this.nextPageView.hide ); 
+  this.listenTo( this.nextPageView, 'backbone:combobox:page:nextpage', this.readNextPage);
+  //this.nextPageView.items = this.items;
 }
 
 _.extend( Constructor.prototype, {
 
   showItems: function( ) {
+    this.inputView.$el.focus( );
     if ( this.POFF20 === true) {
       this.showItems = this.showItemsPOFF20;
       this.showItemsPOFF20( );
@@ -274,6 +277,7 @@ _.extend( Constructor.prototype, {
 
   /** For plain old FireFox2.0 */
   showItemsPOFF20: function( ) {
+    this.inputView.$el.focus( );
     this.itemsView.$el.show( );
     var conteiner = this.itemsView.el;
     var input = this.inputView.el;
@@ -287,6 +291,7 @@ _.extend( Constructor.prototype, {
   },
 
   acceptValue: function( ) {
+    this.inputView.$el.focus( );
     if ( this.items.selectedItem < this.items.actualLength && this.items.selectedItem >= 0 ) {
       this.input.set( this.keyName, this.items.at( this.items.selectedItem ).get( this.keyName ) );
       this.input.set( this.searchName, this.items.at( this.items.selectedItem ).get( this.searchName ) );
@@ -302,11 +307,13 @@ _.extend( Constructor.prototype, {
   },
 
   hideItems: function( ) {
+    this.inputView.$el.focus( );
     this.itemsView.$el.hide( );
   },
 
   /** Fetch collection from server with current searchValue */
   read: function( async ) {
+    this.inputView.$el.focus( );
     if ( async !== false ) {
       async = true;
     }
@@ -324,16 +331,20 @@ _.extend( Constructor.prototype, {
   },
 
   readFirstPage: function( ) {
+    this.inputView.$el.focus( );
     this.items.page = 0;
     this.read( );
   },
 
   readNextPage: function( ) {
+    this.inputView.$el.focus( );
+    this.items.selectItem( 0 );
     this.items.page = 1 + this.items.page;
     this.read( false );
   },
 
   readPreviousPage: function( ) {
+    this.inputView.$el.focus( );
     if ( this.items.page > 0 ) {
       this.items.page = -1 + this.items.page;
       this.read( false );
@@ -341,6 +352,7 @@ _.extend( Constructor.prototype, {
   },
 
   getValue: function( ) {
+    this.inputView.$el.focus( );
     var value = this.input.get( this.keyName );
     if ( value === CONSTANT.undefinedValue ) {
       return undefined;
@@ -350,6 +362,7 @@ _.extend( Constructor.prototype, {
   },
 
   setValue: function( value ) {
+    this.inputView.$el.focus( );
     this.input.set( this.keyName, value );
     this.input.fetch( {async:false, success:function(m,r,o){},error:function(m,r,o){alert('error')}});
     this.items.each( function( element, index, list){element.set( this.keyName, this.undefinedValue );}, this  );
@@ -389,11 +402,12 @@ var InputView = Backbone.View.extend( {
   },
   
   onblur:  function( e ) {
-    /*if ( this.model.get('active') ) {
-      this.model.set( 'active', false );
-      this.$el.val( this.model.get( this.model.displayName ) );
-      this.trigger('backbone:combobox:items:hide');
-    }*/
+    if ( this.model.get('active') ) {
+      //this.$el.focus( );
+      // this.model.set( 'active', false );
+      //this.$el.val( this.model.get( this.model.displayName ) );
+      //this.trigger('backbone:combobox:items:hide');
+    }
   },
   
   onclick: function( ) {
@@ -409,10 +423,11 @@ var InputView = Backbone.View.extend( {
     if ( this.handleTimeout !== null ) {
       window.clearTimeout( this.handleTimeout );
     }
-    if ( e.which === util.key.ENTER) {
+    if ( e.which === util.key.ENTER || e.which === util.key.TAB) {
       if ( this.model.get( 'active' ) ) {
         this.model.set( 'active', false);
         this.trigger('backbone:combobox:items:accept');
+        return;
       }
     }
 
@@ -421,8 +436,18 @@ var InputView = Backbone.View.extend( {
         this.model.set( 'active', false );
         this.$el.val( this.model.get( this.model.displayName ) );
         this.trigger('backbone:combobox:items:hide');
+        return;
       }
     }
+
+    if ( ! this.model.get('active') && e.which >= util.key.DELETE ) {
+      this.model.set( 'active', true );
+      this.$el.val( this.model.get( this.model.searchName ) );
+      this.$el.select( );
+      this.trigger('backbone:combobox:items:show');
+      return false;
+    }
+  
     
     if ( e.which >= util.key.DELETE || e.which == util.key.SPACE
         || e.which == util.key.BACKSPACE) {
@@ -529,6 +554,14 @@ var NextPageView = Backbone.View.extend( {
   hide: function( ) {
     this.$el.hide( );
   },
+ 
+ events: {
+    'click': 'onclick'
+  },
+  
+  onclick: function( ) {
+    this.trigger( 'backbone:combobox:page:nextpage' );
+  }
 
   } );
 
@@ -548,8 +581,17 @@ var PreviousPageView = Backbone.View.extend( {
   hide: function( ) {
     this.$el.hide( );
   },
+  
+  events: {
+    'click': 'onclick'
+  },
+  
+  onclick: function( ) {
+  alert(1)
+    this.items.selectNextPage( );
+  }
 
-  } );
+} );
 
   
 //* use with Requirejs define( ['combobox/Combobox'], function (cmb) {new cmb({});...} ) */
