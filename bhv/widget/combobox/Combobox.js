@@ -38,7 +38,7 @@ var defaults = {
 
   cssItem: {
     itemSelected: 'bbcombobox_item_selected',
-    item: 'bbcombobox_item',
+    item: 'bbcombobox_item'
   },
 
   cssItems: {
@@ -50,13 +50,15 @@ var defaults = {
   },
 
   cssNextPage: {
-    pane: 'bbcombobox_next_page_view'
+    pane: 'bbcombobox_next_page_view',
+    pressed: 'bbcombobox_next_page_view_pressed'
   },
 
   cssPreviousPage: {
-    pane: 'bbcombobox_previous_page_view'
+    pane: 'bbcombobox_previous_page_view',
+    pressed: 'bbcombobox_previous_page_view_pressed'
   }
-
+  
 };
 
 var util = new utils( );
@@ -337,6 +339,11 @@ _.extend( Constructor.prototype, {
         model.selectItem( );
       }
     } );
+    this.previousPageView.$el.removeClass( this.previousPageView.cssPreviousPage.pressed );
+    this.previousPageView.$el.addClass( this.previousPageView.cssPreviousPage.pane );
+    this.nextPageView.$el.removeClass( this.nextPageView.cssNextPage.pressed );
+    this.nextPageView.$el.addClass( this.nextPageView.cssNextPage.pane );
+
   },
 
   readFirstPage: function( ) {
@@ -452,10 +459,11 @@ var InputView = Backbone.View.extend( {
 
     if ( ! this.model.get('active') && e.which >= util.key.DELETE ) {
       this.model.set( 'active', true );
-      this.$el.val( this.model.get( this.model.searchName ) );
-      this.$el.select( );
+      //this.$el.val( this.model.get( this.model.searchName ) );
+      this.$el.val( this.model.get( '' ) );
+      //this.$el.select( );
       this.trigger('backbone:combobox:items:show');
-      return false;
+      //return true;
     }
   
     
@@ -553,7 +561,7 @@ var NextPageView = Backbone.View.extend( {
   },
  
   render: function( ) {
-    this.$el.html( '<center>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;▼ (PageDown)</center>' );
+    this.$el.html( '<center>▼</center>' );
     this.$el.hide( );
   },
   
@@ -570,6 +578,8 @@ var NextPageView = Backbone.View.extend( {
   },
   
   onclick: function( ) {
+    this.$el.removeClass( this.cssNextPage.pane );
+    this.$el.addClass( this.cssNextPage.pressed );
     this.trigger( 'backbone:combobox:page:nextpage' );
   }
 
@@ -587,7 +597,7 @@ var PreviousPageView = Backbone.View.extend( {
   },
 
   render: function( ) {
-    this.$el.html( '<center>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;▲ (PageUp)</center>' );
+    this.$el.html( '<center>▲</center>' );
     this.$el.hide( );
   },
   
@@ -603,11 +613,13 @@ var PreviousPageView = Backbone.View.extend( {
     'click': 'onclick'
   },
  
- events: {
+  events: {
     'click': 'onclick'
   },
   
   onclick: function( ) {
+    this.$el.removeClass( this.cssPreviousPage.pane );
+    this.$el.addClass( this.cssPreviousPage.pressed );
     this.trigger( 'backbone:combobox:page:previouspage' );
   }
 
