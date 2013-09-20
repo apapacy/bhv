@@ -19,7 +19,8 @@ combobox1 = new cmb({
   url: 'test_pdo.php',
   keyName: 'kod',
   searchName: 'name',
-  displayName: 'det'
+  displayName: 'det',
+  store: 'input1'
 });
 alert('hi')
 alert(combobox1.items.length)

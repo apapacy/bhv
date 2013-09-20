@@ -223,6 +223,9 @@ function Constructor( settings ) {
   _.extend( this, CONSTANT );
   _.extend( this, Backbone.Events );
   this.parentElement = $('#'+this.parent);
+  if ( this.store ) {
+    this.storeElement = $('#'+this.store);
+  }
   this.items = ( new Items( ) ).init( settings );
   this.listenTo( this.items, 'backbone:combobox:page:nextpage', this.readNextPage);
   this.listenTo( this.items, 'backbone:combobox:page:previouspage', this.readPreviousPage);
@@ -302,6 +305,9 @@ _.extend( Constructor.prototype, {
       this.input.set( this.keyName, this.items.at( this.items.selectedItem ).get( this.keyName ) );
       this.input.set( this.searchName, this.items.at( this.items.selectedItem ).get( this.searchName ) );
       this.input.set( this.displayName, this.items.at( this.items.selectedItem ).get( this.displayName ) );
+      if ( this.storeElement ) {
+        this.storeElement.val( this.getValue( ) );
+      }
       this.inputView.$el.val(  this.items.at( this.items.selectedItem ).get( this.displayName ) );
       for (var i = new Date().getTime(); new Date().getTime() - i < 500; ){
         Math.random();
@@ -369,7 +375,7 @@ _.extend( Constructor.prototype, {
   },
 
   getValue: function( ) {
-    this.inputView.$el.focus( );
+    //this.inputView.$el.focus( );
     var value = this.input.get( this.keyName );
     if ( value === CONSTANT.undefinedValue ) {
       return undefined;
@@ -379,6 +385,7 @@ _.extend( Constructor.prototype, {
   },
 
   setValue: function( value ) {
+    this.storeElement.val( value );
     this.inputView.$el.focus( );
     this.input.set( this.keyName, value );
     this.input.fetch( {async:false, success:function(m,r,o){},error:function(m,r,o){alert('error')}});
@@ -445,6 +452,8 @@ var InputView = Backbone.View.extend( {
         this.model.set( 'active', false);
         this.trigger('backbone:combobox:items:accept');
         return;
+      } else {
+        util.selectNextInput( this.el);
       }
     }
 
@@ -730,7 +739,16 @@ function utils( ) {
     return left;
     return jQuery(element).offset().left;
   };
-
+  
+  this.selectNextInput = function ( input ) {
+    var inputs = $( 'input:visible' );
+    for ( var i = 0; i < inputs.length; i++ ){
+      if ( inputs[i] === input ) {
+        inputs[i+1].focus()
+      }
+    }
+  } 
+   
   this.key = {};
 
   this.key.BACKSPACE = 8;
