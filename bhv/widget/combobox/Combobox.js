@@ -451,12 +451,21 @@ var InputView = Backbone.View.extend( {
       if ( this.model.get( 'active' ) ) {
         this.model.set( 'active', false);
         this.trigger('backbone:combobox:items:accept');
-        return;
+        return false;
       } else {
         util.selectNextInput( this.el);
+        return false;
       }
     }
 
+    if ( e.which === util.key.LEFT || e.which === util.key.UP) {
+      if ( ! this.model.get( 'active' ) ) {
+        util.selectPreviousInput( this.el);
+        return false;
+      }
+    }
+
+    
     if ( e.which === util.key.ESC) {
       if ( this.model.get('active') ) {
         this.model.set( 'active', false );
@@ -742,13 +751,24 @@ function utils( ) {
   
   this.selectNextInput = function ( input ) {
     var inputs = $( 'input:visible' );
-    for ( var i = 0; i < inputs.length; i++ ){
+    for ( var i = 0; i < inputs.length - 1; i++ ){
       if ( inputs[i] === input ) {
-        inputs[i+1].focus()
+        inputs[i+1].focus( );
+        return
       }
     }
   } 
-   
+
+  this.selectPreviousInput = function ( input ) {
+    var inputs = $( 'input:visible' );
+    for ( var i = 1; i < inputs.length; i++ ){
+      if ( inputs[i] === input ) {
+        inputs[i-1].focus( );
+        return
+      }
+    }
+  } 
+
   this.key = {};
 
   this.key.BACKSPACE = 8;
