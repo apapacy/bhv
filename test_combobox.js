@@ -16,11 +16,11 @@ requirejs(['bhv/widget/combobox/Combobox', 'domReady!'], function ( cmb ) {
 
 combobox1 = new cmb({
   parent: 'combo1',
-  url: 'ci/index.php/cms/test/collection',
-  urlRoot: 'ci/index.php/cms/test/model',
+  url: 'test_pdo.php',
   keyName: 'kod',
   searchName: 'name',
-  displayName: 'det'
+  displayName: 'det',
+  store: 'input1'
 });
 alert('hi')
 alert(combobox1.items.length)
@@ -33,8 +33,7 @@ combobox1.setValue(65181);
 //combobox1.setValue(25);
 combobox2 = new cmb({
   parent: 'combo2',
-  url: 'ci/index.php/cms/test/collection',
-  urlRoot: 'ci/index.php/cms/test/model',
+  url: 'test_pdo.php',
   keyName: 'kod',
   searchName: 'name',
   displayName: 'det',

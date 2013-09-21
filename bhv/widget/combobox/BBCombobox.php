@@ -15,21 +15,83 @@ class BBCombobox {
   protected $fields;
   
   //protected static $SINGLETON = new static( );
+  
+  private function validateSettings(array &$settings ) {
+    $validKey = array(
+      'PDOConnection',
+      'connectionString',
+      'user',
+      'password',
+      'encoding',
+      'table',
+      'keyName',
+      'searchName',
+      'displayName',
+      'order',
+      'fields',
+    );
 
-  function __construct( $connectionString, $table, $keyName, $searchName, $displayName, $order, $additionFields=FALSE ) {
-    $this->connectionString = $connectionString;
-    $this->table = $table;
-    $this->keyName = $keyName;
-    $this->searchName = $searchName;
-    $this->displayName = $displayName;
-    $this->order = $order;
-    $this->fields = array( $keyName );
-    if ( $searchName !== $keyName ) {
-      $this->fields[] = $searchName;
+    if ( ! isset( $settings['keyName'] ) &&  ! isset( $settings['searchName'] ) && ! isset( $settings['displayName'] ) ) {
+      die( 'Table column is not defined.' );
     }
-    if ( $displayName !== $keyName && $displayName !== $searchName ) {
-      $this->fields[] = $displayName;
+
+    if (isset( $settings['keyName'] ) &&  ! isset( $settings['searchName'] ) && ! isset( $settings['displayName'] ) ) {
+      $settings['searchName'] = $settings['displayName'] = $settings['keyName'];
     }
+
+    if ( ! isset( $settings['keyName'] ) && isset( $settings['searchName'] ) && ! isset( $settings['displayName'] ) ) {
+      $settings['displayName'] = $settings['keyName'] = $settings['searchName'];
+    }
+
+    if ( ! isset( $settings['keyName'] ) &&  ! isset( $settings['searchName'] ) && isset( $settings['displayName'] ) ) {
+      $settings['keyName'] = $settings['searchName'] = $settings['displayName'];
+    }
+    
+    if ( ! isset( $settings['keyName'] )) {
+      $settings['keyName'] = $settings['displayName'];
+    }
+    
+    if ( ! isset( $settings['searchName'] )) {
+      $settings['searchName'] = $settings['displayName'];
+    }
+    
+    if ( ! isset( $settings['displayName'] )) {
+      $settings['displayName'] = $settings['searchName'];
+    }
+    
+    if ( ! isset( $settings['fields'] )) {
+      $settings['fields'] = array( );
+    }
+    
+    if ( ! in_array($settings['keyName'], $settings['fields'] ) ) {
+      $settings['fields'][] = $settings['keyName'];
+    }
+    
+    if ( ! in_array($settings['searchName'], $settings['fields'] ) ) {
+      $settings['fields'][] = $settings['searchName'];
+    }
+
+    if ( ! in_array($settings['displayName'], $settings['fields'] ) ) {
+      $settings['fields'][] = $settings['displayName'];
+    }
+   
+    foreach ( $settings as $key => $value ) {
+      if ( ! in_array( $key, $validKey ) ) {
+        die( "'$key' is non valid key" );
+      }
+    }
+  }
+
+  function __construct( $settings ) {
+    $this->validateSettings( $settings );
+    $this->connection = $this->get_connection( $settings );
+    $this->table = $settings['table'];
+    $this->keyName = $settings['keyName'];
+    $this->searchName = $settings['searchName'];
+    $this->displayName = $settings['displayName'];
+    $this->order = $settings['order'];
+    $this->fields = $settings['fields'];
+    //print_r($this->fields);die();
     //$this->action = $this->get_action( );
     //$this->contents = $this->get_contents( );
     if ( isset( $_GET['id'] ) ) {
@@ -42,9 +104,9 @@ class BBCombobox {
   protected function _read( $id, $sid='id' ) {
   // requires: $id IS set ($sid is name key column in real SQL table)
   // output: $model['id'] IS set AND $model[$sid] IS set AND ===
-    $select = 'select "' . implode( '","', $this->fields ) . '" from '
-        . $this->table . ' where "' . $sid . '"=? limit 2';
-    $dbh = $this->get_pdo_connection( );
+    $select = 'select ' . implode( ',', $this->fields ) . ' from '
+        . $this->table . ' where ' . $sid . '=? limit 2';
+    $dbh = $this->connection;
     $sth = $dbh->prepare( $select );
     $sth->execute( array( $id ) );
     $result = $sth->fetch( PDO::FETCH_ASSOC );
@@ -66,10 +128,10 @@ class BBCombobox {
     $value = $_GET['searchValue'];
     $limit =  $_GET['limit'];
     $offset = ( $limit - 1 ) * $_GET['page'];
-    $select = 'select "' . implode( '","', $this->fields ) . '" from '
+    $select = 'select ' . implode( ',', $this->fields ) . ' from '
         . $this->table
-        . " where \"$name\" like ? order by $order limit $limit offset $offset ";
-    $dbh = $this->get_pdo_connection( );
+        . " where $name like ? order by $order limit $limit offset $offset ";
+    $dbh = $this->connection;
     $sth = $dbh->prepare( $select );
     $value = $value . '%';
     $sth->execute( array( $value ) );
@@ -147,16 +209,31 @@ class BBCombobox {
       return json_encode( $assoc );
     }
   }
-
-  private function get_pdo_connection( ) {
-    //try {
-      $dbh = new PDO( $this->connectionString );
-      $dbh->query("set client_encoding to UTF8");
-      return $dbh;
-    //} catch (PDOException $e) {
-    //  $this->error_model_header( );
-    //  die( '{"error":"SQL - not connected"}' );
-    //} 
+  
+  private function get_connection( $settings ) {
+    if ( isset( $settings['pdoConnection'] ) ) {
+      return $setting( 'pdoConnection' );
+    }
+    try {
+      if ( isset( $settings['password'] ) ) {
+        $dbh = new PDO( $settings['connectionString'], $settings['user'], $settings['password'] );
+      } else if ( isset( $settings['user'] ) ) {
+        $dbh = new PDO( $settings['connectionString'], $settings['user'] );
+      } else {
+        $dbh = new PDO( $settings['connectionString'] );
+      }
+    } catch (PDOException $e) {
+      $this->error_model_header( );
+      die( '{"error":"SQL - not connected"}' );
+    } 
+    if ( isset( $settings['encoding'] ) ) {
+      if ( substr( $settings['connectionString'], 0, 2 ) === 'pg' ) {
+        $dbh->query("set client_encoding to {$settings['encoding']}");
+      } else {
+        $dbh->query("set names to '{$settings['encoding']}'");
+      }
+    }
+    return $dbh;
   }
   
 }

@@ -22,11 +22,15 @@ require_once( './bhv/widget/combobox/BBCombobox.php' );
   
 }*/
 
-$combo = new BBCombobox("pgsql:host=localhost;dbname=Ceh16;user=root;password=26682316",
-'cennic',
- 'kod', 'name', 'name"||\'#\'||"kod" as "det',
- 'name', 'name',
- array()   );
+$combo = new BBCombobox( array (
+'connectionString'=>"pgsql:host=localhost;dbname=Ceh16;user=root;password=26682316",
+'table'=>'cennic',
+'keyName'=>'kod',
+'searchName'=> 'name',
+'displayName'=> '"det"||\'#\'||"kod" as det',
+'order'=>'name',
+'encoding'=>'UTF8'
+) );
 /*
   $connectionString, $table, $keyName, $searchName, $displayName, $order, $additionFields=FALSE ) {
 connecionstring
