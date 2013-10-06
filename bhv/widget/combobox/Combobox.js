@@ -218,10 +218,31 @@ var Input = Backbone.Model.extend( {
  * @overview construct all of need for combobox
  */
 function Constructor( settings ) {
+
+  if ( settings['keyName'] &&  ! settings['searchName'] && ! settings['displayName'] ) {
+      settings['searchName'] = settings['displayName'] = settings['keyName'];
+  }
+  if ( ! settings['keyName'] && settings['searchName'] && ! settings['displayName'] ) {
+    settings['displayName'] = settings['keyName'] = settings['searchName'];
+  }
+  if ( settings['keyName'] &&  ! settings['searchName'] && settings['displayName'] ) {
+      settings['keyName'] = settings['searchName'] = settings['displayName'];
+  }  
+  if ( ! settings['keyName'] ) {
+    settings['keyName'] = settings['displayName'];
+  } 
+  if ( ! settings['searchName'] ) {
+    settings['searchName'] = settings['displayName'];
+  } 
+  if ( ! settings['displayName'] ) {
+    settings['displayName'] = settings['searchName'];
+  }
+ 
   _.extend( this, defaults );
   _.extend( this, settings );
   _.extend( this, CONSTANT );
   _.extend( this, Backbone.Events );
+   
   this.parentElement = $('#'+this.parent);
   if ( this.store ) {
     this.storeElement = $('#'+this.store);
@@ -309,18 +330,16 @@ _.extend( Constructor.prototype, {
         this.storeElement.val( this.getValue( ) );
       }
       this.inputView.$el.val(  this.items.at( this.items.selectedItem ).get( this.displayName ) );
-      for (var i = new Date().getTime(); new Date().getTime() - i < 500; ){
-        Math.random();
-      }
-      
+      util.delay( 500 );
       this.hideItems( );
       this.input.set( 'active', false );
     }
   },
 
   hideItems: function( ) {
-    this.inputView.$el.focus( );
     this.itemsView.$el.hide( );
+    this.inputView.el.focus( );
+    //this.inputView.el.select( );
   },
 
   /** Fetch collection from server with current searchValue */
@@ -345,11 +364,6 @@ _.extend( Constructor.prototype, {
         model.selectItem( );
       }
     } );
-    this.previousPageView.$el.removeClass( this.previousPageView.cssPreviousPage.pressed );
-    this.previousPageView.$el.addClass( this.previousPageView.cssPreviousPage.pane );
-    this.nextPageView.$el.removeClass( this.nextPageView.cssNextPage.pressed );
-    this.nextPageView.$el.addClass( this.nextPageView.cssNextPage.pane );
-
   },
 
   readFirstPage: function( ) {
@@ -471,24 +485,11 @@ var InputView = Backbone.View.extend( {
         this.model.set( 'active', false );
         this.$el.val( this.model.get( this.model.displayName ) );
         this.trigger('backbone:combobox:items:hide');
-        return;
+        return false;
       }
     }
 
-    if ( ! this.model.get('active') && e.which >= util.key.DELETE ) {
-      this.model.set( 'active', true );
-      //this.$el.val( this.model.get( this.model.searchName ) );
-      this.$el.val( this.model.get( '' ) );
-      //this.$el.select( );
-      this.trigger('backbone:combobox:items:show');
-      //return true;
-    }
-  
-    
-    if ( e.which >= util.key.DELETE || e.which == util.key.SPACE
-        || e.which == util.key.BACKSPACE) {
-      this.handleTimeout = window.setTimeout( this.setSearchValue, this.delay );
-    } else if ( e.which === util.key.UP ) {
+    if ( e.which === util.key.UP ) {
       this.model.items.selectPreviousItem( );
     } else if ( e.which === util.key.DOWN ) {
       this.model.items.selectNextItem( );
@@ -500,7 +501,19 @@ var InputView = Backbone.View.extend( {
       this.model.items.selectFirstItem( );
     } else if ( e.which === util.key.END ) {
       this.model.items.selectLastItem( );
+    } else {
+      this.handleTimeout = window.setTimeout( this.setSearchValue, this.delay );
     }
+    
+    if ( ! this.model.get('active') /*&& e.which >= util.key.DELETE*/ ) {
+      this.model.set( 'active', true );
+      //this.$el.val( this.model.get( this.model.searchName ) );
+      this.$el.val( this.model.get( '' ) );
+      //this.$el.select( );
+      this.trigger('backbone:combobox:items:show');
+      //return true;
+    }
+
   }
 } );
 
@@ -575,6 +588,13 @@ var NextPageView = Backbone.View.extend( {
     util.mergeArray( this, [ 'cssNextPage' ],
                       defaults, settings, CONSTANT );
     this.$el.addClass( this.cssNextPage.pane );
+    this.unpress = _.bind( function( ) {
+      //this.previousPageView.$el.removeClass( this.previousPageView.cssPreviousPage.pressed );
+      //this.previousPageView.$el.addClass( this.previousPageView.cssPreviousPage.pane );
+      this.$el.removeClass( this.cssNextPage.pressed );
+      this.$el.addClass( this.cssNextPage.pane );
+    }, this );
+
     return this;
   },
  
@@ -598,6 +618,7 @@ var NextPageView = Backbone.View.extend( {
   onclick: function( ) {
     this.$el.removeClass( this.cssNextPage.pane );
     this.$el.addClass( this.cssNextPage.pressed );
+    window.setTimeout( this.unpress, 300);
     this.trigger( 'backbone:combobox:page:nextpage' );
   }
 
@@ -611,6 +632,12 @@ var PreviousPageView = Backbone.View.extend( {
     util.mergeArray( this, [ 'cssPreviousPage' ],
                       defaults, settings, CONSTANT );
     this.$el.addClass( this.cssPreviousPage.pane );
+    this.unpress = _.bind( function( ) {
+      //this.previousPageView.$el.removeClass( this.previousPageView.cssPreviousPage.pressed );
+      //this.previousPageView.$el.addClass( this.previousPageView.cssPreviousPage.pane );
+      this.$el.removeClass( this.cssPreviousPage.pressed );
+      this.$el.addClass( this.cssPreviousPage.pane );
+    }, this );
     return this;
   },
 
@@ -638,6 +665,7 @@ var PreviousPageView = Backbone.View.extend( {
   onclick: function( ) {
     this.$el.removeClass( this.cssPreviousPage.pane );
     this.$el.addClass( this.cssPreviousPage.pressed );
+    window.setTimeout( this.unpress, 300 );
     this.trigger( 'backbone:combobox:page:previouspage' );
   }
 
@@ -769,6 +797,12 @@ function utils( ) {
     }
   } 
 
+  this.delay = function ( delay ) {
+    for (var i = new Date().getTime(); new Date().getTime() - i < delay; ){
+      Math.random();
+    }
+  }
+    
   this.key = {};
 
   this.key.BACKSPACE = 8;

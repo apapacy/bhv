@@ -16,7 +16,7 @@ class BBCombobox {
   
   //protected static $SINGLETON = new static( );
   
-  private function validateSettings(array &$settings ) {
+  protected function validateSettings(array &$settings ) {
     $validKey = array(
       'PDOConnection',
       'connectionString',
@@ -59,6 +59,11 @@ class BBCombobox {
       $settings['displayName'] = $settings['searchName'];
     }
     
+    if ( ! isset( $settings['order'] )) {
+      $settings['order'] = $settings['searchName'];
+    }
+
+
     if ( ! isset( $settings['fields'] )) {
       $settings['fields'] = array( );
     }
