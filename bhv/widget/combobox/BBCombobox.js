@@ -430,12 +430,22 @@ var InputView = Backbone.View.extend( {
       },
       this
     );
+
+    this.restoreValue = _.bind( function( ) {
+      this.$el.val( this.model.get( this.model.displayName ) );
+      },
+      this
+    );
+
+    this.$el.val( this.model.get( this.model.displayName ) );
+
     return this;
   },
 
   events: {
     'click': 'onclick',
     'keydown': 'onkeydown',
+    'keyup': 'onkeyup',
     'blur': 'onblur'
   },
   
@@ -455,6 +465,14 @@ var InputView = Backbone.View.extend( {
       this.$el.select( );
       this.trigger('backbone:combobox:items:show');
     }
+  },
+  
+  onkeyup: function( e ) {
+
+    if ( e.which === util.key.ESC) {
+      return false;
+    }
+    
   },
 
   onkeydown: function( e ) {
@@ -483,7 +501,8 @@ var InputView = Backbone.View.extend( {
     if ( e.which === util.key.ESC) {
       if ( this.model.get('active') ) {
         this.model.set( 'active', false );
-        this.$el.val( this.model.get( this.model.displayName ) );
+        //this.$el.val( this.model.get( this.model.displayName ) );
+        window.setTimeout(this.restoreValue,0);
         this.trigger('backbone:combobox:items:hide');
         return false;
       }

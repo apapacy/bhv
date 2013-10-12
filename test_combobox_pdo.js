@@ -12,7 +12,7 @@ requirejs.config({
    }
 });
 
-requirejs(['bhv/widget/combobox/Combobox', 'domReady!'], function ( cmb ) {
+requirejs(['bhv/widget/combobox/BBCombobox', 'domReady!'], function ( cmb ) {
 
 combobox1 = new cmb({
   parent: 'combo1',
